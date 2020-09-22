@@ -1,10 +1,12 @@
 package com.fr1014.frecyclerviewadapter;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -97,7 +99,7 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder> extends Recycler
         return mFooterView;
     }
 
-    public List<T> getDatas(){
+    public List<T> getDatas() {
         return mData;
     }
 

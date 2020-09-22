@@ -14,13 +14,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.fr1014.musicmanager.Music;
 import com.fr1014.musicmanager.MusicService;
@@ -28,6 +28,7 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
+import com.fr1014.mycoludmusic.home.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
@@ -38,9 +39,9 @@ public class PlayListDialogFragment extends DialogFragment {
 
     private FragmentPlayListDialogBinding binding;
     private PlayListAdapter playListAdapter;
-    private TopListViewModel viewModel;
     private MusicService.MusicControl musicControl;
     private int oldPosition = -1;  //当前播放音乐的位置
+    private TopListViewModel viewModel;
 
     public PlayListDialogFragment() {
         // Required empty public constructor
@@ -52,7 +53,6 @@ public class PlayListDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), R.style.PayListDialog);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //设置content前设定
-//        dialog.setContentView(R.layout.fragment_play_list_dialog);
         dialog.setCanceledOnTouchOutside(true);  //外部点击取消
 
         return dialog;
@@ -120,23 +120,20 @@ public class PlayListDialogFragment extends DialogFragment {
     };
 
     private MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
-        @Override
-        public void onPlayProgressChange(long played, long duration) {
-
-        }
 
         @Override
         public void onPlay(Music item) {
-
+            Log.d(TAG, "++++onPlay: "+item.toString());
+            int position = musicControl.getPlayList().indexOf(item);
+            if (oldPosition != position) {
+                playListAdapter.setCurrentMusic(item);
+                playListAdapter.notifyDataSetChanged();
+                oldPosition = position;
+            }
         }
 
         @Override
         public void onPause() {
-
-        }
-
-        @Override
-        public void onNotify(Music item, boolean canPlay) {
 
         }
     };
@@ -155,16 +152,11 @@ public class PlayListDialogFragment extends DialogFragment {
                 case R.id.ll_playlist:
                     if (oldPosition != position) {
                         Music item = (Music) adapter.getData(position);
-                        musicControl.addPlayList(item);
-                        playListAdapter.setCurrentMusic(item);
-//                        if (oldPosition != -1) {
-//                            playListAdapter.notifyItemChanged(oldPosition);
-//                        }
-//                        playListAdapter.notifyItemChanged(position);
-                        playListAdapter.notifyDataSetChanged();
-                        oldPosition = position;
+                        viewModel.checkSong(item);
                     } else {
-                        Toast.makeText(getContext(), "点击的为当前播放的音乐!!!", Toast.LENGTH_SHORT).show();
+                        //点击的为当前播放的歌曲
+                        new CurrentMusicDialogFragment().show(getParentFragmentManager(), "current_music_dialog");
+                        dismissDialog();
                     }
                     break;
                 case R.id.iv_del:
@@ -178,10 +170,18 @@ public class PlayListDialogFragment extends DialogFragment {
         binding.header.tvCount.setText(String.format("(%d)", count));
     }
 
+    private static final String TAG = "PlayListDialogFragment";
+
+    private void dismissDialog() {
+        if (getDialog() != null) {
+            getDialog().dismiss();
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (getActivity() != null) {
+        if (getActivity()!=null){
             getActivity().unbindService(serviceConnection);
         }
     }

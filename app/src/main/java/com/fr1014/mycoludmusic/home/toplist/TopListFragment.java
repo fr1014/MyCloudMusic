@@ -18,6 +18,8 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentTopListBinding;
 import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
 
+
+//排行榜榜单页面
 public class TopListFragment extends Fragment {
     private TopListViewModel viewModel;
     private TopListAdapter topListAdapter;

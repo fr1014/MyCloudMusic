@@ -4,13 +4,11 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -51,6 +49,7 @@ public class MusicService extends Service {
         progressChangeListeners = new ArrayList<>(); //初始化进度监听器列表
         player = new MediaPlayer();
         player.setOnCompletionListener(onCompletionListener);
+        player.setOnErrorListener(onErrorListener);
         handler = new MyHandler(player, progressChangeListeners);
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE); //获取音频管理服务
     }
@@ -71,13 +70,9 @@ public class MusicService extends Service {
     }
 
     public interface OnStateChangeListener {
-        void onPlayProgressChange(long played, long duration);
-
         void onPlay(Music item); //播放状态变为播放时
 
         void onPause(); //播放状态变为暂停时
-
-        void onNotify(Music item, boolean canPlay);
     }
 
     private static final String TAG = "MusicService";
@@ -145,7 +140,7 @@ public class MusicService extends Service {
 
         //设置音乐的播放位置
         public void seekTo(int progress) {
-            player.seekTo(progress);
+            seekToInner(progress);
         }
 
         //下一首
@@ -170,9 +165,6 @@ public class MusicService extends Service {
     private void addPlayListInner(Music item) {
         if (!playingMusicList.contains(item)) {
             playingMusicList.add(0, item);
-        }
-        for (Music music : playingMusicList) {
-            Log.d(TAG, "----addPlayListInner: " + music.toString());
         }
         currentMusic = item;
         isNeedReload = true;
@@ -203,37 +195,19 @@ public class MusicService extends Service {
     private void playMusicItem(Music item, boolean reload) {
         if (item == null) return;
         if (reload) {
-            if (item.getSongUrl() == null) {
-                for (OnStateChangeListener listener : listenerList) {
-                    listener.onNotify(item, false);
-                }
-                return;
-            } else {
+            if (item.getSongUrl() != null) {
                 //需要重新加载音乐
                 prepareToPlay(item);
             }
-        }
-        //如果无需重新加载，就是被暂停的歌曲
-        if (!reload) {
+        } else {
+            //如果无需重新加载，就是被暂停的歌曲
             player.start();
             isNeedReload = true;
-            for (OnStateChangeListener listener : listenerList) {
-                listener.onPlay(currentMusic);
-            }
         }
-        //异步准备音乐已完成
-        player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                player.start();
-                for (OnStateChangeListener listener : listenerList) {
-                    listener.onPlay(currentMusic);
-                }
-                //移除现有的更新消息，重新启动更新
-                handler.removeMessages(PROGRESS_CHANGE);
-                handler.sendEmptyMessage(PROGRESS_CHANGE);
-            }
-        });
+        for (OnStateChangeListener listener : listenerList) {
+            listener.onPlay(item);
+        }
+        Log.d(TAG, "----playMusicItem: " + item);
     }
 
     //将要播放的音乐载入MediaPlay（并不是播放）
@@ -245,6 +219,16 @@ public class MusicService extends Service {
             player.setDataSource(item.getSongUrl());
             //异步准备播放音乐
             player.prepareAsync();
+            //异步准备音乐已完成
+            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    player.start();
+                    //移除现有的更新消息，重新启动更新
+                    handler.removeMessages(PROGRESS_CHANGE);
+                    handler.sendEmptyMessage(PROGRESS_CHANGE);
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -323,6 +307,7 @@ public class MusicService extends Service {
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
+            Log.d(TAG, "onCompletion: ");
             //单曲循环后继续播放同样歌曲
             if (playMode == TYPE_SINGLE) {
                 playInner();
@@ -330,6 +315,14 @@ public class MusicService extends Service {
             } else {
                 playNextInner();
             }
+        }
+    };
+
+    //必写，不然不会拦截error，会到onCompletion中处理，导致逻辑问题
+    private MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mp, int what, int extra) {
+            return true;
         }
     };
 
@@ -393,5 +386,4 @@ public class MusicService extends Service {
             void onPlayProgressChange(long played, long duration); //播放进度变化
         }
     }
-
 }

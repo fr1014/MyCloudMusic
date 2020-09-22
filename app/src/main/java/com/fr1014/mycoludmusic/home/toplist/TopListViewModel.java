@@ -38,17 +38,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private BusLiveData<List<Music>> getPlayListDetail;
     private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSearch;
-    private BusLiveData<Boolean> getCheckSongResult;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
-    }
-
-    public BusLiveData<Boolean> getCheckSongResult() {
-        if (getCheckSongResult == null){
-            getCheckSongResult = new BusLiveData<>();
-        }
-        return getCheckSongResult;
     }
 
     //搜索
@@ -71,7 +63,6 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
             getPlayListDetail = new BusLiveData<>();
         }
         getPlayListDetailEntity(id);
-        Log.d(TAG, "----getPlayListDetail: " + id);
         return getPlayListDetail;
     }
 
@@ -85,7 +76,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     private static final String TAG = "TopListViewModel";
 
-    public void getSongUrlEntity(Music music) {
+    private void getSongUrlEntity(Music music) {
         model.getSongUrl(music.getId())
                 .compose(RxSchedulers.apply())
                 .map(new Function<SongUrlEntity, Music>() {
@@ -254,7 +245,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     }
 
     //通过搜索得到的歌曲，需要通过获取歌曲详情来获取音乐专辑图片
-    public void getSongDetailEntity(Music music) {
+    private void getSongDetailEntity(Music music) {
         model.getSongDetail(music.getId())
                 .map(new Function<SongDetailEntity, Music>() {
                     @Override
@@ -274,6 +265,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(Music music) {
+                        Log.d(TAG, "++++onNext: " + music);
                         getSongUrl.postValue(music);
                     }
 

@@ -136,17 +136,9 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         }
     };
 
-    private static final String TAG = "CurrentMusicDialogFragm";
-
     private MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
         @Override
-        public void onPlayProgressChange(long played, long duration) {
-
-        }
-
-        @Override
         public void onPlay(Music item) {
-            Log.d(TAG, "====onPlay: " + item.toString());
             binding.ivState.setImageResource(R.drawable.ic_stop_black);
             if (item == oldMusic) { //选择播放的音乐与当前音乐相同
                 if (FIRST_START_ANIMATION == 1) { //动画已经start过
@@ -156,16 +148,18 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                     FIRST_START_ANIMATION = 1;
                 }
             } else {
-                oldMusic = item;
-                binding.tvName.setText(item.getTitle());
-                if (getActivity() != null) {
-                    Glide.with(CurrentMusicDialogFragment.this)
-                            .load(item.getImgUrl())
-                            .placeholder(R.drawable.film)
-                            .into(binding.civSongImg);
+                if (item.getSongUrl() != null) {
+                    oldMusic = item;
+                    binding.tvName.setText(oldMusic.getTitle());
+                    if (getActivity() != null) {
+                        Glide.with(CurrentMusicDialogFragment.this)
+                                .load(oldMusic.getImgUrl())
+                                .placeholder(R.drawable.film)
+                                .into(binding.civSongImg);
+                    }
+                    rotationAnimator.start();
+                    FIRST_START_ANIMATION = 1;
                 }
-                rotationAnimator.start();
-                FIRST_START_ANIMATION = 1;
             }
         }
 
@@ -175,10 +169,6 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
             binding.ivState.setImageResource(R.drawable.ic_play_black);
         }
 
-        @Override
-        public void onNotify(Music item, boolean canPlay) {
-
-        }
     };
 
     private MusicService.MyHandler.OnProgressChangeListener onProgressChangeListener = new MusicService.MyHandler.OnProgressChangeListener() {
@@ -238,7 +228,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     @Override
     public void onResume() {
         super.onResume();
-        if (rotationAnimator != null && rotationAnimator.isPaused()) {
+        if (rotationAnimator != null && rotationAnimator.isPaused() && musicControl.isPlaying()) {
             rotationAnimator.resume();
         }
     }

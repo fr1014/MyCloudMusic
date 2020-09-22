@@ -135,27 +135,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //监听MusicService的变化
     private MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
         @Override
-        public void onPlayProgressChange(long played, long duration) {
-
-        }
-
-        @Override
         public void onPlay(Music item) {
             Log.d(TAG, "----onPlay: " + item.toString());
             //播放音乐时，若底部的音乐状态栏不可见，则设置为可见
-            int visibility = binding.appBarMain.contentMain.clBottomBar.getVisibility();
-            if (visibility == 8) {
-                binding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
+            if (item.getSongUrl() != null) {
+                int visibility = binding.appBarMain.contentMain.clBottomBar.getVisibility();
+                if (visibility == 8) {
+                    binding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
+                }
+
+                Glide.with(MainActivity.this)
+                        .load(item.getImgUrl())
+                        .placeholder(R.drawable.film)
+                        .into(binding.appBarMain.contentMain.ivCoverImg);
+                binding.appBarMain.contentMain.tvName.setText(item.getTitle());
+
+                binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.GONE);
+                binding.appBarMain.contentMain.ivStateStop.setVisibility(View.VISIBLE);
+            } else {
+                Log.d(TAG, "++++onPlay: "+"main");
+                viewModel.checkSong(item);
             }
-
-            Glide.with(MainActivity.this)
-                    .load(item.getImgUrl())
-                    .placeholder(R.drawable.film)
-                    .into(binding.appBarMain.contentMain.ivCoverImg);
-            binding.appBarMain.contentMain.tvName.setText(item.getTitle());
-
-            binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.GONE);
-            binding.appBarMain.contentMain.ivStateStop.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -164,20 +164,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             binding.appBarMain.contentMain.ivStateStop.setVisibility(View.GONE);
         }
 
-        @Override
-        public void onNotify(Music item, boolean canPlay) {
-            if (!canPlay) {
-                viewModel.checkSong(item);
-//                viewModel.getCheckSongResult().observe(MainActivity.this, new Observer<Boolean>() {
-//                    @Override
-//                    public void onChanged(Boolean canPlay) {
-//                        if (!canPlay) {
-//                            musicControl.playNext();
-//                        }
-//                    }
-//                });
-            }
-        }
     };
 
     @Override

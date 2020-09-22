@@ -27,6 +27,8 @@ import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 
 import java.util.List;
 
+
+//排行榜详情页面
 public class PlayListDetailFragment extends Fragment {
     public static final String KEY_ID = "ID";
     private long id = 0L;
@@ -52,11 +54,8 @@ public class PlayListDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             id = getArguments().getLong(KEY_ID);
-            Log.d(TAG, "------onCreate: " + id);
         }
     }
-
-    private static final String TAG = "PlayListDetailFragment";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,14 +69,14 @@ public class PlayListDetailFragment extends Fragment {
         initAdapter();
         binding.rvPlaylistDetail.setAdapter(adapter);
 
-        viewModel.getSongUrl().observe(getViewLifecycleOwner(), new Observer<Music>() {
+        viewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
                 musicControl.addPlayList(music);
             }
         });
 
-        viewModel.getPlayListDetail(id).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
+        viewModel.getPlayListDetail(id).observe(this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> musics) {
                 adapter.setData(musics);
@@ -97,11 +96,18 @@ public class PlayListDetailFragment extends Fragment {
         adapter.setHeaderView(header);
         header.setOnClickListener(v -> {
             List<Music> datas = adapter.getDatas();
-            musicControl.addPlayList(datas);
+            if (datas.size() >= 1) {
+                musicControl.addPlayList(datas);
+                viewModel.checkSong(datas.get(0));
+            }
         });
         adapter.setOnItemClickListener((adapter, view, position) -> {
             Music music = (Music) adapter.getData(position);
-            viewModel.getSongUrlEntity(music);
+            if (music.getSongUrl() == null) {
+                viewModel.checkSong(music);
+            } else {
+                musicControl.addPlayList(music);
+            }
         });
     }
 
@@ -130,4 +136,11 @@ public class PlayListDetailFragment extends Fragment {
         }
     };
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (getActivity() != null) {
+            getActivity().unbindService(mServiceConnection);
+        }
+    }
 }
