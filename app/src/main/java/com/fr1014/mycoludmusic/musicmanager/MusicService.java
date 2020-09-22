@@ -1,4 +1,4 @@
-package com.fr1014.musicmanager;
+package com.fr1014.mycoludmusic.musicmanager;
 
 import android.app.Service;
 import android.content.Intent;

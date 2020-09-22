@@ -7,7 +7,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
-import com.fr1014.musicmanager.Music;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.entity.CheckEntity;
 import com.fr1014.mycoludmusic.entity.PlayListDetailEntity;
@@ -15,6 +14,7 @@ import com.fr1014.mycoludmusic.entity.SearchEntity;
 import com.fr1014.mycoludmusic.entity.SongDetailEntity;
 import com.fr1014.mycoludmusic.entity.SongUrlEntity;
 import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
+import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mymvvm.base.BaseViewModel;

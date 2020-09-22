@@ -16,4 +16,5 @@
     <string name="action_search">搜索</string>
     <string name="search">搜索</string>
     <string name="play_all">播放全部</string>
+    <string name="channel_name">音乐前台服务</string>
 </resources>

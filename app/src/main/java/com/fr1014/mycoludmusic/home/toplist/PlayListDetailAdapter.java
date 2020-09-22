@@ -5,8 +5,8 @@ import android.view.View;
 
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
-import com.fr1014.musicmanager.Music;
 import com.fr1014.mycoludmusic.R;
+import com.fr1014.mycoludmusic.musicmanager.Music;
 
 /**
  * 创建时间:2020/9/5

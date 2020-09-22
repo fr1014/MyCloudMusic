@@ -18,13 +18,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
-import com.fr1014.musicmanager.Music;
-import com.fr1014.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding;
 import com.fr1014.mycoludmusic.home.toplist.PlayListDetailAdapter;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
+import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.musicmanager.MusicService;
 
 import java.util.List;
 

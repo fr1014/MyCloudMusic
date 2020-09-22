@@ -22,14 +22,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.fr1014.musicmanager.Music;
-import com.fr1014.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
 import com.fr1014.mycoludmusic.home.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
+import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import java.util.List;

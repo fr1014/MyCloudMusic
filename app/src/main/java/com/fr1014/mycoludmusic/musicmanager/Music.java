@@ -1,4 +1,4 @@
-package com.fr1014.musicmanager;
+package com.fr1014.mycoludmusic.musicmanager;
 
 /**
  * 创建时间:2020/9/7

@@ -12,17 +12,16 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
-import com.fr1014.musicmanager.Music;
-import com.fr1014.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.home.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
+import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.musicmanager.MusicService;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -153,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.GONE);
                 binding.appBarMain.contentMain.ivStateStop.setVisibility(View.VISIBLE);
             } else {
-                Log.d(TAG, "++++onPlay: "+"main");
+                Log.d(TAG, "++++onPlay: " + "main");
                 viewModel.checkSong(item);
             }
         }
@@ -211,6 +210,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onDestroy() {
         super.onDestroy();
         Glide.with(getApplicationContext()).pauseAllRequests();
-        unbindService(serviceConnection);
+        if (serviceConnection != null) {
+            unbindService(serviceConnection);
+        }
     }
 }

@@ -23,11 +23,11 @@ import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
-import com.fr1014.musicmanager.Music;
-import com.fr1014.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
 import com.fr1014.mycoludmusic.home.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 public class CurrentMusicDialogFragment extends DialogFragment implements View.OnClickListener {

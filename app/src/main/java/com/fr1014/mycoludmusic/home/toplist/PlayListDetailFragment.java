@@ -18,12 +18,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.fr1014.musicmanager.Music;
-import com.fr1014.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
+import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.musicmanager.MusicService;
 
 import java.util.List;
 
@@ -60,28 +60,13 @@ public class PlayListDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        initViewModel();
         // Inflate the layout for this fragment
         binding = FragmentPlaylistDetailBinding.inflate(getLayoutInflater(), container, false);
-
-        initViewModel();
 
         binding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         initAdapter();
         binding.rvPlaylistDetail.setAdapter(adapter);
-
-        viewModel.getSongUrl().observe(this, new Observer<Music>() {
-            @Override
-            public void onChanged(Music music) {
-                musicControl.addPlayList(music);
-            }
-        });
-
-        viewModel.getPlayListDetail(id).observe(this, new Observer<List<Music>>() {
-            @Override
-            public void onChanged(List<Music> musics) {
-                adapter.setData(musics);
-            }
-        });
         return binding.getRoot();
     }
 
@@ -97,8 +82,10 @@ public class PlayListDetailFragment extends Fragment {
         header.setOnClickListener(v -> {
             List<Music> datas = adapter.getDatas();
             if (datas.size() >= 1) {
-                musicControl.addPlayList(datas);
-                viewModel.checkSong(datas.get(0));
+                if (musicControl != null) {
+                    musicControl.addPlayList(datas);
+                    viewModel.checkSong(datas.get(0));
+                }
             }
         });
         adapter.setOnItemClickListener((adapter, view, position) -> {
@@ -106,7 +93,9 @@ public class PlayListDetailFragment extends Fragment {
             if (music.getSongUrl() == null) {
                 viewModel.checkSong(music);
             } else {
-                musicControl.addPlayList(music);
+                if (musicControl != null) {
+                    musicControl.addPlayList(music);
+                }
             }
         });
     }
@@ -118,6 +107,20 @@ public class PlayListDetailFragment extends Fragment {
             Intent intent = new Intent(getActivity(), MusicService.class);
             getActivity().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         }
+
+        viewModel.getSongUrl().observe(PlayListDetailFragment.this, new Observer<Music>() {
+            @Override
+            public void onChanged(Music music) {
+                musicControl.addPlayList(music);
+            }
+        });
+
+        viewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
+            @Override
+            public void onChanged(List<Music> musics) {
+                adapter.setData(musics);
+            }
+        });
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {

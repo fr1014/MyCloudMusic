@@ -1,12 +1,10 @@
 package com.fr1014.mycoludmusic.home.playlist;
 
-import android.util.Log;
-
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
-import com.fr1014.musicmanager.Music;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.musicmanager.Music;
 
 /**
  * 创建时间:2020/9/15
