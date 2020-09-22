@@ -1,0 +1,5 @@
+include ':musicmanager'
+include ':FRecyclerviewAdapter'
+include ':mymvvm'
+include ':app'
+rootProject.name = "MyColudMusic"
