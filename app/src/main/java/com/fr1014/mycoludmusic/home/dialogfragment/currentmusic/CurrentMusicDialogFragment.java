@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.home;
+package com.fr1014.mycoludmusic.home.dialogfragment.currentmusic;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import android.os.IBinder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ import android.widget.SeekBar;
 import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
-import com.fr1014.mycoludmusic.home.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.MusicService;
 import com.fr1014.mycoludmusic.utils.CommonUtil;

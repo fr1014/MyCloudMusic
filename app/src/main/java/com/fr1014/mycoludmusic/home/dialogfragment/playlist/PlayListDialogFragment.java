@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.home.playlist;
+package com.fr1014.mycoludmusic.home.dialogfragment.playlist;
 
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -26,7 +26,7 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
-import com.fr1014.mycoludmusic.home.CurrentMusicDialogFragment;
+import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.MusicService;
@@ -41,7 +41,6 @@ public class PlayListDialogFragment extends DialogFragment {
     private PlayListAdapter playListAdapter;
     private MusicService.MusicControl musicControl;
     private int oldPosition = -1;  //当前播放音乐的位置
-    private TopListViewModel viewModel;
 
     public PlayListDialogFragment() {
         // Required empty public constructor
@@ -61,8 +60,6 @@ public class PlayListDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(getActivity(), factory).get(TopListViewModel.class);
         binding = FragmentPlayListDialogBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -123,9 +120,9 @@ public class PlayListDialogFragment extends DialogFragment {
 
         @Override
         public void onPlay(Music item) {
-            Log.d(TAG, "++++onPlay: "+item.toString());
+            Log.d(TAG, "++++onPlay: " + item.toString());
             int position = musicControl.getPlayList().indexOf(item);
-            if (oldPosition != position) {
+            if (oldPosition != position && item.getSongUrl() != null) {
                 playListAdapter.setCurrentMusic(item);
                 playListAdapter.notifyDataSetChanged();
                 oldPosition = position;
@@ -152,7 +149,7 @@ public class PlayListDialogFragment extends DialogFragment {
                 case R.id.ll_playlist:
                     if (oldPosition != position) {
                         Music item = (Music) adapter.getData(position);
-                        viewModel.checkSong(item);
+                        musicControl.addPlayList(item);
                     } else {
                         //点击的为当前播放的歌曲
                         new CurrentMusicDialogFragment().show(getParentFragmentManager(), "current_music_dialog");
@@ -181,7 +178,7 @@ public class PlayListDialogFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (getActivity()!=null){
+        if (getActivity() != null) {
             getActivity().unbindService(serviceConnection);
         }
     }

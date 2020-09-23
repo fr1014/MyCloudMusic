@@ -52,6 +52,8 @@ public class MusicService extends Service {
         player.setOnErrorListener(onErrorListener);
         handler = new MyHandler(player, progressChangeListeners);
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE); //获取音频管理服务
+
+        Notifier.getInstance().init(this); //前台任务初始化
     }
 
     public void addTimer() {
@@ -182,8 +184,8 @@ public class MusicService extends Service {
 
     private void playInner() {
         //获取音乐焦点
-        audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-//        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//        audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         //如果之前未选定要播放的音乐，就选择列表中的第一首音乐
         if (currentMusic == null && playingMusicList.size() > 0) {
             currentMusic = playingMusicList.get(0);
@@ -213,6 +215,8 @@ public class MusicService extends Service {
     //将要播放的音乐载入MediaPlay（并不是播放）
     private void prepareToPlay(Music item) {
         try {
+            //打开通知
+            Notifier.getInstance().showPlay(item);
             player.reset();
             //音乐的播放地址
 //            player.setDataSource(getApplicationContext(), Uri.parse(item.getSongUrl()));
@@ -370,14 +374,16 @@ public class MusicService extends Service {
             switch (msg.what) {
                 case PROGRESS_CHANGE:
                     MediaPlayer mediaPlayer = player.get();
-                    //通知监听者当前的播放进度
-                    long played = mediaPlayer.getCurrentPosition();
-                    long duration = mediaPlayer.getDuration();
-                    for (OnProgressChangeListener l : onProgressChangeListeners.get()) {
-                        l.onPlayProgressChange(played, duration);
+                    if (mediaPlayer != null) {
+                        //通知监听者当前的播放进度
+                        long played = mediaPlayer.getCurrentPosition();
+                        long duration = mediaPlayer.getDuration();
+                        for (OnProgressChangeListener l : onProgressChangeListeners.get()) {
+                            l.onPlayProgressChange(played, duration);
+                        }
+                        //间隔一秒发送一次更新播放进度的消息
+                        sendEmptyMessageDelayed(PROGRESS_CHANGE, 1000);
                     }
-                    //间隔一秒发送一次更新播放进度的消息
-                    sendEmptyMessageDelayed(PROGRESS_CHANGE, 1000);
                     break;
             }
         }

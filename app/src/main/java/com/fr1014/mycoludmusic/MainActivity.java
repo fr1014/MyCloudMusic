@@ -15,13 +15,14 @@ import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
-import com.fr1014.mycoludmusic.home.CurrentMusicDialogFragment;
-import com.fr1014.mycoludmusic.home.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
+import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.MusicService;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -65,6 +66,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initService();
 
         initClickListener();
+
+        viewModel.getCheckSongResult().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isCanPlay) {
+                if (!isCanPlay) {
+                    musicControl.playNext();
+                }
+            }
+        });
     }
 
     private void initClickListener() {

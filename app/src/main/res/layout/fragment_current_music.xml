@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#80F1C9C9"
-    tools:context=".home.CurrentMusicDialogFragment">
+    tools:context=".home.dialogfragment.currentmusic.CurrentMusicDialogFragment">
 
     <ImageView
         android:id="@+id/ic_back"

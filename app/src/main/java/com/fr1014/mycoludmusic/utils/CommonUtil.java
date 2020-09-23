@@ -18,6 +18,10 @@ public class CommonUtil {
         Toast.makeText(MyApplication.getInstance(), message, Toast.LENGTH_SHORT).show();
     }
 
+    public static void toastLong(String message) {
+        Toast.makeText(MyApplication.getInstance(), message, Toast.LENGTH_LONG).show();
+    }
+
     //格式化歌曲时间
     public static String formatTime(long time) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");

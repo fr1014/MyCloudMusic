@@ -38,9 +38,17 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private BusLiveData<List<Music>> getPlayListDetail;
     private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSearch;
+    private BusLiveData<Boolean> getCheckSongResult;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
+    }
+
+    public BusLiveData<Boolean> getCheckSongResult() {
+        if (getCheckSongResult == null) {
+            getCheckSongResult = new BusLiveData<>();
+        }
+        return getCheckSongResult;
     }
 
     //搜索
@@ -296,9 +304,10 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         if (checkEntity.isSuccess()) {
                             getSongUrlEntity(item);
                         } else {
-                            CommonUtil.toastShort(checkEntity.getMessage());
+                            CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
                             //播放下一首
                             // TODO: 2020/9/17
+                            getCheckSongResult.postValue(false);
                         }
                     }
 
@@ -306,9 +315,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     public void onError(Throwable e) {
                         // TODO: 2020/9/18
                         // retrofit2.adapter.rxjava2.HttpException: HTTP 404 Not Found
-                        CommonUtil.toastShort("播放歌曲失败：" + e.getMessage());
+                        CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
                         Log.d(TAG, "------onError: " + e.toString());
-//                        getCheckSongResult.postValue(false);
+                        getCheckSongResult.postValue(false);
                     }
 
                     @Override
