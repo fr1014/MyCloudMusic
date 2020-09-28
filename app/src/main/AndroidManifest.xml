@@ -16,10 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <service
+            android:name=".musicmanager.PlayService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <receiver
             android:name=".musicmanager.receiver.StatusBarReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
 
         <activity
             android:name=".SearchActivity"
@@ -35,7 +40,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".musicmanager.MusicService"></service>
+        <service android:name=".musicmanager.MusicService" />
     </application>
 
 </manifest>
