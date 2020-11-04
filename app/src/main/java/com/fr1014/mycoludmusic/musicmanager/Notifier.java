@@ -8,18 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.widget.RemoteViews;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.MainActivity;
 import com.fr1014.mycoludmusic.R;
-import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.musicmanager.receiver.StatusBarReceiver;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 
 import java.io.File;
