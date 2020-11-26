@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.home.toplist;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
@@ -8,24 +9,28 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.entity.CheckEntity;
-import com.fr1014.mycoludmusic.entity.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.entity.SearchEntity;
-import com.fr1014.mycoludmusic.entity.SongDetailEntity;
-import com.fr1014.mycoludmusic.entity.SongUrlEntity;
-import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.CheckEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.SongDetailEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 /**
  * 创建时间:2020/9/4
@@ -201,8 +206,8 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 });
     }
 
-    //获取搜索结果
-    public void getSearchEntity(String keywords, int offset) {
+    //获取搜索结果（网易）
+    public void getSearchEntityWYY(String keywords, int offset) {
         model.getSearch(keywords, offset)
                 .map(new Function<SearchEntity, List<Music>>() {
                     @Override
@@ -318,6 +323,83 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
                         Log.d(TAG, "------onError: " + e.toString());
                         getCheckSongResult.postValue(false);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    //获取搜索结果（酷我）
+    public void getSearchEntityKW(String name, int page, int count){
+        model.getSearch(name, page, count)
+                .map(new Function<com.fr1014.mycoludmusic.entity.kuwo.SearchEntity, List<Music>>() {
+                    @Override
+                    public List<Music> apply(@io.reactivex.annotations.NonNull com.fr1014.mycoludmusic.entity.kuwo.SearchEntity searchEntity) throws Exception {
+                        List<Music> musics = new ArrayList<>();
+                        List<com.fr1014.mycoludmusic.entity.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
+                        for (com.fr1014.mycoludmusic.entity.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
+                            Music music = new Music();
+                            String artist = abslistBean.getAARTIST().replaceAll("&nbsp;", " ");
+                            String title = abslistBean.getSONGNAME().replaceAll("&nbsp;", " ");
+                            music.setArtist(artist.replaceAll("###", "/"));
+                            music.setTitle(title);
+                            music.setMUSICRID(abslistBean.getMUSICRID());
+                            musics.add(music);
+                        }
+                        return musics;
+                    }
+                }).compose(RxSchedulers.apply())
+                .subscribe(new Observer<List<Music>>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull List<Music> music) {
+                        getSearch.postValue(music);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.d(TAG, "----onError: "+e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+    }
+
+    public void getSongUrl(Music music){
+        if (TextUtils.isEmpty(music.getMUSICRID())) return;
+
+        model.getSongUrl(music.getMUSICRID())
+                .compose(RxSchedulers.apply())
+                .subscribe(new Observer<ResponseBody>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull ResponseBody response) {
+                        try {
+                            music.setSongUrl(response.string());
+                            getSongUrl.postValue(music);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.d(TAG, "----onError: "+e.getMessage());
                     }
 
                     @Override

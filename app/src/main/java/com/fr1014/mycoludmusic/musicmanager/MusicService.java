@@ -216,7 +216,7 @@ public class MusicService extends Service {
     private void prepareToPlay(Music item) {
         try {
             //打开通知
-            Notifier.getInstance().showPlay(item);
+//            Notifier.getInstance().showPlay(item);
             player.reset();
             //音乐的播放地址
 //            player.setDataSource(getApplicationContext(), Uri.parse(item.getSongUrl()));

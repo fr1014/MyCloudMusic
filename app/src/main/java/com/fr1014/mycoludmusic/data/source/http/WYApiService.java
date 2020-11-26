@@ -1,12 +1,12 @@
 package com.fr1014.mycoludmusic.data.source.http;
 
-import com.fr1014.mycoludmusic.entity.CheckEntity;
-import com.fr1014.mycoludmusic.entity.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.entity.SearchEntity;
-import com.fr1014.mycoludmusic.entity.SongDetailEntity;
-import com.fr1014.mycoludmusic.entity.SongUrlEntity;
-import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
-import com.fr1014.mycoludmusic.entity.TopListEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.CheckEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.SongDetailEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.TopListEntity;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -16,8 +16,9 @@ import retrofit2.http.Query;
  * 创建时间:2020/9/2
  * 作者:fr
  * 邮箱:1546352238@qq.com
+ * 网易API
  */
-public interface ApiService {
+public interface WYApiService {
 
     //所有榜单
     @GET("toplist")

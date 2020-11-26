@@ -15,7 +15,7 @@ import com.bumptech.glide.Glide;
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
 import com.fr1014.mycoludmusic.R;
-import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
+import com.fr1014.mycoludmusic.entity.wangyiyun.TopListDetailEntity;
 
 import java.util.List;
 

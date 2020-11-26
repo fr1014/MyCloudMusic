@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.entity;
+package com.fr1014.mycoludmusic.entity.wangyiyun;
 
 import java.util.List;
 
