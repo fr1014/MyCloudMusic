@@ -1,12 +1,12 @@
 package com.fr1014.mycoludmusic.data.source.http;
 
-import com.fr1014.mycoludmusic.entity.wangyiyun.CheckEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.SearchEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.SongDetailEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.SongUrlEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.TopListDetailEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.TopListEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -27,6 +27,9 @@ public interface WYApiService {
     //所有榜单内容摘要
     @GET("toplist/detail")
     Observable<TopListDetailEntity> getTopListDetail();
+
+    @GET("top/list")
+    Observable<PlayListDetailEntity> getTopList(@Query("id") long id);
 
     @GET("playlist/detail")
     Observable<PlayListDetailEntity> getPlayListDetail(@Query("id") long id);

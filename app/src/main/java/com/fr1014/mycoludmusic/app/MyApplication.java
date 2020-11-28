@@ -3,6 +3,8 @@ package com.fr1014.mycoludmusic.app;
 import android.content.Intent;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.source.HttpDataSourceImpl;
+import com.fr1014.mycoludmusic.data.source.LocalDataSourceImpl;
 import com.fr1014.mycoludmusic.data.source.http.KWApiService;
 import com.fr1014.mycoludmusic.data.source.http.WYApiService;
 import com.fr1014.mycoludmusic.data.source.local.preference.Preferences;
@@ -31,6 +33,6 @@ public class MyApplication extends BaseApplication {
         WYApiService wyApiService = RetrofitClient.getInstance().create(WYApiService.class);
         KWApiService kwApiService = RetrofitClient.getInstance().create(KWApiService.class);
         //数据仓库
-        return DataRepository.getInstance(wyApiService,kwApiService);
+        return DataRepository.getInstance(HttpDataSourceImpl.getInstance(wyApiService,kwApiService), LocalDataSourceImpl.getInstance());
     }
 }

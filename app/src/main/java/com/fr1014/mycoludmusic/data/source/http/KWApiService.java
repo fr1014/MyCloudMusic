@@ -1,6 +1,6 @@
 package com.fr1014.mycoludmusic.data.source.http;
 
-import com.fr1014.mycoludmusic.entity.kuwo.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;

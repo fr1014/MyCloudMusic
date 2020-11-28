@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SearchView">
+        <attr name="iconSearch_id" format="reference"/>
+        <attr name="iconClear_id" format="reference"/>
+    </declare-styleable>
+</resources>

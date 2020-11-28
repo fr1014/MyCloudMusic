@@ -34,8 +34,6 @@ public class SearchActivity extends AppCompatActivity {
     private PlayListDetailAdapter adapter;
     private MusicService.MusicControl musicControl;
 
-    private static final String TAG = "SearchActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +54,6 @@ public class SearchActivity extends AppCompatActivity {
                 adapter.setData(music);
             }
         });
-
-//        viewModel.getSearchEntityWYY("陈奕迅", 0);
 
         viewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override

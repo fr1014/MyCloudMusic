@@ -6,6 +6,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -142,12 +143,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     };
 
     //监听MusicService的变化
-    private MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
+    private final MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
         @Override
         public void onPlay(Music item) {
             Log.d(TAG, "----onPlay: " + item.toString());
             //播放音乐时，若底部的音乐状态栏不可见，则设置为可见
-            if (item.getSongUrl() != null) {
+            if (!TextUtils.isEmpty(item.getSongUrl())) {
                 int visibility = binding.appBarMain.contentMain.clBottomBar.getVisibility();
                 if (visibility == 8) {
                     binding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);

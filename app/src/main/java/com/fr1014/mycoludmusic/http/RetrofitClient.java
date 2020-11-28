@@ -20,9 +20,8 @@ public class RetrofitClient {
     //缓存时间
     private static final int CACHE_TIMEOUT = 10 * 1024 * 1024;
 
-    //http://101.133.238.38:3000/
     //http://149.129.123.124:3000/
-    public static String baseUrl = "http://149.129.123.124:3000/";
+    public static String baseUrl = "https://api.mtnhao.com/";
     private static OkHttpClient okHttpClient;
     private static Retrofit retrofit;
 

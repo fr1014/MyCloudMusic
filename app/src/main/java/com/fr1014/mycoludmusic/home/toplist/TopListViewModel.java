@@ -1,6 +1,5 @@
 package com.fr1014.mycoludmusic.home.toplist;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
@@ -9,12 +8,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.entity.wangyiyun.CheckEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.SearchEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.SongDetailEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.SongUrlEntity;
-import com.fr1014.mycoludmusic.entity.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
@@ -27,10 +26,8 @@ import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
-import retrofit2.Response;
 
 /**
  * 创建时间:2020/9/4
@@ -126,9 +123,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 });
     }
 
-    //获取歌单详情
+    //获取排行榜歌单详情
     private void getPlayListDetailEntity(final long id) {
-        model.getPlayListDetail(id)
+        model.getTopList(id)
                 .map(new Function<PlayListDetailEntity, List<Music>>() {
                     @Override
                     public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
@@ -335,12 +332,12 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     //获取搜索结果（酷我）
     public void getSearchEntityKW(String name, int page, int count){
         model.getSearch(name, page, count)
-                .map(new Function<com.fr1014.mycoludmusic.entity.kuwo.SearchEntity, List<Music>>() {
+                .map(new Function<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity, List<Music>>() {
                     @Override
-                    public List<Music> apply(@io.reactivex.annotations.NonNull com.fr1014.mycoludmusic.entity.kuwo.SearchEntity searchEntity) throws Exception {
+                    public List<Music> apply(@io.reactivex.annotations.NonNull com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity searchEntity) throws Exception {
                         List<Music> musics = new ArrayList<>();
-                        List<com.fr1014.mycoludmusic.entity.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
-                        for (com.fr1014.mycoludmusic.entity.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
+                        List<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
+                        for (com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
                             Music music = new Music();
                             String artist = abslistBean.getAARTIST().replaceAll("&nbsp;", " ");
                             String title = abslistBean.getSONGNAME().replaceAll("&nbsp;", " ");

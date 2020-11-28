@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.entity.kuwo;
+package com.fr1014.mycoludmusic.data.entity.http.kuwo;
 
 import java.util.List;
 

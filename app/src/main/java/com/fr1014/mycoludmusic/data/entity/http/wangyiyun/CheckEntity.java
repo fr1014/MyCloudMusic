@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.entity.wangyiyun;
+package com.fr1014.mycoludmusic.data.entity.http.wangyiyun;
 
 /**
  * 创建时间:2020/9/14
