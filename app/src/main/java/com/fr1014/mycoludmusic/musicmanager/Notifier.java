@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
@@ -41,7 +42,7 @@ public class Notifier {
     }
 
     private static class SingletonHolder {
-        private static Notifier instance = new Notifier();
+        private static final Notifier instance = new Notifier();
     }
 
     public void init(MusicService musicService) {
@@ -98,10 +99,12 @@ public class Notifier {
 //        String subtitle = FileUtils.getArtistAndAlbum(music.getArtist(), music.getAlbum());
 //        Bitmap cover = CoverLoader.get().loadThumb(music);
 
-        File imgFile = DataCacheKey.getCacheFile2(music.getImgUrl());
         Bitmap cover = null;
-        if (imgFile != null) {
-            cover = BitmapFactory.decodeFile(imgFile.getPath());
+        if (!TextUtils.isEmpty(music.getImgUrl())){
+            File imgFile = DataCacheKey.getCacheFile2(music.getImgUrl());
+            if (imgFile != null) {
+                cover = BitmapFactory.decodeFile(imgFile.getPath());
+            }
         }
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);
         if (cover != null) {

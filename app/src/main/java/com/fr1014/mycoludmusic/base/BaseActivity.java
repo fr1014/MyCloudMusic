@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
 
+import com.bumptech.glide.Glide;
+
 public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActivity {
     protected VB mViewBinding;
 
@@ -31,5 +33,11 @@ public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActi
     protected void startActivity(Class<?> clazz){
         Intent intent = new Intent(this,clazz);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Glide.with(getApplicationContext()).pauseAllRequests();
     }
 }
