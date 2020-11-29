@@ -35,8 +35,8 @@ public class LocalDataSourceImpl implements LocalDataSource {
     }
 
     @Override
-    public LiveData<MusicEntity> getItem(String songUrl) {
-        return db.musicDao().getItem(songUrl);
+    public LiveData<MusicEntity> getItem(String title,String artist) {
+        return db.musicDao().getItem(title,artist);
     }
 
     @Override

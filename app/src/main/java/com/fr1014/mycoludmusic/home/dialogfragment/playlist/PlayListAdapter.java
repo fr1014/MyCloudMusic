@@ -20,13 +20,13 @@ public class PlayListAdapter extends BaseAdapter<Music, BaseViewHolder> {
 
     @Override
     protected void convert(BaseViewHolder holder, Music data) {
-        holder.addOnClickListener(R.id.ll_playlist,R.id.iv_del);
-        if (currentMusic != null && currentMusic.getSongUrl().equals(data.getSongUrl())) {
+        holder.addOnClickListener(R.id.ll_playlist, R.id.iv_del);
+        if (currentMusic != null && currentMusic.getTitle().equals(data.getTitle()) && currentMusic.getArtist().equals(data.getArtist())) {
             holder.setText(R.id.tv_song_name, data.getTitle()).setTextColor(R.id.tv_song_name, MyApplication.getInstance().getColor(R.color.red));
             holder.setText(R.id.tv_author, "- " + data.getArtist()).setTextColor(R.id.tv_author, MyApplication.getInstance().getColor(R.color.red));
         } else {
-            holder.setText(R.id.tv_song_name, data.getTitle()).setTextColor(R.id.tv_song_name,MyApplication.getInstance().getColor(R.color.black));
-            holder.setText(R.id.tv_author, "- " + data.getArtist()).setTextColor(R.id.tv_author,MyApplication.getInstance().getColor(R.color.light_black));
+            holder.setText(R.id.tv_song_name, data.getTitle()).setTextColor(R.id.tv_song_name, MyApplication.getInstance().getColor(R.color.black));
+            holder.setText(R.id.tv_author, "- " + data.getArtist()).setTextColor(R.id.tv_author, MyApplication.getInstance().getColor(R.color.light_black));
         }
     }
 

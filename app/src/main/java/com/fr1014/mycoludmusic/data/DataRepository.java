@@ -102,8 +102,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public LiveData<MusicEntity> getItem(String songUrl) {
-        return localDataSource.getItem(songUrl);
+    public LiveData<MusicEntity> getItem(String title,String artist) {
+        return localDataSource.getItem(title,artist);
     }
 
     @Override

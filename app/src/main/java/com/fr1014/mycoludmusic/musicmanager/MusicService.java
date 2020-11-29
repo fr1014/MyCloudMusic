@@ -78,8 +78,6 @@ public class MusicService extends Service {
         void onPause(); //播放状态变为暂停时
     }
 
-    private static final String TAG = "MusicService";
-
     public class MusicControl extends Binder {
 
         //注册监听器
@@ -210,7 +208,6 @@ public class MusicService extends Service {
         for (OnStateChangeListener listener : listenerList) {
             listener.onPlay(item);
         }
-        Log.d(TAG, "----playMusicItem: " + item);
     }
 
     //将要播放的音乐载入MediaPlay（并不是播放）
@@ -312,7 +309,6 @@ public class MusicService extends Service {
     private final MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
-            Log.d(TAG, "onCompletion: ");
             //单曲循环后继续播放同样歌曲
             if (playMode == TYPE_SINGLE) {
                 playInner();

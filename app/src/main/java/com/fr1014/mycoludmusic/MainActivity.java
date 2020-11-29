@@ -20,6 +20,7 @@ import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.home.toplist.PlayListDetailFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.MusicService;
@@ -90,6 +91,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
                 }
             }
         });
+
+        viewModel.getSongUrl().observe(this, new Observer<Music>() {
+            @Override
+            public void onChanged(Music music) {
+                musicControl.addPlayList(music);
+            }
+        });
     }
 
 
@@ -137,7 +145,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
                     if (!CommonUtil.isEmptyList(musicEntities)) {
                         List<Music> musicList = new ArrayList<>();
                         for (MusicEntity musicEntity : musicEntities) {
-                            musicList.add(new Music(0, musicEntity.getArtist(), musicEntity.getTitle(), musicEntity.getSongUrl(), musicEntity.getImgUrl(), ""));
+                            musicList.add(new Music(musicEntity.getId(),musicEntity.getArtist(),musicEntity.getTitle(),"",musicEntity.getImgUrl(), musicEntity.getMusicRid()));
                         }
                         Collections.reverse(musicList);
                         musicControl.addPlayList(musicList);
@@ -171,7 +179,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
                 statusBar.setPlayStatus(View.GONE);
                 statusBar.setStopStatus(View.VISIBLE);
 
-                viewModel.getItemLocal(item.getSongUrl()).observe(MainActivity.this, new Observer<MusicEntity>() {
+                viewModel.getItemLocal(item.getTitle(),item.getArtist()).observe(MainActivity.this, new Observer<MusicEntity>() {
                     @Override
                     public void onChanged(MusicEntity musicEntity) {
                         if (musicEntity == null) {
@@ -180,7 +188,11 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
                     }
                 });
             } else {
-                viewModel.checkSong(item);
+                if (!TextUtils.isEmpty(item.getMUSICRID())){  //酷我的歌
+                    viewModel.getSongUrl(item);
+                }else if (item.getId() != 0){           //网易的歌
+                    viewModel.checkSong(item);
+                }
             }
         }
 

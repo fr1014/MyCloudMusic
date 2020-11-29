@@ -379,6 +379,10 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     }
 
+    /**
+     * 酷我
+     * @param music
+     */
     public void getSongUrl(Music music) {
         if (TextUtils.isEmpty(music.getMUSICRID())) return;
 
@@ -423,7 +427,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Music music) {
-                        MusicEntity musicEntity = new MusicEntity(music.getSongUrl(), music.getTitle(), music.getArtist(), music.getImgUrl());
+                        MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID());
                         model.insert(musicEntity);
                     }
 
@@ -444,7 +448,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getMusicRoom = model.getAll();
     }
 
-    public LiveData<MusicEntity> getItemLocal(String songUrl){
-        return getItemRoom = model.getItem(songUrl);
+    public LiveData<MusicEntity> getItemLocal(String title,String artist){
+        return getItemRoom = model.getItem(title,artist);
     }
 }

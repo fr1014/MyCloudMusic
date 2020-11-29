@@ -9,7 +9,7 @@ import java.util.List;
 public interface LocalDataSource {
     LiveData<List<MusicEntity>> getAll();
 
-    LiveData<MusicEntity> getItem(String songUrl);
+    LiveData<MusicEntity> getItem(String title,String artist);
 
     void insertAll(List<MusicEntity> musicEntities);
 
