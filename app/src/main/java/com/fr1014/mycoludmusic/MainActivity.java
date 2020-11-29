@@ -15,6 +15,7 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
@@ -31,48 +32,50 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener {
     private static final String TAG = "MainActivity";
 
     private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
     private MusicService.MusicControl musicControl;
-    private ActivityMainBinding binding;
     private SharedPreferences spMode;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.appBarMain.toolbar);
-
+    protected void initView() {
+        setSupportActionBar(mViewBinding.appBarMain.toolbar);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(binding.drawerLayout)
+                .setOpenableLayout(mViewBinding.drawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
-
-        initSettings();
-
-        initService();
+        NavigationUI.setupWithNavController(mViewBinding.navView, navController);
 
         initClickListener();
+    }
+
+    @Override
+    protected void initViewModel() {
+        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
+        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    }
+
+    @Override
+    protected ActivityMainBinding getViewBinding() {
+        return ActivityMainBinding.inflate(getLayoutInflater());
+    }
+
+    @Override
+    protected void initData() {
+        initService();
+        initSettings();
 
         viewModel.getCheckSongResult().observe(this, new Observer<Boolean>() {
             @Override
@@ -84,11 +87,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+
     private void initClickListener() {
-        binding.appBarMain.contentMain.clBottomBar.setOnClickListener(this);
-        binding.appBarMain.contentMain.ivStateStop.setOnClickListener(this);
-        binding.appBarMain.contentMain.ivStatePlay.setOnClickListener(this);
-        binding.appBarMain.contentMain.ivMusicMenu.setOnClickListener(this);
+        mViewBinding.appBarMain.contentMain.clBottomBar.setOnClickListener(this);
+        mViewBinding.appBarMain.contentMain.ivStateStop.setOnClickListener(this);
+        mViewBinding.appBarMain.contentMain.ivStatePlay.setOnClickListener(this);
+        mViewBinding.appBarMain.contentMain.ivMusicMenu.setOnClickListener(this);
     }
 
     @Override
@@ -102,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-                searchSong();
+                startActivity(SearchActivity.class);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //
 //            //首次绑定服务时若无音乐播放底部的设置音乐状态栏不可见
 //            if (item == null) {
-//                binding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
+//                mViewBinding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
 //            }
             viewModel.getMusicLocal().observe(MainActivity.this, new Observer<List<MusicEntity>>() {
                 @Override
@@ -145,9 +149,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                         Collections.reverse(musicList);
                         musicControl.addPlayList(musicList);
-                        binding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
+                        mViewBinding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
                     } else {
-                        binding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
+                        mViewBinding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
                     }
 
                 }
@@ -171,19 +175,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "----onPlay: " + item.toString());
             //播放音乐时，若底部的音乐状态栏不可见，则设置为可见
             if (!TextUtils.isEmpty(item.getSongUrl())) {
-                int visibility = binding.appBarMain.contentMain.clBottomBar.getVisibility();
+                int visibility = mViewBinding.appBarMain.contentMain.clBottomBar.getVisibility();
                 if (visibility == 8) {
-                    binding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
+                    mViewBinding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
                 }
 
                 Glide.with(MainActivity.this)
                         .load(item.getImgUrl())
                         .placeholder(R.drawable.film)
-                        .into(binding.appBarMain.contentMain.ivCoverImg);
-                binding.appBarMain.contentMain.tvName.setText(item.getTitle());
+                        .into(mViewBinding.appBarMain.contentMain.ivCoverImg);
+                mViewBinding.appBarMain.contentMain.tvName.setText(item.getTitle());
 
-                binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.GONE);
-                binding.appBarMain.contentMain.ivStateStop.setVisibility(View.VISIBLE);
+                mViewBinding.appBarMain.contentMain.ivStatePlay.setVisibility(View.GONE);
+                mViewBinding.appBarMain.contentMain.ivStateStop.setVisibility(View.VISIBLE);
 
                 viewModel.getItemLocal(item.getSongUrl()).observe(MainActivity.this, new Observer<MusicEntity>() {
                     @Override
@@ -201,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onPause() {
-            binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.VISIBLE);
-            binding.appBarMain.contentMain.ivStateStop.setVisibility(View.GONE);
+            mViewBinding.appBarMain.contentMain.ivStatePlay.setVisibility(View.VISIBLE);
+            mViewBinding.appBarMain.contentMain.ivStateStop.setVisibility(View.GONE);
         }
 
     };
@@ -223,11 +227,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new CurrentMusicDialogFragment().show(getSupportFragmentManager(), "current_music_dialog");
                 break;
         }
-    }
-
-    private void searchSong() {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
     }
 
     private void initSettings() {
