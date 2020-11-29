@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.data.source.local.room
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -9,10 +10,16 @@ import com.fr1014.mycoludmusic.data.entity.room.MusicEntity
 @Dao
 interface MusicDao {
     @Query("SELECT * FROM musicentity")
-    fun getAll(): List<MusicEntity>
+    fun getAll(): LiveData<List<MusicEntity>>
+
+    @Query("SELECT * FROM musicentity where songUrl = :songUrl")
+    fun getItem(songUrl: String): LiveData<MusicEntity>
 
     @Insert
     fun insertAll(musicEntities: List<MusicEntity>)
+
+    @Insert
+    fun insert(musicEntity: MusicEntity)
 
     @Delete
     fun delete(musicEntity: MusicEntity)

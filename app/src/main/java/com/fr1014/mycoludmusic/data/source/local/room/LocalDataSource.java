@@ -1,13 +1,19 @@
 package com.fr1014.mycoludmusic.data.source.local.room;
 
+import androidx.lifecycle.LiveData;
+
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 
 import java.util.List;
 
 public interface LocalDataSource {
-    List<MusicEntity> getAll();
+    LiveData<List<MusicEntity>> getAll();
+
+    LiveData<MusicEntity> getItem(String songUrl);
 
     void insertAll(List<MusicEntity> musicEntities);
+
+    void insert(MusicEntity musicEntity);
 
     void delete(MusicEntity musicEntity);
 }

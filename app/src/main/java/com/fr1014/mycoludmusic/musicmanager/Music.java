@@ -25,6 +25,15 @@ public class Music {
         this.isOnlineMusic = isOnlineMusic;
     }
 
+    public Music(long id, String artist, String title, String songUrl, String imgUrl, String MUSICRID) {
+        this.id = id;
+        this.artist = artist;
+        this.title = title;
+        this.songUrl = songUrl;
+        this.imgUrl = imgUrl;
+        this.MUSICRID = MUSICRID;
+    }
+
     public String getMUSICRID() {
         return MUSICRID;
     }

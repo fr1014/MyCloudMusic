@@ -15,12 +15,14 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.MusicService;
+import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
@@ -30,6 +32,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -115,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             musicControl = (MusicService.MusicControl) service;
@@ -123,13 +129,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //注册监听器
             musicControl.registerOnStateChangeListener(onStateChangeListener);
 
-            Music item = musicControl.getCurrentMusic();
+//            Music item = musicControl.getCurrentMusic();
+//
+//            //首次绑定服务时若无音乐播放底部的设置音乐状态栏不可见
+//            if (item == null) {
+//                binding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
+//            }
+            viewModel.getMusicLocal().observe(MainActivity.this, new Observer<List<MusicEntity>>() {
+                @Override
+                public void onChanged(List<MusicEntity> musicEntities) {
+                    if (!CommonUtil.isEmptyList(musicEntities)) {
+                        List<Music> musicList = new ArrayList<>();
+                        for (MusicEntity musicEntity : musicEntities) {
+                            musicList.add(new Music(0, musicEntity.getArtist(), musicEntity.getTitle(), musicEntity.getSongUrl(), musicEntity.getImgUrl(), ""));
+                        }
+                        Collections.reverse(musicList);
+                        musicControl.addPlayList(musicList);
+                        binding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
+                    }
 
-            //首次绑定服务时若无音乐播放底部的设置音乐状态栏不可见
-            if (item == null) {
-                binding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
-            }
-
+                }
+            });
             //设置播放模式，默认为循环播放
             int mode = spMode.getInt("play_mode", MusicService.TYPE_ORDER);
             musicControl.setPlayMode(mode);
@@ -162,6 +184,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.GONE);
                 binding.appBarMain.contentMain.ivStateStop.setVisibility(View.VISIBLE);
+
+                viewModel.getItemLocal(item.getSongUrl()).observe(MainActivity.this, new Observer<MusicEntity>() {
+                    @Override
+                    public void onChanged(MusicEntity musicEntity) {
+                        if (musicEntity == null){
+                            viewModel.saveMusicLocal(item);
+                        }
+                    }
+                });
             } else {
                 Log.d(TAG, "++++onPlay: " + "main");
                 viewModel.checkSong(item);

@@ -6,6 +6,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 创建时间:2020/9/10
@@ -27,5 +28,9 @@ public class CommonUtil {
         SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
         Date data = new Date(time);
         return dateFormat.format(data);
+    }
+
+    public static boolean isEmptyList(List list) {
+        return list == null || list.size() == 0;
     }
 }

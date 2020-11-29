@@ -21,7 +21,7 @@ public class PlayListAdapter extends BaseAdapter<Music, BaseViewHolder> {
     @Override
     protected void convert(BaseViewHolder holder, Music data) {
         holder.addOnClickListener(R.id.ll_playlist,R.id.iv_del);
-        if (currentMusic != null && currentMusic.getId() == data.getId()) {
+        if (currentMusic != null && currentMusic.getSongUrl().equals(data.getSongUrl())) {
             holder.setText(R.id.tv_song_name, data.getTitle()).setTextColor(R.id.tv_song_name, MyApplication.getInstance().getColor(R.color.red));
             holder.setText(R.id.tv_author, "- " + data.getArtist()).setTextColor(R.id.tv_author, MyApplication.getInstance().getColor(R.color.red));
         } else {

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
@@ -14,6 +15,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
@@ -24,8 +26,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
 
@@ -41,6 +45,8 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
+    private LiveData<List<MusicEntity>> getMusicRoom;
+    private LiveData<MusicEntity> getItemRoom;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
@@ -330,7 +336,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     }
 
     //获取搜索结果（酷我）
-    public void getSearchEntityKW(String name, int page, int count){
+    public void getSearchEntityKW(String name, int page, int count) {
         model.getSearch(name, page, count)
                 .map(new Function<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity, List<Music>>() {
                     @Override
@@ -362,7 +368,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.d(TAG, "----onError: "+e.getMessage());
+                        Log.d(TAG, "----onError: " + e.getMessage());
                     }
 
                     @Override
@@ -373,7 +379,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     }
 
-    public void getSongUrl(Music music){
+    public void getSongUrl(Music music) {
         if (TextUtils.isEmpty(music.getMUSICRID())) return;
 
         model.getSongUrl(music.getMUSICRID())
@@ -396,7 +402,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.d(TAG, "----onError: "+e.getMessage());
+                        Log.d(TAG, "----onError: " + e.getMessage());
                     }
 
                     @Override
@@ -406,4 +412,39 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 });
     }
 
+    public void saveMusicLocal(Music music) {
+        Observable.just(music)
+                .compose(RxSchedulers.applyIO())
+                .subscribe(new Observer<Music>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull Music music) {
+                        MusicEntity musicEntity = new MusicEntity(music.getSongUrl(), music.getTitle(), music.getArtist(), music.getImgUrl());
+                        model.insert(musicEntity);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+    }
+
+    public LiveData<List<MusicEntity>> getMusicLocal() {
+        return getMusicRoom = model.getAll();
+    }
+
+    public LiveData<MusicEntity> getItemLocal(String songUrl){
+        return getItemRoom = model.getItem(songUrl);
+    }
 }

@@ -1,5 +1,7 @@
 package com.fr1014.mycoludmusic.data;
 
+import androidx.lifecycle.LiveData;
+
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
@@ -95,13 +97,23 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public List<MusicEntity> getAll() {
+    public LiveData<List<MusicEntity>> getAll() {
         return localDataSource.getAll();
+    }
+
+    @Override
+    public LiveData<MusicEntity> getItem(String songUrl) {
+        return localDataSource.getItem(songUrl);
     }
 
     @Override
     public void insertAll(List<MusicEntity> musicEntities) {
         localDataSource.insertAll(musicEntities);
+    }
+
+    @Override
+    public void insert(MusicEntity musicEntity) {
+        localDataSource.insert(musicEntity);
     }
 
     @Override
