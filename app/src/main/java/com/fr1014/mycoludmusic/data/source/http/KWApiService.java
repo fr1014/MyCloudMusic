@@ -19,9 +19,9 @@ public interface KWApiService {
      * @param count 当前页的返回数量
      * @return SearchEntity
      */
-    @GET("http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&rformat=json&encoding=utf8")
+    @GET("开源版本省略api")
     Observable<SearchEntity> getSearchEntity(@Query("all")String name,@Query("qn")int page,@Query("rn")int count);
 
-    @GET("http://antiserver.kuwo.cn/anti.s?type=convert_url&format=aac|mp3&response=url")
+    @GET("开源版本省略api")
     Observable<ResponseBody> getSongUrl(@Query("rid")String rid);
 }
