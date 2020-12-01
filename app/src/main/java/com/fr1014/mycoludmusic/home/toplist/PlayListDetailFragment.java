@@ -108,13 +108,6 @@ public class PlayListDetailFragment extends Fragment {
             getActivity().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         }
 
-        viewModel.getSongUrl().observe(PlayListDetailFragment.this, new Observer<Music>() {
-            @Override
-            public void onChanged(Music music) {
-                musicControl.addPlayList(music);
-            }
-        });
-
         viewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> musics) {

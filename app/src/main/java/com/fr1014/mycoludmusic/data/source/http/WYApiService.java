@@ -1,12 +1,12 @@
 package com.fr1014.mycoludmusic.data.source.http;
 
-import com.fr1014.mycoludmusic.entity.CheckEntity;
-import com.fr1014.mycoludmusic.entity.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.entity.SearchEntity;
-import com.fr1014.mycoludmusic.entity.SongDetailEntity;
-import com.fr1014.mycoludmusic.entity.SongUrlEntity;
-import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
-import com.fr1014.mycoludmusic.entity.TopListEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -16,8 +16,9 @@ import retrofit2.http.Query;
  * 创建时间:2020/9/2
  * 作者:fr
  * 邮箱:1546352238@qq.com
+ * 网易API
  */
-public interface ApiService {
+public interface WYApiService {
 
     //所有榜单
     @GET("toplist")
@@ -26,6 +27,9 @@ public interface ApiService {
     //所有榜单内容摘要
     @GET("toplist/detail")
     Observable<TopListDetailEntity> getTopListDetail();
+
+    @GET("top/list")
+    Observable<PlayListDetailEntity> getTopList(@Query("id") long id);
 
     @GET("playlist/detail")
     Observable<PlayListDetailEntity> getPlayListDetail(@Query("id") long id);

@@ -5,27 +5,33 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.entity.CheckEntity;
-import com.fr1014.mycoludmusic.entity.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.entity.SearchEntity;
-import com.fr1014.mycoludmusic.entity.SongDetailEntity;
-import com.fr1014.mycoludmusic.entity.SongUrlEntity;
-import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import okhttp3.ResponseBody;
 
 /**
  * 创建时间:2020/9/4
@@ -36,9 +42,11 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
     private BusLiveData<List<Music>> getPlayListDetail;
-    private BusLiveData<Music> getSongUrl;
+    private MutableLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
+    private LiveData<List<MusicEntity>> getMusicRoom;
+    private LiveData<MusicEntity> getItemRoom;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
@@ -59,9 +67,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getSearch;
     }
 
-    public BusLiveData<Music> getSongUrl() {
+    public MutableLiveData<Music> getSongUrl() {
         if (getSongUrl == null) {
-            getSongUrl = new BusLiveData<>();
+            getSongUrl = new MutableLiveData<>();
         }
         return getSongUrl;
     }
@@ -121,9 +129,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 });
     }
 
-    //获取歌单详情
+    //获取排行榜歌单详情
     private void getPlayListDetailEntity(final long id) {
-        model.getPlayListDetail(id)
+        model.getTopList(id)
                 .map(new Function<PlayListDetailEntity, List<Music>>() {
                     @Override
                     public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
@@ -201,8 +209,8 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 });
     }
 
-    //获取搜索结果
-    public void getSearchEntity(String keywords, int offset) {
+    //获取搜索结果（网易）
+    public void getSearchEntityWYY(String keywords, int offset) {
         model.getSearch(keywords, offset)
                 .map(new Function<SearchEntity, List<Music>>() {
                     @Override
@@ -273,7 +281,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(Music music) {
-                        Log.d(TAG, "++++onNext: " + music);
+                        Log.d(TAG, "----onNext: " + music);
                         getSongUrl.postValue(music);
                     }
 
@@ -327,4 +335,120 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 });
     }
 
+    //获取搜索结果（酷我）
+    public void getSearchEntityKW(String name, int page, int count) {
+        model.getSearch(name, page, count)
+                .map(new Function<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity, List<Music>>() {
+                    @Override
+                    public List<Music> apply(@io.reactivex.annotations.NonNull com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity searchEntity) throws Exception {
+                        List<Music> musics = new ArrayList<>();
+                        List<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
+                        for (com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
+                            Music music = new Music();
+                            String artist = abslistBean.getAARTIST().replaceAll("&nbsp;", " ");
+                            String title = abslistBean.getSONGNAME().replaceAll("&nbsp;", " ");
+                            music.setArtist(artist.replaceAll("###", "/"));
+                            music.setTitle(title);
+                            music.setMUSICRID(abslistBean.getMUSICRID());
+                            musics.add(music);
+                        }
+                        return musics;
+                    }
+                }).compose(RxSchedulers.apply())
+                .subscribe(new Observer<List<Music>>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull List<Music> music) {
+                        getSearch.postValue(music);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.d(TAG, "----onError: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+    }
+
+    /**
+     * 酷我
+     * @param music
+     */
+    public void getSongUrl(Music music) {
+        if (TextUtils.isEmpty(music.getMUSICRID())) return;
+
+        model.getSongUrl(music.getMUSICRID())
+                .compose(RxSchedulers.apply())
+                .subscribe(new Observer<ResponseBody>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull ResponseBody response) {
+                        try {
+                            music.setSongUrl(response.string());
+                            getSongUrl.postValue(music);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+                        Log.d(TAG, "----onError: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    public void saveMusicLocal(Music music) {
+        Observable.just(music)
+                .compose(RxSchedulers.applyIO())
+                .subscribe(new Observer<Music>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull Music music) {
+                        MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID());
+                        model.insert(musicEntity);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+    }
+
+    public LiveData<List<MusicEntity>> getMusicLocal() {
+        return getMusicRoom = model.getAll();
+    }
+
+    public LiveData<MusicEntity> getItemLocal(String title,String artist){
+        return getItemRoom = model.getItem(title,artist);
+    }
 }

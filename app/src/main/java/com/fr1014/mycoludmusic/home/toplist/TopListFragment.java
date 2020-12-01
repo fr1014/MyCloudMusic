@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentTopListBinding;
-import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 
 
 //排行榜榜单页面

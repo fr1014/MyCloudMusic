@@ -4,22 +4,23 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.base.BasePlayActivity;
+import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
-import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
-import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.MusicService;
+import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
@@ -28,44 +29,56 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener {
     private static final String TAG = "MainActivity";
 
     private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
     private MusicService.MusicControl musicControl;
-    private ActivityMainBinding binding;
     private SharedPreferences spMode;
+    private PlayStatusBarView statusBar;
+    private Observer<Music> musicObserver;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void initView() {
+        setSupportActionBar(mViewBinding.appBarMain.toolbar);
 
-        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        setSupportActionBar(binding.appBarMain.toolbar);
+        statusBar = new PlayStatusBarView(this,getSupportFragmentManager());
+        mViewBinding.appBarMain.contentMain.llPlaystatus.addView(statusBar);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(binding.drawerLayout)
+                .setOpenableLayout(mViewBinding.drawerLayout)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+        NavigationUI.setupWithNavController(mViewBinding.navView, navController);
 
-        initSettings();
+//        initClickListener();
+    }
 
+    @Override
+    protected void initViewModel() {
+        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
+        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    }
+
+    @Override
+    protected ActivityMainBinding getViewBinding() {
+        return ActivityMainBinding.inflate(getLayoutInflater());
+    }
+
+    @Override
+    protected void initData() {
         initService();
-
-        initClickListener();
+        initSettings();
 
         viewModel.getCheckSongResult().observe(this, new Observer<Boolean>() {
             @Override
@@ -75,14 +88,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+
+        musicObserver = music -> musicControl.addPlayList(music);
+        viewModel.getSongUrl().observeForever(musicObserver);
     }
 
-    private void initClickListener() {
-        binding.appBarMain.contentMain.clBottomBar.setOnClickListener(this);
-        binding.appBarMain.contentMain.ivStateStop.setOnClickListener(this);
-        binding.appBarMain.contentMain.ivStatePlay.setOnClickListener(this);
-        binding.appBarMain.contentMain.ivMusicMenu.setOnClickListener(this);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -95,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-                searchSong();
+                startActivity(SearchActivity.class);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -114,21 +124,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             musicControl = (MusicService.MusicControl) service;
-
+            statusBar.setMusicControl(musicControl);
             //注册监听器
             musicControl.registerOnStateChangeListener(onStateChangeListener);
 
-            Music item = musicControl.getCurrentMusic();
+            viewModel.getMusicLocal().observe(MainActivity.this, new Observer<List<MusicEntity>>() {
+                @Override
+                public void onChanged(List<MusicEntity> musicEntities) {
+                    if (!CommonUtil.isEmptyList(musicEntities)) {
+                        List<Music> musicList = new ArrayList<>();
+                        for (MusicEntity musicEntity : musicEntities) {
+                            musicList.add(new Music(musicEntity.getId(),musicEntity.getArtist(),musicEntity.getTitle(),"",musicEntity.getImgUrl(), musicEntity.getMusicRid()));
+                        }
+                        Collections.reverse(musicList);
+                        musicControl.addPlayList(musicList);
+                        statusBar.setVisibility(View.VISIBLE);
+                    } else {
+                        statusBar.setVisibility(View.GONE);
+                    }
 
-            //首次绑定服务时若无音乐播放底部的设置音乐状态栏不可见
-            if (item == null) {
-                binding.appBarMain.contentMain.clBottomBar.setVisibility(View.GONE);
-            }
-
+                }
+            });
             //设置播放模式，默认为循环播放
             int mode = spMode.getInt("play_mode", MusicService.TYPE_ORDER);
             musicControl.setPlayMode(mode);
@@ -142,60 +162,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     };
 
     //监听MusicService的变化
-    private MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
+    private final MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
         @Override
         public void onPlay(Music item) {
             Log.d(TAG, "----onPlay: " + item.toString());
             //播放音乐时，若底部的音乐状态栏不可见，则设置为可见
-            if (item.getSongUrl() != null) {
-                int visibility = binding.appBarMain.contentMain.clBottomBar.getVisibility();
-                if (visibility == 8) {
-                    binding.appBarMain.contentMain.clBottomBar.setVisibility(View.VISIBLE);
-                }
+            if (!TextUtils.isEmpty(item.getSongUrl())) {
+                statusBar.setMusic(item);
+                statusBar.setPlayStatus(View.GONE);
+                statusBar.setStopStatus(View.VISIBLE);
 
-                Glide.with(MainActivity.this)
-                        .load(item.getImgUrl())
-                        .placeholder(R.drawable.film)
-                        .into(binding.appBarMain.contentMain.ivCoverImg);
-                binding.appBarMain.contentMain.tvName.setText(item.getTitle());
-
-                binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.GONE);
-                binding.appBarMain.contentMain.ivStateStop.setVisibility(View.VISIBLE);
+                viewModel.getItemLocal(item.getTitle(),item.getArtist()).observe(MainActivity.this, new Observer<MusicEntity>() {
+                    @Override
+                    public void onChanged(MusicEntity musicEntity) {
+                        if (musicEntity == null) {
+                            viewModel.saveMusicLocal(item);
+                        }
+                    }
+                });
             } else {
-                Log.d(TAG, "++++onPlay: " + "main");
-                viewModel.checkSong(item);
+                if (!TextUtils.isEmpty(item.getMUSICRID())){  //酷我的歌
+                    viewModel.getSongUrl(item);
+                }else if (item.getId() != 0){           //网易的歌
+                    viewModel.checkSong(item);
+                }
             }
         }
 
         @Override
         public void onPause() {
-            binding.appBarMain.contentMain.ivStatePlay.setVisibility(View.VISIBLE);
-            binding.appBarMain.contentMain.ivStateStop.setVisibility(View.GONE);
+            statusBar.setPlayStatus(View.VISIBLE);
+            statusBar.setStopStatus(View.GONE);
         }
 
     };
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.iv_state_play:
-            case R.id.iv_state_stop:
-                musicControl.playOrPause();
-                break;
-            case R.id.iv_music_menu:
-                //弹出当前播放列表
-                new PlayListDialogFragment().show(getSupportFragmentManager(), "playlist_dialog");
-                break;
-            case R.id.cl_bottom_bar:
-                //当前播放的音乐的详情页
-                new CurrentMusicDialogFragment().show(getSupportFragmentManager(), "current_music_dialog");
-                break;
-        }
-    }
-
-    private void searchSong() {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
     }
 
     private void initSettings() {
@@ -219,9 +222,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Glide.with(getApplicationContext()).pauseAllRequests();
         if (serviceConnection != null) {
             unbindService(serviceConnection);
         }
+        viewModel.getSongUrl().removeObserver(musicObserver);
     }
 }

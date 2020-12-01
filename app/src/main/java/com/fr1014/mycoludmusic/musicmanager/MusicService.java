@@ -4,10 +4,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -76,8 +78,6 @@ public class MusicService extends Service {
 
         void onPause(); //播放状态变为暂停时
     }
-
-    private static final String TAG = "MusicService";
 
     public class MusicControl extends Binder {
 
@@ -197,7 +197,7 @@ public class MusicService extends Service {
     private void playMusicItem(Music item, boolean reload) {
         if (item == null) return;
         if (reload) {
-            if (item.getSongUrl() != null) {
+            if (!TextUtils.isEmpty(item.getSongUrl())) {
                 //需要重新加载音乐
                 prepareToPlay(item);
             }
@@ -209,7 +209,6 @@ public class MusicService extends Service {
         for (OnStateChangeListener listener : listenerList) {
             listener.onPlay(item);
         }
-        Log.d(TAG, "----playMusicItem: " + item);
     }
 
     //将要播放的音乐载入MediaPlay（并不是播放）
@@ -219,8 +218,8 @@ public class MusicService extends Service {
             Notifier.getInstance().showPlay(item);
             player.reset();
             //音乐的播放地址
-//            player.setDataSource(getApplicationContext(), Uri.parse(item.getSongUrl()));
-            player.setDataSource(item.getSongUrl());
+            player.setDataSource(getApplicationContext(), Uri.parse(item.getSongUrl()));
+//            player.setDataSource(item.getSongUrl());
             //异步准备播放音乐
             player.prepareAsync();
             //异步准备音乐已完成
@@ -308,10 +307,10 @@ public class MusicService extends Service {
         playingMusicList = new ArrayList<>();
     }
 
-    private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
+    private final MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
-            Log.d(TAG, "onCompletion: ");
+            Log.d(TAG, "----onCompletion: ");
             //单曲循环后继续播放同样歌曲
             if (playMode == TYPE_SINGLE) {
                 playInner();
@@ -322,10 +321,12 @@ public class MusicService extends Service {
         }
     };
 
+    private static final String TAG = "MusicService";
     //必写，不然不会拦截error，会到onCompletion中处理，导致逻辑问题
-    private MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
+    private final MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
+            Log.d(TAG, "---onError: what:" + what + "    extra:" + extra);
             return true;
         }
     };
@@ -337,7 +338,7 @@ public class MusicService extends Service {
         return new MusicControl();
     }
 
-    private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+    private final AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(int focusChange) {
 
@@ -361,8 +362,8 @@ public class MusicService extends Service {
     }
 
     public static class MyHandler extends Handler {
-        private WeakReference<MediaPlayer> player;
-        private WeakReference<List<OnProgressChangeListener>> onProgressChangeListeners;
+        private final WeakReference<MediaPlayer> player;
+        private final WeakReference<List<OnProgressChangeListener>> onProgressChangeListeners;
 
         public MyHandler(MediaPlayer player, List<OnProgressChangeListener> onProgressChangeListeners) {
             this.player = new WeakReference<>(player);

@@ -17,93 +17,10 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/mobile_navigation" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_bottom_bar"
+    <LinearLayout
+        android:id="@+id/ll_playstatus"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.8"
-        android:background="@color/colorLightGray"
-        android:foreground="?attr/selectableItemBackground"
-        android:visibility="gone">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/iv_coverImg"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="16dp"
-            app:civ_border_color="#FF000000"
-            app:civ_border_width="2dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/guideline2"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_state_play"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/selectableitem"
-            android:src="@drawable/ic_play_red"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline3"
-            app:layout_constraintStart_toStartOf="@+id/guideline2"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_state_stop"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@drawable/selectableitem"
-            android:src="@drawable/ic_stop_red"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline3"
-            app:layout_constraintStart_toStartOf="@+id/guideline2"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/iv_music_menu"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="@drawable/selectableitem"
-            android:src="@drawable/ic_music_menu"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@+id/guideline3"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.15" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.85" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="?actionBarSize"
+        android:orientation="vertical" />
 
 </LinearLayout>

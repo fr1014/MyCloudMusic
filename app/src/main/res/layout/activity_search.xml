@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:layout_weight="0.2"
+        android:background="@color/colorPrimaryDark"
         android:orientation="horizontal">
 
         <ImageView
@@ -21,16 +22,22 @@
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_back" />
 
-        <EditText
+        <com.fr1014.mycoludmusic.customview.SearchView
             android:id="@+id/et_keywords"
+            style="@style/Widget.AppCompat.EditText"
             android:layout_width="match_parent"
+            android:padding="8dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginStart="8dp"
-            android:imeOptions="actionSearch"
-            android:singleLine="true"
-            android:maxLines="1"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_edittext"
             android:hint="@string/search"
-            android:layout_marginEnd="8dp" />
+            android:textColor="@android:color/holo_orange_dark"
+            android:imeOptions="actionSearch"
+            android:maxLines="1"
+            android:singleLine="true"
+            app:closeIcon="@drawable/ic_clear_24" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

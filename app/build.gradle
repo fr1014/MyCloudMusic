@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -57,5 +59,18 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+    def room_version = "2.2.5"
+    implementation "androidx.room:room-runtime:$room_version"
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+
+    implementation 'org.greenrobot:eventbus:3.1.1'
+}
+repositories {
+    mavenCentral()
 }

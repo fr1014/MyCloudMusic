@@ -1,37 +1,45 @@
 package com.fr1014.mycoludmusic.data;
 
-import com.fr1014.mycoludmusic.data.source.http.ApiService;
+import androidx.lifecycle.LiveData;
+
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
-import com.fr1014.mycoludmusic.entity.CheckEntity;
-import com.fr1014.mycoludmusic.entity.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.entity.SearchEntity;
-import com.fr1014.mycoludmusic.entity.SongDetailEntity;
-import com.fr1014.mycoludmusic.entity.SongUrlEntity;
-import com.fr1014.mycoludmusic.entity.TopListDetailEntity;
-import com.fr1014.mycoludmusic.entity.TopListEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
+import com.fr1014.mycoludmusic.data.source.local.room.LocalDataSource;
 import com.fr1014.mymvvm.base.BaseModel;
 
+import java.util.List;
+
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 
 /**
  * 创建时间:2020/9/4
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class DataRepository extends BaseModel implements HttpDataSource {
+public class DataRepository extends BaseModel implements HttpDataSource, LocalDataSource {
 
     private volatile static DataRepository instance = null;
-    private ApiService apiService;
+    private HttpDataSource httpDataSource;
+    private LocalDataSource localDataSource;
 
-    private DataRepository(ApiService apiService){
-        this.apiService = apiService;
+    private DataRepository(HttpDataSource httpDataSource,LocalDataSource localDataSource){
+        this.httpDataSource = httpDataSource;
+        this.localDataSource = localDataSource;
     }
 
-    public static DataRepository getInstance(ApiService apiService){
+    public static DataRepository getInstance(HttpDataSource httpDataSource,LocalDataSource localDataSource){
         if (instance == null){
             synchronized (DataRepository.class){
                 if (instance == null){
-                    instance = new DataRepository(apiService);
+                    instance = new DataRepository(httpDataSource,localDataSource);
                 }
             }
         }
@@ -40,36 +48,76 @@ public class DataRepository extends BaseModel implements HttpDataSource {
 
     @Override
     public Observable<TopListEntity> getTopList() {
-        return apiService.getTopList();
+        return httpDataSource.getTopList();
     }
 
     @Override
     public Observable<TopListDetailEntity> getTopListDetail() {
-        return apiService.getTopListDetail();
+        return httpDataSource.getTopListDetail();
+    }
+
+    @Override
+    public Observable<PlayListDetailEntity> getTopList(long id) {
+        return httpDataSource.getTopList(id);
     }
 
     @Override
     public Observable<PlayListDetailEntity> getPlayListDetail(long id) {
-        return apiService.getPlayListDetail(id);
+        return httpDataSource.getPlayListDetail(id);
     }
 
     @Override
     public Observable<SongDetailEntity> getSongDetail(long ids) {
-        return apiService.getSongDetail(ids);
+        return httpDataSource.getSongDetail(ids);
     }
 
     @Override
     public Observable<SongUrlEntity> getSongUrl(long id) {
-        return apiService.getSongUrl(id);
+        return httpDataSource.getSongUrl(id);
     }
 
     @Override
     public Observable<CheckEntity> checkMusic(long id) {
-        return apiService.checkMusic(id);
+        return httpDataSource.checkMusic(id);
     }
 
     @Override
     public Observable<SearchEntity> getSearch(String keywords,int offset) {
-        return apiService.getSearch(keywords,offset);
+        return httpDataSource.getSearch(keywords,offset);
+    }
+
+    @Override
+    public Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearch(String name, int page, int count) {
+        return httpDataSource.getSearch(name,page,count);
+    }
+
+    @Override
+    public Observable<ResponseBody> getSongUrl(String rid) {
+        return httpDataSource.getSongUrl(rid);
+    }
+
+    @Override
+    public LiveData<List<MusicEntity>> getAll() {
+        return localDataSource.getAll();
+    }
+
+    @Override
+    public LiveData<MusicEntity> getItem(String title,String artist) {
+        return localDataSource.getItem(title,artist);
+    }
+
+    @Override
+    public void insertAll(List<MusicEntity> musicEntities) {
+        localDataSource.insertAll(musicEntities);
+    }
+
+    @Override
+    public void insert(MusicEntity musicEntity) {
+        localDataSource.insert(musicEntity);
+    }
+
+    @Override
+    public void delete(MusicEntity musicEntity) {
+        localDataSource.delete(musicEntity);
     }
 }

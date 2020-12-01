@@ -34,8 +34,6 @@ public class SearchActivity extends AppCompatActivity {
     private PlayListDetailAdapter adapter;
     private MusicService.MusicControl musicControl;
 
-    private static final String TAG = "SearchActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,8 +55,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getSearchEntity("陈奕迅", 0);
-
         viewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
@@ -79,7 +75,8 @@ public class SearchActivity extends AppCompatActivity {
                             Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(
                             SearchActivity.this.getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
-                    viewModel.getSearchEntity(binding.etKeywords.getText().toString(), 0);
+//                    viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
+                    viewModel.getSearchEntityKW(binding.etKeywords.getText().toString(), 0,10);
                     return true;
                 }
                 return false;
@@ -113,7 +110,8 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(BaseAdapter adapter, View view, int position) {
 //                viewModel.getSongUrlEntity((Music) adapter.getData(position));
-                viewModel.checkSong((Music) adapter.getData(position));
+//                viewModel.checkSong((Music) adapter.getData(position));
+                viewModel.getSongUrl((Music) adapter.getData(position));
             }
         });
     }
