@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -217,8 +218,8 @@ public class MusicService extends Service {
             Notifier.getInstance().showPlay(item);
             player.reset();
             //音乐的播放地址
-//            player.setDataSource(getApplicationContext(), Uri.parse(item.getSongUrl()));
-            player.setDataSource(item.getSongUrl());
+            player.setDataSource(getApplicationContext(), Uri.parse(item.getSongUrl()));
+//            player.setDataSource(item.getSongUrl());
             //异步准备播放音乐
             player.prepareAsync();
             //异步准备音乐已完成
@@ -309,6 +310,7 @@ public class MusicService extends Service {
     private final MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mp) {
+            Log.d(TAG, "----onCompletion: ");
             //单曲循环后继续播放同样歌曲
             if (playMode == TYPE_SINGLE) {
                 playInner();
@@ -319,10 +321,12 @@ public class MusicService extends Service {
         }
     };
 
+    private static final String TAG = "MusicService";
     //必写，不然不会拦截error，会到onCompletion中处理，导致逻辑问题
     private final MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra) {
+            Log.d(TAG, "---onError: what:" + what + "    extra:" + extra);
             return true;
         }
     };

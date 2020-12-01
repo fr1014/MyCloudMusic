@@ -11,16 +11,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
-import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
-import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
-import com.fr1014.mycoludmusic.home.toplist.PlayListDetailFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.MusicService;
@@ -46,6 +42,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     private MusicService.MusicControl musicControl;
     private SharedPreferences spMode;
     private PlayStatusBarView statusBar;
+    private Observer<Music> musicObserver;
 
     @Override
     protected void initView() {
@@ -92,12 +89,8 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
             }
         });
 
-        viewModel.getSongUrl().observe(this, new Observer<Music>() {
-            @Override
-            public void onChanged(Music music) {
-                musicControl.addPlayList(music);
-            }
-        });
+        musicObserver = music -> musicControl.addPlayList(music);
+        viewModel.getSongUrl().observeForever(musicObserver);
     }
 
 
@@ -232,5 +225,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         if (serviceConnection != null) {
             unbindService(serviceConnection);
         }
+        viewModel.getSongUrl().removeObserver(musicObserver);
     }
 }

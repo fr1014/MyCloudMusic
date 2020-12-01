@@ -42,7 +42,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
     private BusLiveData<List<Music>> getPlayListDetail;
-    private BusLiveData<Music> getSongUrl;
+    private MutableLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
     private LiveData<List<MusicEntity>> getMusicRoom;
@@ -67,9 +67,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getSearch;
     }
 
-    public BusLiveData<Music> getSongUrl() {
+    public MutableLiveData<Music> getSongUrl() {
         if (getSongUrl == null) {
-            getSongUrl = new BusLiveData<>();
+            getSongUrl = new MutableLiveData<>();
         }
         return getSongUrl;
     }
@@ -281,7 +281,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(Music music) {
-                        Log.d(TAG, "++++onNext: " + music);
+                        Log.d(TAG, "----onNext: " + music);
                         getSongUrl.postValue(music);
                     }
 
