@@ -75,8 +75,8 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
             musicControl = (MusicService.MusicControl) service;
             musicControl.registerOnStateChangeListener(onStateChangeListener);
             musicControl.registerOnProgressChangeListener(onProgressChangeListener);
-
             oldMusic = musicControl.getCurrentMusic();
+            binding.biBackground.setBlurImageUrl(oldMusic.getImgUrl());
             Glide.with(CurrentMusicDialogFragment.this)
                     .load(oldMusic.getImgUrl())
                     .placeholder(R.drawable.film)
@@ -151,6 +151,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                     oldMusic = item;
                     binding.tvName.setText(oldMusic.getTitle());
                     if (getActivity() != null) {
+                        binding.biBackground.setBlurImageUrl(oldMusic.getImgUrl());
                         Glide.with(CurrentMusicDialogFragment.this)
                                 .load(oldMusic.getImgUrl())
                                 .placeholder(R.drawable.film)

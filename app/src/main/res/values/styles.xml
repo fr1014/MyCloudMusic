@@ -29,9 +29,10 @@
         <!--可以使状态栏变透明，同时内容区域可以浸入状态栏下面-->
         <item name="android:windowTranslucentNavigation">true</item>
         <!--会自动让你的布局paddingTop一个状态栏的高度，在NoActionBar的时候很有用-->
-        <item name="android:fitsSystemWindows">true</item>
+<!--        <item name="android:fitsSystemWindows">true</item>-->
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
+<!--        <item name="android:windowFullscreen">true</item>-->
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
