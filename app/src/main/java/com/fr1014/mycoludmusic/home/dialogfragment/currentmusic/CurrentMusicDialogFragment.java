@@ -81,7 +81,8 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                     .load(oldMusic.getImgUrl())
                     .placeholder(R.drawable.film)
                     .into(binding.civSongImg);
-            binding.tvName.setText(oldMusic.getTitle());
+            binding.tvTitle.setText(oldMusic.getTitle());
+            binding.tvArtist.setText(oldMusic.getArtist());
             rotationAnimator = ObjectAnimator.ofFloat(binding.civSongImg, "rotation", 0f, 360f);//旋转的角度可有多个
             rotationAnimator.setDuration(20000);
             rotationAnimator.setRepeatCount(ValueAnimator.INFINITE);
@@ -91,21 +92,21 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
             if (musicControl.isPlaying()) {
                 rotationAnimator.start();//开始（重新开始）
                 FIRST_START_ANIMATION = 1;
-                binding.ivState.setImageResource(R.drawable.ic_stop_black);
+                binding.ivState.setImageResource(R.drawable.ic_stop_white);
             } else {
-                binding.ivState.setImageResource(R.drawable.ic_play_black);
+                binding.ivState.setImageResource(R.drawable.ic_play_white);
             }
 
             int mode = musicControl.getPlayMode();
             switch (mode) {
                 case MusicService.TYPE_SINGLE:
-                    binding.ivMode.setImageResource(R.drawable.ic_cycle);
+                    binding.ivMode.setImageResource(R.drawable.ic_cycle_white);
                     break;
                 case MusicService.TYPE_ORDER:
-                    binding.ivMode.setImageResource(R.drawable.ic_type_order);
+                    binding.ivMode.setImageResource(R.drawable.ic_loop_white);
                     break;
                 case MusicService.TYPE_RANDOM:
-                    binding.ivMode.setImageResource(R.drawable.ic_random);
+                    binding.ivMode.setImageResource(R.drawable.ic_random_white);
                     break;
             }
 
@@ -138,7 +139,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     private MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
         @Override
         public void onPlay(Music item) {
-            binding.ivState.setImageResource(R.drawable.ic_stop_black);
+            binding.ivState.setImageResource(R.drawable.ic_stop_white);
             if (item == oldMusic) { //选择播放的音乐与当前音乐相同
                 if (FIRST_START_ANIMATION == 1) { //动画已经start过
                     rotationAnimator.resume();//继续（在暂停的位置继续动画）
@@ -149,7 +150,8 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
             } else {
                 if (item.getSongUrl() != null) {
                     oldMusic = item;
-                    binding.tvName.setText(oldMusic.getTitle());
+                    binding.tvTitle.setText(oldMusic.getTitle());
+                    binding.tvArtist.setText(oldMusic.getArtist());
                     if (getActivity() != null) {
                         binding.biBackground.setBlurImageUrl(oldMusic.getImgUrl());
                         Glide.with(CurrentMusicDialogFragment.this)
@@ -166,7 +168,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         @Override
         public void onPause() {
             rotationAnimator.pause();//暂停
-            binding.ivState.setImageResource(R.drawable.ic_play_black);
+            binding.ivState.setImageResource(R.drawable.ic_play_white);
         }
 
     };
@@ -189,17 +191,17 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 switch (mode) {
                     case MusicService.TYPE_SINGLE:
                         musicControl.setPlayMode(MusicService.TYPE_ORDER);
-                        binding.ivMode.setImageResource(R.drawable.ic_type_order);
+                        binding.ivMode.setImageResource(R.drawable.ic_cycle_white);
                         CommonUtil.toastShort("循环播放");
                         break;
                     case MusicService.TYPE_ORDER:
                         musicControl.setPlayMode(MusicService.TYPE_RANDOM);
-                        binding.ivMode.setImageResource(R.drawable.ic_random);
+                        binding.ivMode.setImageResource(R.drawable.ic_random_white);
                         CommonUtil.toastShort("随机播放");
                         break;
                     case MusicService.TYPE_RANDOM:
                         musicControl.setPlayMode(MusicService.TYPE_SINGLE);
-                        binding.ivMode.setImageResource(R.drawable.ic_cycle);
+                        binding.ivMode.setImageResource(R.drawable.ic_cycle_white);
                         CommonUtil.toastShort("单曲循环");
                         break;
                 }

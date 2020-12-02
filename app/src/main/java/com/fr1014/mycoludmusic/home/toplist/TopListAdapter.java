@@ -57,7 +57,7 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
     protected void convert(BaseViewHolder holder, TopListDetailEntity.ListBean data) {
         if (data.getTracks() != null && data.getTracks().size() == 3) {
             holder.getView(R.id.ll_tv).setVisibility(View.VISIBLE);
-            holder.getView(R.id.tv_name).setVisibility(View.GONE);
+            holder.getView(R.id.tv_title).setVisibility(View.GONE);
             TopListDetailEntity.ListBean.TracksBean bean1 = data.getTracks().get(0);
             TopListDetailEntity.ListBean.TracksBean bean2 = data.getTracks().get(1);
             TopListDetailEntity.ListBean.TracksBean bean3 = data.getTracks().get(2);
@@ -66,8 +66,8 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
             holder.setText(R.id.tv_seq3, "3. " + bean3.getFirst() + "- " + bean3.getSecond());
         } else {
             holder.getView(R.id.ll_tv).setVisibility(View.GONE);
-            holder.getView(R.id.tv_name).setVisibility(View.VISIBLE);
-            holder.setText(R.id.tv_name, data.getName());
+            holder.getView(R.id.tv_title).setVisibility(View.VISIBLE);
+            holder.setText(R.id.tv_title, data.getName());
         }
         Glide.with(holder.itemView)
                 .load(data.getCoverImgUrl())

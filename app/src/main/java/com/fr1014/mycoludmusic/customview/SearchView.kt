@@ -31,7 +31,7 @@ class SearchView @JvmOverloads constructor(
                         )
                         val iconSearch = getResourceId(
                                 R.styleable.SearchView_iconSearch_id,
-                                R.drawable.ic_search_24
+                                R.drawable.ic_search_black
                         )
                         iconDrawable = ContextCompat.getDrawable(context, iconClear)
                         searchDrawable = ContextCompat.getDrawable(context,iconSearch)
