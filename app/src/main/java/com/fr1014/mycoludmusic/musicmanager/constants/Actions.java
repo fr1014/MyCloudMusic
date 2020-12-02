@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.constants;
+package com.fr1014.mycoludmusic.musicmanager.constants;
 
 /**
  * 创建时间:2020/9/29

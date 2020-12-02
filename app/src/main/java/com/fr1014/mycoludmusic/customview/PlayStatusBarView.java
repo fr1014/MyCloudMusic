@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.customview;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,18 +16,20 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.listener.MusicInfoListener;
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.MusicService;
+import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 
 /**
  * 底部播放状态栏
  */
-public class PlayStatusBarView extends LinearLayout implements View.OnClickListener {
+public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
-    private MusicService.MusicControl musicControl;
     private FragmentManager fragmentManager;
+    private MusicInfoListener musicInfoListener;
 
-    public PlayStatusBarView(Context context,FragmentManager fragmentManager) {
+    public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
         super(context);
         this.fragmentManager = fragmentManager;
         initView();
@@ -55,32 +58,42 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         mViewBinding.ivMusicMenu.setOnClickListener(this);
     }
 
-    public void setMusicControl(MusicService.MusicControl musicControl){
-        this.musicControl = musicControl;
-    }
-
-    public void setPlayStatus(int visibility) {
+    private void setPlayStatus(int visibility) {
         mViewBinding.ivStatePlay.setVisibility(visibility);
     }
 
-    public void setStopStatus(int visibility) {
+    private void setStopStatus(int visibility) {
         mViewBinding.ivStateStop.setVisibility(visibility);
     }
 
-    public void setMusic(Music music){
+    private void setPlayPause(boolean isPlaying) {
+        if (isPlaying) {
+            setPlayStatus(View.GONE);
+            setStopStatus(View.VISIBLE);
+        } else {
+            setPlayStatus(View.VISIBLE);
+            setStopStatus(View.GONE);
+        }
+    }
+
+    public void setMusic(Music music) {
         setTitle(music.getTitle());
         setImageUrl(music.getImgUrl());
     }
 
-    public void setTitle(String title) {
+    private void setTitle(String title) {
         mViewBinding.tvName.setText(title);
     }
 
-    public void setImageUrl(String imgUrl) {
+    private void setImageUrl(String imgUrl) {
         Glide.with(MyApplication.getInstance())
                 .load(imgUrl)
                 .placeholder(R.drawable.film)
                 .into(mViewBinding.ivCoverImg);
+    }
+
+    public void setMusicInfoListener(MusicInfoListener musicInfoListener) {
+        this.musicInfoListener = musicInfoListener;
     }
 
     @Override
@@ -88,7 +101,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         switch (v.getId()) {
             case R.id.iv_state_play:
             case R.id.iv_state_stop:
-                musicControl.playOrPause();
+                AudioPlayer.get().playPause();
                 break;
             case R.id.iv_music_menu:
                 //弹出当前播放列表
@@ -99,5 +112,34 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 new CurrentMusicDialogFragment().show(fragmentManager, "current_music_dialog");
                 break;
         }
+    }
+
+    @Override
+    public void onChange(Music music) {
+        setMusic(music);
+        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
+         if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
+            musicInfoListener.songUrlIsEmpty(music);
+        }
+    }
+
+    @Override
+    public void onPlayerStart() {
+        setPlayPause(true);
+    }
+
+    @Override
+    public void onPlayerPause() {
+        setPlayPause(false);
+    }
+
+    @Override
+    public void onPublish(int progress) {
+
+    }
+
+    @Override
+    public void onBufferingUpdate(int percent) {
+
     }
 }

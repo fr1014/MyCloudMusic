@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -13,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.IBinder;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,19 +23,19 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.MusicService;
+import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 
 import java.util.List;
 
 
 //排行榜详情页面
-public class PlayListDetailFragment extends Fragment {
+public class PlayListDetailFragment extends Fragment implements OnPlayerEventListener {
     public static final String KEY_ID = "ID";
     private long id = 0L;
     private TopListViewModel viewModel;
     private PlayListDetailAdapter adapter;
-    private MusicService.MusicControl musicControl;
     private FragmentPlaylistDetailBinding binding;
 
     public PlayListDetailFragment() {
@@ -63,7 +64,6 @@ public class PlayListDetailFragment extends Fragment {
         initViewModel();
         // Inflate the layout for this fragment
         binding = FragmentPlaylistDetailBinding.inflate(getLayoutInflater(), container, false);
-
         binding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         initAdapter();
         binding.rvPlaylistDetail.setAdapter(adapter);
@@ -82,20 +82,16 @@ public class PlayListDetailFragment extends Fragment {
         header.setOnClickListener(v -> {
             List<Music> datas = adapter.getDatas();
             if (datas.size() >= 1) {
-                if (musicControl != null) {
-                    musicControl.addPlayList(datas);
-                    viewModel.checkSong(datas.get(0));
-                }
+                AudioPlayer.get().addAndPlay(datas);
+                viewModel.checkSong(datas.get(0));
             }
         });
         adapter.setOnItemClickListener((adapter, view, position) -> {
             Music music = (Music) adapter.getData(position);
-            if (music.getSongUrl() == null) {
+            if (TextUtils.isEmpty(music.getSongUrl())) {
                 viewModel.checkSong(music);
             } else {
-                if (musicControl != null) {
-                    musicControl.addPlayList(music);
-                }
+                AudioPlayer.get().addAndPlay(music);
             }
         });
     }
@@ -103,10 +99,7 @@ public class PlayListDetailFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getActivity() != null) {
-            Intent intent = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        }
+        AudioPlayer.get().addOnPlayEventListener(this);
 
         viewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
             @Override
@@ -116,27 +109,35 @@ public class PlayListDetailFragment extends Fragment {
         });
     }
 
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        //绑定成功时
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            musicControl = (MusicService.MusicControl) service;
-
-        }
-
-        //断开连接时
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (getActivity() != null) {
-            getActivity().unbindService(mServiceConnection);
-        }
+    public void onChange(Music music) {
+
+    }
+
+    @Override
+    public void onPlayerStart() {
+
+    }
+
+    @Override
+    public void onPlayerPause() {
+
+    }
+
+    @Override
+    public void onPublish(int progress) {
+
+    }
+
+    @Override
+    public void onBufferingUpdate(int percent) {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        AudioPlayer.get().removeOnPlayEventListener(this);
     }
 }

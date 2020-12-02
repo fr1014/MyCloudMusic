@@ -7,7 +7,7 @@ import com.fr1014.mycoludmusic.data.source.HttpDataSourceImpl;
 import com.fr1014.mycoludmusic.data.source.LocalDataSourceImpl;
 import com.fr1014.mycoludmusic.data.source.http.KWApiService;
 import com.fr1014.mycoludmusic.data.source.http.WYApiService;
-import com.fr1014.mycoludmusic.data.source.local.preference.Preferences;
+import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.http.RetrofitClient;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
 import com.fr1014.mymvvm.base.BaseApplication;
@@ -22,7 +22,7 @@ public class MyApplication extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        Preferences.init(this);
+        Preferences.init(this); //SharePreferences
 
         Intent intent = new Intent(this, PlayService.class);
         startService(intent);

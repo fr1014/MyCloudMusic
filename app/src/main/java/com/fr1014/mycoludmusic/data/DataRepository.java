@@ -30,16 +30,16 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     private HttpDataSource httpDataSource;
     private LocalDataSource localDataSource;
 
-    private DataRepository(HttpDataSource httpDataSource,LocalDataSource localDataSource){
+    private DataRepository(HttpDataSource httpDataSource, LocalDataSource localDataSource) {
         this.httpDataSource = httpDataSource;
         this.localDataSource = localDataSource;
     }
 
-    public static DataRepository getInstance(HttpDataSource httpDataSource,LocalDataSource localDataSource){
-        if (instance == null){
-            synchronized (DataRepository.class){
-                if (instance == null){
-                    instance = new DataRepository(httpDataSource,localDataSource);
+    public static DataRepository getInstance(HttpDataSource httpDataSource, LocalDataSource localDataSource) {
+        if (instance == null) {
+            synchronized (DataRepository.class) {
+                if (instance == null) {
+                    instance = new DataRepository(httpDataSource, localDataSource);
                 }
             }
         }
@@ -82,13 +82,13 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<SearchEntity> getSearch(String keywords,int offset) {
-        return httpDataSource.getSearch(keywords,offset);
+    public Observable<SearchEntity> getSearch(String keywords, int offset) {
+        return httpDataSource.getSearch(keywords, offset);
     }
 
     @Override
     public Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearch(String name, int page, int count) {
-        return httpDataSource.getSearch(name,page,count);
+        return httpDataSource.getSearch(name, page, count);
     }
 
     @Override
@@ -97,13 +97,23 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public LiveData<List<MusicEntity>> getAll() {
+    public LiveData<List<MusicEntity>> getAllLive() {
+        return localDataSource.getAllLive();
+    }
+
+    @Override
+    public LiveData<MusicEntity> getItemLive(String title, String artist) {
+        return localDataSource.getItemLive(title, artist);
+    }
+
+    @Override
+    public List<MusicEntity> getAll() {
         return localDataSource.getAll();
     }
 
     @Override
-    public LiveData<MusicEntity> getItem(String title,String artist) {
-        return localDataSource.getItem(title,artist);
+    public MusicEntity getItem(String title, String artist) {
+        return localDataSource.getItem(title, artist);
     }
 
     @Override

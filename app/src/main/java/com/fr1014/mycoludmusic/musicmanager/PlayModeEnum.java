@@ -6,9 +6,9 @@ package com.fr1014.mycoludmusic.musicmanager;
  * 邮箱:1546352238@qq.com
  */
 public enum PlayModeEnum {
-    LOOP(0),
-    SHUFFLE(1),
-    SINGLE(2);
+    LOOP(0),  //循环
+    SHUFFLE(1), //随机
+    SINGLE(2); //单曲
 
     private int value;
 

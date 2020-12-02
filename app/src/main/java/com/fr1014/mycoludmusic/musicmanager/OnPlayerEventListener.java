@@ -1,11 +1,8 @@
 package com.fr1014.mycoludmusic.musicmanager;
-
 /**
- * 创建时间:2020/9/28
- * 作者:fr
- * 邮箱:1546352238@qq.com
+ *  播放进度监听器
  */
-public interface OnPlayEventListener {
+public interface OnPlayerEventListener {
     /**
      * 切换歌曲
      */

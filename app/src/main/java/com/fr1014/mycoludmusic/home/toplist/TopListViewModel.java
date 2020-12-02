@@ -42,7 +42,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
     private BusLiveData<List<Music>> getPlayListDetail;
-    private MutableLiveData<Music> getSongUrl;
+    private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
     private LiveData<List<MusicEntity>> getMusicRoom;
@@ -67,9 +67,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getSearch;
     }
 
-    public MutableLiveData<Music> getSongUrl() {
+    public BusLiveData<Music> getSongUrl() {
         if (getSongUrl == null) {
-            getSongUrl = new MutableLiveData<>();
+            getSongUrl = new BusLiveData<>();
         }
         return getSongUrl;
     }
@@ -195,6 +195,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     @Override
                     public void onNext(TopListDetailEntity topListDetailEntity) {
                         getTopListDetail.postValue(topListDetailEntity);
+                        Log.d(TAG, "----onNext: "+topListDetailEntity.toString());
                     }
 
                     @Override
@@ -263,14 +264,11 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     //通过搜索得到的歌曲，需要通过获取歌曲详情来获取音乐专辑图片
     private void getSongDetailEntity(Music music) {
         model.getSongDetail(music.getId())
-                .map(new Function<SongDetailEntity, Music>() {
-                    @Override
-                    public Music apply(SongDetailEntity songDetailEntity) throws Exception {
-                        if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
-                            music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
-                        }
-                        return music;
+                .map(songDetailEntity -> {
+                    if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
+                        music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
                     }
+                    return music;
                 })
                 .compose(RxSchedulers.apply())
                 .subscribe(new Observer<Music>() {
@@ -282,7 +280,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     @Override
                     public void onNext(Music music) {
                         Log.d(TAG, "----onNext: " + music);
-                        getSongUrl.postValue(music);
+                        getSongUrl().postValue(music);
                     }
 
                     @Override
@@ -338,22 +336,19 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     //获取搜索结果（酷我）
     public void getSearchEntityKW(String name, int page, int count) {
         model.getSearch(name, page, count)
-                .map(new Function<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity, List<Music>>() {
-                    @Override
-                    public List<Music> apply(@io.reactivex.annotations.NonNull com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity searchEntity) throws Exception {
-                        List<Music> musics = new ArrayList<>();
-                        List<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
-                        for (com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
-                            Music music = new Music();
-                            String artist = abslistBean.getAARTIST().replaceAll("&nbsp;", " ");
-                            String title = abslistBean.getSONGNAME().replaceAll("&nbsp;", " ");
-                            music.setArtist(artist.replaceAll("###", "/"));
-                            music.setTitle(title);
-                            music.setMUSICRID(abslistBean.getMUSICRID());
-                            musics.add(music);
-                        }
-                        return musics;
+                .map(searchEntity -> {
+                    List<Music> musics = new ArrayList<>();
+                    List<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
+                    for (com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
+                        Music music = new Music();
+                        String artist = abslistBean.getAARTIST().replaceAll("&nbsp;", " ");
+                        String title = abslistBean.getSONGNAME().replaceAll("&nbsp;", " ");
+                        music.setArtist(artist.replaceAll("###", "/"));
+                        music.setTitle(title);
+                        music.setMUSICRID(abslistBean.getMUSICRID());
+                        musics.add(music);
                     }
+                    return musics;
                 }).compose(RxSchedulers.apply())
                 .subscribe(new Observer<List<Music>>() {
                     @Override
@@ -363,7 +358,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull List<Music> music) {
-                        getSearch.postValue(music);
+                        getSearch().postValue(music);
                     }
 
                     @Override
@@ -387,7 +382,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         if (TextUtils.isEmpty(music.getMUSICRID())) return;
 
         model.getSongUrl(music.getMUSICRID())
-                .compose(RxSchedulers.apply())
+                .compose(RxSchedulers.applyIO())
                 .subscribe(new Observer<ResponseBody>() {
                     @Override
                     public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
@@ -397,8 +392,11 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull ResponseBody response) {
                         try {
-                            music.setSongUrl(response.string());
-                            getSongUrl.postValue(music);
+                            if (!TextUtils.isEmpty(response.string())){
+                                Log.d(TAG, "----onNext: "+response.string().length());
+                                music.setSongUrl(response.string());
+                                getSongUrl().postValue(music);
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -445,10 +443,10 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     }
 
     public LiveData<List<MusicEntity>> getMusicLocal() {
-        return getMusicRoom = model.getAll();
+        return getMusicRoom = model.getAllLive();
     }
 
     public LiveData<MusicEntity> getItemLocal(String title,String artist){
-        return getItemRoom = model.getItem(title,artist);
+        return getItemRoom = model.getItemLive(title,artist);
     }
 }

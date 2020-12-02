@@ -46,4 +46,11 @@
         android:layout_height="match_parent"
         android:layout_weight="9.8" />
 
+    <LinearLayout
+        android:id="@+id/ll_playstatus"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"/>
+
 </LinearLayout>

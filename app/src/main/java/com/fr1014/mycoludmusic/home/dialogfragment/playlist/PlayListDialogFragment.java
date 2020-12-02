@@ -1,20 +1,13 @@
 package com.fr1014.mycoludmusic.home.dialogfragment.playlist;
 
 import android.app.Dialog;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.os.IBinder;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,23 +16,21 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.fr1014.mycoludmusic.R;
-import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
-import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.MusicService;
+import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import java.util.List;
 
 
-public class PlayListDialogFragment extends DialogFragment {
+public class PlayListDialogFragment extends DialogFragment implements OnPlayerEventListener {
 
     private FragmentPlayListDialogBinding binding;
     private PlayListAdapter playListAdapter;
-    private MusicService.MusicControl musicControl;
     private int oldPosition = -1;  //当前播放音乐的位置
 
     public PlayListDialogFragment() {
@@ -65,12 +56,19 @@ public class PlayListDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        AudioPlayer.get().addOnPlayEventListener(this);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (getActivity() != null) {
-            Intent intent = new Intent(getActivity(), MusicService.class);
-            getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        }
+        initHeader();
+        initAdapter();
+        binding.rvPlaylist.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
+        binding.rvPlaylist.setAdapter(playListAdapter);
+        binding.rvPlaylist.scrollToPosition(oldPosition);
     }
 
     /**
@@ -98,58 +96,21 @@ public class PlayListDialogFragment extends DialogFragment {
         }
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            musicControl = (MusicService.MusicControl) service;
-            initHeader();
-            initAdapter();
-            binding.rvPlaylist.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
-            binding.rvPlaylist.setAdapter(playListAdapter);
-            binding.rvPlaylist.scrollToPosition(oldPosition);
-            musicControl.registerOnStateChangeListener(onStateChangeListener);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            musicControl.unregisterOnStateChangeListener(onStateChangeListener);
-        }
-    };
-
-    private MusicService.OnStateChangeListener onStateChangeListener = new MusicService.OnStateChangeListener() {
-
-        @Override
-        public void onPlay(Music item) {
-            Log.d(TAG, "++++onPlay: " + item.toString());
-            int position = musicControl.getPlayList().indexOf(item);
-            if (oldPosition != position && item.getSongUrl() != null) {
-                playListAdapter.setCurrentMusic(item);
-                playListAdapter.notifyDataSetChanged();
-                oldPosition = position;
-            }
-        }
-
-        @Override
-        public void onPause() {
-
-        }
-    };
-
     private void initAdapter() {
         playListAdapter = new PlayListAdapter();
-        List<Music> playList = musicControl.getPlayList();
+        List<Music> playList = AudioPlayer.get().getMusicList();
         if (playList != null) {
             playListAdapter.setData(playList);
-            oldPosition = playList.indexOf(musicControl.getCurrentMusic());
+            oldPosition = playList.indexOf(AudioPlayer.get().getPlayMusic());
         }
-        playListAdapter.setCurrentMusic(musicControl.getCurrentMusic());
+        playListAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
 
         playListAdapter.setOnItemClickListener((adapter, view, position) -> {
             switch (view.getId()) {
                 case R.id.ll_playlist:
                     if (oldPosition != position) {
                         Music item = (Music) adapter.getData(position);
-                        musicControl.addPlayList(item);
+                        AudioPlayer.get().addAndPlay(item);
                     } else {
                         //点击的为当前播放的歌曲
                         new CurrentMusicDialogFragment().show(getParentFragmentManager(), "current_music_dialog");
@@ -163,7 +124,7 @@ public class PlayListDialogFragment extends DialogFragment {
     }
 
     private void initHeader() {
-        int count = musicControl.getPlayList().size();
+        int count = AudioPlayer.get().getMusicList().size();
         binding.header.tvCount.setText(String.format("(%d)", count));
     }
 
@@ -176,10 +137,39 @@ public class PlayListDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (getActivity() != null) {
-            getActivity().unbindService(serviceConnection);
+    public void onChange(Music music) {
+        int position = AudioPlayer.get().getMusicList().indexOf(music);
+        //oldPosition != position && music.getSongUrl() != null
+        if (oldPosition != position) {
+            playListAdapter.setCurrentMusic(music);
+            playListAdapter.notifyDataSetChanged();
+            oldPosition = position;
         }
+    }
+
+    @Override
+    public void onPlayerStart() {
+
+    }
+
+    @Override
+    public void onPlayerPause() {
+
+    }
+
+    @Override
+    public void onPublish(int progress) {
+
+    }
+
+    @Override
+    public void onBufferingUpdate(int percent) {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        AudioPlayer.get().removeOnPlayEventListener(this);
     }
 }

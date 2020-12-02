@@ -30,14 +30,14 @@ public class Notifier {
     private static final int NOTIFICATION_ID = 0x111;
     //Channel ID 必须保证唯一
     private static final String CHANNEL_ID = "com.fr1014.cloudmusic.notification.channel";
-    private MusicService musicService;
+    private PlayService playService;
     private NotificationManager notificationManager;
 
     private Notifier() {
 
     }
 
-    public static Notifier getInstance() {
+    public static Notifier get() {
         return SingletonHolder.instance;
     }
 
@@ -45,8 +45,8 @@ public class Notifier {
         private static final Notifier instance = new Notifier();
     }
 
-    public void init(MusicService musicService) {
-        this.musicService = musicService;
+    public void init(PlayService musicService) {
+        this.playService = musicService;
         //向系统注册通知渠道，注册后不能改变重要性以及其他通知行为
         this.notificationManager = (NotificationManager) musicService.getSystemService(Context.NOTIFICATION_SERVICE);
     }
@@ -54,7 +54,19 @@ public class Notifier {
     public void showPlay(Music music) {
         if (music == null) return;
         //将服务置于启动状态
-        musicService.startForeground(NOTIFICATION_ID, buildNotification(musicService, music, true));
+        playService.startForeground(NOTIFICATION_ID, buildNotification(playService, music, true));
+    }
+
+    public void showPause(Music music) {
+        if (music == null) {
+            return;
+        }
+        playService.stopForeground(false);
+        notificationManager.notify(NOTIFICATION_ID, buildNotification(playService, music, false));
+    }
+
+    public void cancelAll() {
+        notificationManager.cancelAll();
     }
 
     private Notification buildNotification(Context context, Music music, boolean isPlaying) {
