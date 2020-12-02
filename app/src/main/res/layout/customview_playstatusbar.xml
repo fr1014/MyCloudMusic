@@ -65,7 +65,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:background="@drawable/selectableitem"
-            android:src="@drawable/ic_music_menu"
+            android:src="@drawable/ic_music_menu_red"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

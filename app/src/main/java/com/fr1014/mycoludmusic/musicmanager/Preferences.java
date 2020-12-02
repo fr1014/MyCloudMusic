@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.data.source.local.preference;
+package com.fr1014.mycoludmusic.musicmanager;
 
 import android.content.Context;
 import android.content.SharedPreferences;

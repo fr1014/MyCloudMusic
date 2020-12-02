@@ -7,9 +7,13 @@ import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import java.util.List;
 
 public interface LocalDataSource {
-    LiveData<List<MusicEntity>> getAll();
+    LiveData<List<MusicEntity>> getAllLive();
 
-    LiveData<MusicEntity> getItem(String title,String artist);
+    LiveData<MusicEntity> getItemLive(String title,String artist);
+
+   List<MusicEntity> getAll();
+
+    MusicEntity getItem(String title,String artist);
 
     void insertAll(List<MusicEntity> musicEntities);
 

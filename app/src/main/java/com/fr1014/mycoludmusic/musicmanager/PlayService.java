@@ -1,15 +1,18 @@
 package com.fr1014.mycoludmusic.musicmanager;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
-import com.fr1014.mycoludmusic.constants.Actions;
+import androidx.annotation.Nullable;
+
+import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
 
 public class PlayService extends Service {
-    public PlayService() {
-    }
+    private static final String TAG = "Service";
 
     public class PlayBinder extends Binder {
         public PlayService getService() {
@@ -20,23 +23,30 @@ public class PlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.i(TAG, "onCreate: " + getClass().getSimpleName());
         AudioPlayer.get().init(this);
-        // TODO: 2020/9/29 MediaSession
-//        Notifier.getInstance().init(this);
+        MediaSessionManager.get().init(this);
+        Notifier.get().init(this);
+        QuitTimer.get().init(this);
     }
 
+    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return new PlayBinder();
     }
 
+    public static void startCommand(Context context, String action) {
+        Intent intent = new Intent(context, PlayService.class);
+        intent.setAction(action);
+        context.startService(intent);
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.getAction() != null) {
-            switch (intent.getAction()) {
-                case Actions.ACTION_STOP:
-                    stop();
-                    break;
+            if (Actions.ACTION_STOP.equals(intent.getAction())) {
+                stop();
             }
         }
         return START_NOT_STICKY;
@@ -44,7 +54,8 @@ public class PlayService extends Service {
 
     private void stop() {
         AudioPlayer.get().stopPlayer();
-//        QuitTimer.get().stop();
-//        Notifier.getInstance().cancelAll();
+        QuitTimer.get().stop();
+        Notifier.get().cancelAll();
     }
+
 }

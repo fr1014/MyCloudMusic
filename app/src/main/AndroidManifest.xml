@@ -40,7 +40,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".musicmanager.MusicService" />
     </application>
 
 </manifest>

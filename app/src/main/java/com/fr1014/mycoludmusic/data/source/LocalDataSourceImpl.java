@@ -30,12 +30,22 @@ public class LocalDataSourceImpl implements LocalDataSource {
     }
 
     @Override
-    public LiveData<List<MusicEntity>> getAll() {
+    public LiveData<List<MusicEntity>> getAllLive() {
+        return db.musicDao().getAllLive();
+    }
+
+    @Override
+    public LiveData<MusicEntity> getItemLive(String title, String artist) {
+        return db.musicDao().getItemLive(title,artist);
+    }
+
+    @Override
+    public List<MusicEntity> getAll() {
         return db.musicDao().getAll();
     }
 
     @Override
-    public LiveData<MusicEntity> getItem(String title,String artist) {
+    public MusicEntity getItem(String title,String artist) {
         return db.musicDao().getItem(title,artist);
     }
 

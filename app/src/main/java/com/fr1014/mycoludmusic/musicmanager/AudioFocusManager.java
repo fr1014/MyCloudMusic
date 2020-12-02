@@ -3,6 +3,8 @@ package com.fr1014.mycoludmusic.musicmanager;
 import android.content.Context;
 import android.media.AudioManager;
 
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+
 import static android.content.Context.AUDIO_SERVICE;
 
 /**
