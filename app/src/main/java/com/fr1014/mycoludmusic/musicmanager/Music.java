@@ -98,6 +98,7 @@ public class Music {
                 ", title='" + title + '\'' +
                 ", songUrl='" + songUrl + '\'' +
                 ", imgUrl='" + imgUrl + '\'' +
+                ", MUSICRID='" + MUSICRID + '\'' +
                 ", isOnlineMusic=" + isOnlineMusic +
                 '}';
     }

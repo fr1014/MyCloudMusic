@@ -12,7 +12,6 @@ import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
@@ -29,8 +28,8 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
@@ -195,7 +194,6 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     @Override
                     public void onNext(TopListDetailEntity topListDetailEntity) {
                         getTopListDetail.postValue(topListDetailEntity);
-                        Log.d(TAG, "----onNext: "+topListDetailEntity.toString());
                     }
 
                     @Override
@@ -279,7 +277,6 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(Music music) {
-                        Log.d(TAG, "----onNext: " + music);
                         getSongUrl().postValue(music);
                     }
 
@@ -385,19 +382,17 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 .compose(RxSchedulers.applyIO())
                 .subscribe(new Observer<ResponseBody>() {
                     @Override
-                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+                    public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@io.reactivex.annotations.NonNull ResponseBody response) {
+                    public void onNext(ResponseBody body) {
                         try {
-                            if (!TextUtils.isEmpty(response.string())){
-                                Log.d(TAG, "----onNext: "+response.string().length());
-                                music.setSongUrl(response.string());
-                                getSongUrl().postValue(music);
-                            }
-                        } catch (IOException e) {
+                            String url = body.string();
+                            music.setSongUrl(url);
+                            getSongUrl().postValue(music);
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -425,7 +420,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Music music) {
-                        MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID());
+                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getId(), music.getMUSICRID());
                         model.insert(musicEntity);
                     }
 
@@ -446,7 +441,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getMusicRoom = model.getAllLive();
     }
 
-    public LiveData<MusicEntity> getItemLocal(String title,String artist){
-        return getItemRoom = model.getItemLive(title,artist);
+    public LiveData<MusicEntity> getItemLocal(String title, String artist) {
+        return getItemRoom = model.getItemLive(title, artist);
     }
 }

@@ -73,13 +73,16 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         super.onViewCreated(view, savedInstanceState);
 
         oldMusic = AudioPlayer.get().getPlayMusic();
-        if (oldMusic != null && !TextUtils.isEmpty(oldMusic.getImgUrl())){
+        if (oldMusic != null){
             binding.biBackground.setBlurImageUrl(oldMusic.getImgUrl());
         }
-        Glide.with(CurrentMusicDialogFragment.this)
-                .load(oldMusic.getImgUrl())
-                .placeholder(R.drawable.film)
-                .into(binding.civSongImg);
+        if (!TextUtils.isEmpty(oldMusic.getImgUrl())){
+            Glide.with(CurrentMusicDialogFragment.this)
+                    .load(oldMusic.getImgUrl())
+                    .placeholder(R.drawable.bg_play)
+                    .error(R.drawable.bg_play)
+                    .into(binding.civSongImg);
+        }
         binding.tvTitle.setText(oldMusic.getTitle());
         binding.tvArtist.setText(oldMusic.getArtist());
         rotationAnimator = ObjectAnimator.ofFloat(binding.civSongImg, "rotation", 0f, 360f);//旋转的角度可有多个
@@ -202,7 +205,8 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                     binding.biBackground.setBlurImageUrl(oldMusic.getImgUrl());
                     Glide.with(CurrentMusicDialogFragment.this)
                             .load(oldMusic.getImgUrl())
-                            .placeholder(R.drawable.film)
+                            .placeholder(R.drawable.bg_play)
+                            .error(R.drawable.bg_play)
                             .into(binding.civSongImg);
                 }
                 rotationAnimator.start();

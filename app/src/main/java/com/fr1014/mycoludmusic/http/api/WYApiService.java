@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.data.source.http;
+package com.fr1014.mycoludmusic.http.api;
 
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
@@ -59,4 +59,15 @@ public interface WYApiService {
      */
     @GET("/search")
     Observable<SearchEntity> getSearch(@Query("keywords") String keywords, @Query("offset") int offset);
+
+
+    /**
+     * KW的api 返回的为json
+     * @param name  需要搜索的歌曲或歌手
+     * @param page  查询的页码数
+     * @param count 当前页的返回数量
+     * @return SearchEntity
+     */
+    @GET("http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&rformat=json&encoding=utf8")
+    Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearchEntity(@Query("all") String name, @Query("qn") int page, @Query("rn") int count);
 }

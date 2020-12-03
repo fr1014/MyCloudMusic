@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
@@ -88,7 +89,8 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private void setImageUrl(String imgUrl) {
         Glide.with(MyApplication.getInstance())
                 .load(imgUrl)
-                .placeholder(R.drawable.film)
+                .placeholder(R.drawable.bg_play)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(mViewBinding.ivCoverImg);
     }
 

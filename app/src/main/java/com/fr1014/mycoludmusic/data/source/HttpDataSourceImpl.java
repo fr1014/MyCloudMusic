@@ -8,8 +8,8 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
-import com.fr1014.mycoludmusic.data.source.http.KWApiService;
-import com.fr1014.mycoludmusic.data.source.http.WYApiService;
+import com.fr1014.mycoludmusic.http.api.KWApiService;
+import com.fr1014.mycoludmusic.http.api.WYApiService;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
@@ -77,7 +77,7 @@ public class HttpDataSourceImpl implements HttpDataSource {
 
     @Override
     public Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearch(String name, int page, int count) {
-        return kwApiService.getSearchEntity(name, page, count);
+        return wyApiService.getSearchEntity(name, page, count);
     }
 
     @Override

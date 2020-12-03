@@ -3,10 +3,10 @@ package com.fr1014.mycoludmusic.customview.blurimageview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
@@ -41,13 +41,19 @@ public class BlurImageView extends AppCompatImageView {
     }
 
     public void setBlurImageUrl(String url){
+        setScaleType(ScaleType.CENTER_CROP);
+        if (TextUtils.isEmpty(url)){
+            setImageDrawable(getForegroundDrawable(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play)));
+            return;
+        }
         Glide.with(this)
                 .asBitmap()
                 .load(url)
+                .placeholder(R.drawable.bg_play)
+                .error(R.drawable.bg_play)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        BlurImageView.this.setScaleType(ScaleType.CENTER_CROP);
                         BlurImageView.this.setImageDrawable(getForegroundDrawable(resource));
                     }
 
