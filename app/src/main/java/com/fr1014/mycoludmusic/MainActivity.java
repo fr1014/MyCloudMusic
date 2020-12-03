@@ -86,7 +86,11 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         musicObserver = new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
-                AudioPlayer.get().addAndPlay(music);
+                if (!TextUtils.isEmpty(music.getSongUrl())){
+                    AudioPlayer.get().addAndPlay(music);
+                }else{
+                    AudioPlayer.get().playNext();
+                }
             }
         };
         viewModel.getSongUrl().observeForever(musicObserver);
