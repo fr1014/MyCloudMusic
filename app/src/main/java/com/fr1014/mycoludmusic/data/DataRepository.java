@@ -17,6 +17,7 @@ import com.fr1014.mymvvm.base.BaseModel;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**

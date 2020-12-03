@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -60,7 +61,11 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
         viewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
-                AudioPlayer.get().addAndPlay(music);
+                if (!TextUtils.isEmpty(music.getSongUrl())){
+                    AudioPlayer.get().addAndPlay(music);
+                }else{
+                    AudioPlayer.get().playNext();
+                }
             }
         });
     }
