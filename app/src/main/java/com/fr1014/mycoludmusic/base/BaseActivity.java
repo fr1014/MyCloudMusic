@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewbinding.ViewBinding;
 
 import com.bumptech.glide.Glide;
+import com.fr1014.mycoludmusic.app.MyApplication;
 
 public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActivity {
     protected VB mViewBinding;
@@ -38,6 +39,6 @@ public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Glide.with(getApplicationContext()).pauseAllRequests();
+        Glide.with(MyApplication.getInstance()).pauseAllRequests();
     }
 }
