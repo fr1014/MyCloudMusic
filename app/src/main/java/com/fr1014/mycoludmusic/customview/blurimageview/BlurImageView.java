@@ -44,6 +44,7 @@ public class BlurImageView extends AppCompatImageView {
         Glide.with(this)
                 .asBitmap()
                 .load(url)
+                .placeholder(R.mipmap.ic_launcher)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
