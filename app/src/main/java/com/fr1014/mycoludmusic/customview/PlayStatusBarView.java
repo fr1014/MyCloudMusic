@@ -114,16 +114,20 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 break;
             case R.id.iv_music_menu:
                 if (AudioPlayer.get().getPlayMusic() != null) {
-                    //弹出当前播放列表
-                    listDialogFragment.show(fragmentManager, "playlist_dialog");
+                    if (!listDialogFragment.isAdded()) {
+                        //弹出当前播放列表
+                        listDialogFragment.show(fragmentManager, "playlist_dialog");
+                    }
                 } else {
                     CommonUtil.toastShort("当前播放列表为空！！！");
                 }
                 break;
             case R.id.cl_bottom_bar:
                 if (AudioPlayer.get().getPlayMusic() != null) {
-                    //当前播放的音乐的详情页
-                    musicDialogFragment.show(fragmentManager, "current_music_dialog");
+                    if (!musicDialogFragment.isAdded()) {
+                        //当前播放的音乐的详情页
+                        musicDialogFragment.show(fragmentManager, "current_music_dialog");
+                    }
                 } else {
                     CommonUtil.toastShort("当前尚未有歌曲在播放！！！");
                 }
