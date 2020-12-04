@@ -1,6 +1,5 @@
 package com.fr1014.mycoludmusic;
 
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,13 +9,11 @@ import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
-import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.listener.MusicInfoListener;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
@@ -31,7 +28,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
 
     private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
-    private SharedPreferences spMode;
     private PlayStatusBarView statusBar;
     private Observer<Music> musicObserver;
 
