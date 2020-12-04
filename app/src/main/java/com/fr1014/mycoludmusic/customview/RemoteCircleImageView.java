@@ -31,7 +31,7 @@ public class RemoteCircleImageView extends CircleImageView {
     public void setImageUrl(String url){
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .placeholder(R.drawable.bg_play)
+                .placeholder(R.drawable.film)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .error(R.drawable.bg_play)
                 .format(DecodeFormat.PREFER_ARGB_8888);
