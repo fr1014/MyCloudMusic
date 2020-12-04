@@ -46,7 +46,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     private int FIRST_START_ANIMATION = 0; //旋转的动画是否已经start,0-noStart,1-start
     private FragmentCurrentMusicBinding binding;
     private Music oldMusic;
-    private Bitmap oldResource;
+    private Bitmap oldResource = null;
     ObjectAnimator rotationAnimator;
 
     public CurrentMusicDialogFragment() {
@@ -202,7 +202,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 .load(music.getImgUrl())
                 .placeholder(R.drawable.bg_play)
                 .error(R.drawable.film)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
