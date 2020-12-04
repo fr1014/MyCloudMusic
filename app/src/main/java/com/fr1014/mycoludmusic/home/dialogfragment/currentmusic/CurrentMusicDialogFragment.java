@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.home.dialogfragment.currentmusic;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,11 @@ import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
@@ -182,27 +189,30 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         binding.biBackground.setBlurImageUrl(music.getImgUrl());
         binding.tvTitle.setText(music.getTitle());
         binding.tvArtist.setText(music.getArtist());
-        Glide.with(MyApplication.getInstance())
+        Glide.with(CurrentMusicDialogFragment.this)
                 .load(music.getImgUrl())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.bg_play)
                 .error(R.drawable.bg_play)
                 .into(binding.civSongImg);
     }
 
-    private void endAnimator(){
+    private void endAnimator() {
         rotationAnimator.end();//结束（回到原始位置）
         FIRST_START_ANIMATION = 0;
     }
 
-    private void startAnimator(){
+    private void startAnimator() {
         rotationAnimator.start();
         FIRST_START_ANIMATION = 1;
     }
 
     @Override
     public void onChange(Music music) {
-        initView(music);
-        oldMusic = music;
+        if (music != oldMusic){
+            initView(music);
+            oldMusic = music;
+        }
         endAnimator();
     }
 

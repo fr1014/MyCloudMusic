@@ -46,7 +46,7 @@ public class BlurImageView extends AppCompatImageView {
             setImageDrawable(getForegroundDrawable(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play)));
             return;
         }
-        Glide.with(this)
+        Glide.with(getContext())
                 .asBitmap()
                 .load(url)
                 .placeholder(R.drawable.bg_play)

@@ -3,10 +3,10 @@ package com.fr1014.mycoludmusic.customview;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
@@ -14,7 +14,6 @@ import androidx.fragment.app.FragmentManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.fr1014.mycoludmusic.R;
-import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
@@ -33,6 +32,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private MusicInfoListener musicInfoListener;
     private PlayListDialogFragment listDialogFragment;
     private CurrentMusicDialogFragment musicDialogFragment;
+    private Music oldMusic;
 
     public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
         super(context);
@@ -55,6 +55,8 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         addView(mViewBinding.getRoot());
         listDialogFragment = new PlayListDialogFragment();
         musicDialogFragment = new CurrentMusicDialogFragment();
+        setMusic(AudioPlayer.get().getPlayMusic());
+        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
         initClickListener();
     }
 
@@ -84,8 +86,11 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     public void setMusic(Music music) {
-        setTitle(music.getTitle());
-        setImageUrl(music.getImgUrl());
+        if (music != oldMusic) {
+            setTitle(music.getTitle());
+            setImageUrl(music.getImgUrl());
+        }
+        oldMusic = music;
     }
 
     private void setTitle(String title) {
@@ -93,7 +98,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     private void setImageUrl(String imgUrl) {
-        Glide.with(MyApplication.getInstance())
+        Glide.with(getContext())
                 .load(imgUrl)
                 .placeholder(R.drawable.bg_play)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)

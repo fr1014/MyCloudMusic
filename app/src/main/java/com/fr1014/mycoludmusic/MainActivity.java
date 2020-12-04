@@ -141,13 +141,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     public void onClick(View v) {
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (AudioPlayer.get().isPlaying()){
-            statusBar.setMusic(AudioPlayer.get().getPlayMusic());
-        }
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if (AudioPlayer.get().isPlaying()){
+//            statusBar.setMusic(AudioPlayer.get().getPlayMusic());
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
