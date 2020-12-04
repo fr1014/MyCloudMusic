@@ -191,7 +191,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     }
 
     private void initView(Music music) {
-        if (oldResource == null) {
+        if (oldResource == null || TextUtils.isEmpty(music.getImgUrl())) {
             binding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
         }
         binding.civSongImg.setImageDrawable(getContext().getDrawable(R.drawable.bg_play));
