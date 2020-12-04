@@ -25,14 +25,15 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
 
 import java.util.List;
 
-public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
+public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
     private TopListViewModel viewModel;
     private PlayListDetailAdapter adapter;
     private PlayStatusBarView statusBarView;
 
     @Override
     protected void initView() {
-        statusBarView = new PlayStatusBarView(this,getSupportFragmentManager());
+        statusBarView = new PlayStatusBarView(this, getSupportFragmentManager());
+        AudioPlayer.get().addOnPlayEventListener(statusBarView);
         mViewBinding.llPlaystatus.addView(statusBarView);
         initAdapter();
         initEditText();
@@ -46,7 +47,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
 
     @Override
     protected ActivitySearchBinding getViewBinding() {
-       return mViewBinding = ActivitySearchBinding.inflate(getLayoutInflater());
+        return mViewBinding = ActivitySearchBinding.inflate(getLayoutInflater());
     }
 
     @Override
@@ -61,9 +62,9 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
         viewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
-                if (!TextUtils.isEmpty(music.getSongUrl())){
+                if (!TextUtils.isEmpty(music.getSongUrl())) {
                     AudioPlayer.get().addAndPlay(music);
-                }else{
+                } else {
                     AudioPlayer.get().playNext();
                 }
             }
@@ -81,7 +82,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
                             SearchActivity.this.getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 //                    viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
-                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0,10);
+                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0, 10);
                     return true;
                 }
                 return false;
@@ -102,5 +103,13 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
                 viewModel.getSongUrl((Music) adapter.getData(position));
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (statusBarView != null) {
+            AudioPlayer.get().removeOnPlayEventListener(statusBarView);
+        }
     }
 }
