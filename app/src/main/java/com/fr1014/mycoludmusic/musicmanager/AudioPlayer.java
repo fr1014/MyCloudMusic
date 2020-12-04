@@ -68,6 +68,7 @@ public class AudioPlayer {
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
+                DBManager.get().insert(getPlayMusic());
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
@@ -93,7 +94,7 @@ public class AudioPlayer {
         int position = musicList.indexOf(music);
         if (position < 0) {
             musicList.add(music);
-            DBManager.get().insert(music);
+//            DBManager.get().insert(music);
             position = musicList.size() - 1;
         }
         play(position);
