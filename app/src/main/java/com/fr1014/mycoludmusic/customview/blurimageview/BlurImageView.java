@@ -40,6 +40,11 @@ public class BlurImageView extends AppCompatImageView {
 
     }
 
+    public void setBitmap(Bitmap bitmap){
+        setScaleType(ScaleType.CENTER_CROP);
+        setImageDrawable(getForegroundDrawable(bitmap));
+    }
+
     public void setBlurImageUrl(String url){
         setScaleType(ScaleType.CENTER_CROP);
         if (TextUtils.isEmpty(url)){

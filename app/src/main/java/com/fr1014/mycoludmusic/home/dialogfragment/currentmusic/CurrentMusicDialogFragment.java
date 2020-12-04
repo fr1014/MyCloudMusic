@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.home.dialogfragment.currentmusic;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -25,7 +26,9 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
@@ -186,15 +189,26 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     }
 
     private void initView(Music music) {
-        binding.biBackground.setBlurImageUrl(music.getImgUrl());
         binding.tvTitle.setText(music.getTitle());
         binding.tvArtist.setText(music.getArtist());
         Glide.with(CurrentMusicDialogFragment.this)
+                .asBitmap()
                 .load(music.getImgUrl())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.bg_play)
-                .error(R.drawable.bg_play)
-                .into(binding.civSongImg);
+                .error(R.drawable.film)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        binding.civSongImg.setImageBitmap(resource);
+                        binding.biBackground.setBitmap(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
     }
 
     private void endAnimator() {
@@ -209,7 +223,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
 
     @Override
     public void onChange(Music music) {
-        if (music != oldMusic){
+        if (music != oldMusic) {
             initView(music);
             oldMusic = music;
         }

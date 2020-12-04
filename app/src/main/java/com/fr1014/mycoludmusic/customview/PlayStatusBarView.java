@@ -98,11 +98,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     private void setImageUrl(String imgUrl) {
-        Glide.with(getContext())
-                .load(imgUrl)
-                .placeholder(R.drawable.bg_play)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(mViewBinding.ivCoverImg);
+        mViewBinding.ivCoverImg.setImageUrl(imgUrl);
     }
 
     public void setMusicInfoListener(MusicInfoListener musicInfoListener) {

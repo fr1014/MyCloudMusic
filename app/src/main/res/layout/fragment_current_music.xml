@@ -51,7 +51,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_title"
             app:layout_constraintVertical_bias="0.0" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <com.fr1014.mycoludmusic.customview.RemoteCircleImageView
             android:id="@+id/civ_songImg"
             android:layout_width="250dp"
             android:layout_height="250dp"
