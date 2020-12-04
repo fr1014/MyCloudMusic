@@ -20,6 +20,7 @@ import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.R;
+import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
@@ -73,18 +74,10 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         super.onViewCreated(view, savedInstanceState);
 
         oldMusic = AudioPlayer.get().getPlayMusic();
-        if (oldMusic != null){
-            binding.biBackground.setBlurImageUrl(oldMusic.getImgUrl());
-        }
-        if (!TextUtils.isEmpty(oldMusic.getImgUrl())){
-            Glide.with(CurrentMusicDialogFragment.this)
-                    .load(oldMusic.getImgUrl())
-                    .placeholder(R.drawable.bg_play)
-                    .error(R.drawable.bg_play)
-                    .into(binding.civSongImg);
-        }
-        binding.tvTitle.setText(oldMusic.getTitle());
-        binding.tvArtist.setText(oldMusic.getArtist());
+        if (oldMusic == null) return;
+
+        initView(oldMusic);
+
         rotationAnimator = ObjectAnimator.ofFloat(binding.civSongImg, "rotation", 0f, 360f);//旋转的角度可有多个
         rotationAnimator.setDuration(20000);
         rotationAnimator.setRepeatCount(ValueAnimator.INFINITE);
@@ -92,8 +85,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         //让旋转动画一直转，不停顿的重点
         rotationAnimator.setInterpolator(new LinearInterpolator());
         if (AudioPlayer.get().isPlaying()) {
-            rotationAnimator.start();//开始（重新开始）
-            FIRST_START_ANIMATION = 1;
+            startAnimator();
             binding.ivState.setImageResource(R.drawable.ic_stop_white);
         } else {
             binding.ivState.setImageResource(R.drawable.ic_play_white);
@@ -167,8 +159,8 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 break;
             case R.id.ic_back:
                 if (getDialog() != null) {
+                    endAnimator();
                     getDialog().dismiss();
-                    rotationAnimator.end();//结束（回到原始位置）
                 }
                 break;
             case R.id.iv_pre:
@@ -186,38 +178,45 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         }
     }
 
+    private void initView(Music music) {
+        binding.biBackground.setBlurImageUrl(music.getImgUrl());
+        binding.tvTitle.setText(music.getTitle());
+        binding.tvArtist.setText(music.getArtist());
+        Glide.with(MyApplication.getInstance())
+                .load(music.getImgUrl())
+                .placeholder(R.drawable.bg_play)
+                .error(R.drawable.bg_play)
+                .into(binding.civSongImg);
+    }
+
+    private void endAnimator(){
+        rotationAnimator.end();//结束（回到原始位置）
+        FIRST_START_ANIMATION = 0;
+    }
+
+    private void startAnimator(){
+        rotationAnimator.start();
+        FIRST_START_ANIMATION = 1;
+    }
+
     @Override
     public void onChange(Music music) {
-        binding.ivState.setImageResource(R.drawable.ic_stop_white);
-        if (music == oldMusic) { //选择播放的音乐与当前音乐相同
-            if (FIRST_START_ANIMATION == 1) { //动画已经start过
-                rotationAnimator.resume();//继续（在暂停的位置继续动画）
-            } else {
-                rotationAnimator.start();
-                FIRST_START_ANIMATION = 1;
-            }
-        } else {
-            if (music.getSongUrl() != null) {
-                oldMusic = music;
-                binding.tvTitle.setText(oldMusic.getTitle());
-                binding.tvArtist.setText(oldMusic.getArtist());
-                if (getActivity() != null) {
-                    binding.biBackground.setBlurImageUrl(oldMusic.getImgUrl());
-                    Glide.with(CurrentMusicDialogFragment.this)
-                            .load(oldMusic.getImgUrl())
-                            .placeholder(R.drawable.bg_play)
-                            .error(R.drawable.bg_play)
-                            .into(binding.civSongImg);
-                }
-                rotationAnimator.start();
-                FIRST_START_ANIMATION = 1;
-            }
-        }
+        initView(music);
+        oldMusic = music;
+        endAnimator();
     }
 
     @Override
     public void onPlayerStart() {
-
+        binding.ivState.setImageResource(R.drawable.ic_stop_white);
+        Music music = AudioPlayer.get().getPlayMusic();
+        if (music == oldMusic) { //选择播放的音乐与当前音乐相同
+            if (FIRST_START_ANIMATION == 1) { //动画已经start过
+                rotationAnimator.resume();//继续（在暂停的位置继续动画）
+            } else {
+                startAnimator();
+            }
+        }
     }
 
     @Override
