@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     private int FIRST_START_ANIMATION = 0; //旋转的动画是否已经start,0-noStart,1-start
     private FragmentCurrentMusicBinding binding;
     private Music oldMusic;
+    private Bitmap oldResource;
     ObjectAnimator rotationAnimator;
 
     public CurrentMusicDialogFragment() {
@@ -189,6 +191,10 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     }
 
     private void initView(Music music) {
+        if (oldResource == null) {
+            binding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
+        }
+        binding.civSongImg.setImageDrawable(getContext().getDrawable(R.drawable.bg_play));
         binding.tvTitle.setText(music.getTitle());
         binding.tvArtist.setText(music.getArtist());
         Glide.with(CurrentMusicDialogFragment.this)
@@ -202,6 +208,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         binding.civSongImg.setImageBitmap(resource);
                         binding.biBackground.setBitmap(resource);
+                        oldResource = resource;
                     }
 
                     @Override
