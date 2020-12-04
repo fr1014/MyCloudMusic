@@ -1496,7 +1496,7 @@ public class PlayListDetailEntity {
                 private int br;
                 private int fid;
                 private int size;
-                private int vd;
+                private float vd;
 
                 public int getBr() {
                     return br;
@@ -1522,11 +1522,11 @@ public class PlayListDetailEntity {
                     this.size = size;
                 }
 
-                public int getVd() {
+                public float getVd() {
                     return vd;
                 }
 
-                public void setVd(int vd) {
+                public void setVd(float vd) {
                     this.vd = vd;
                 }
 
@@ -1552,7 +1552,7 @@ public class PlayListDetailEntity {
                 private int br;
                 private int fid;
                 private int size;
-                private int vd;
+                private float vd;
 
                 public int getBr() {
                     return br;
@@ -1578,11 +1578,11 @@ public class PlayListDetailEntity {
                     this.size = size;
                 }
 
-                public int getVd() {
+                public float getVd() {
                     return vd;
                 }
 
-                public void setVd(int vd) {
+                public void setVd(float vd) {
                     this.vd = vd;
                 }
 
@@ -1608,7 +1608,7 @@ public class PlayListDetailEntity {
                 private int br;
                 private int fid;
                 private int size;
-                private int vd;
+                private float vd;
 
                 public int getBr() {
                     return br;
@@ -1634,11 +1634,11 @@ public class PlayListDetailEntity {
                     this.size = size;
                 }
 
-                public int getVd() {
+                public float getVd() {
                     return vd;
                 }
 
-                public void setVd(int vd) {
+                public void setVd(float vd) {
                     this.vd = vd;
                 }
 
