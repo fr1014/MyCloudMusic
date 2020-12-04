@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
@@ -21,6 +22,7 @@ import com.fr1014.mycoludmusic.listener.MusicInfoListener;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 /**
  * 底部播放状态栏
@@ -29,6 +31,8 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
     private MusicInfoListener musicInfoListener;
+    private PlayListDialogFragment listDialogFragment;
+    private CurrentMusicDialogFragment musicDialogFragment;
 
     public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
         super(context);
@@ -49,6 +53,8 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private void initView() {
         mViewBinding = CustomviewPlaystatusbarBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
+        listDialogFragment = new PlayListDialogFragment();
+        musicDialogFragment = new CurrentMusicDialogFragment();
         initClickListener();
     }
 
@@ -106,12 +112,20 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 AudioPlayer.get().playPause();
                 break;
             case R.id.iv_music_menu:
-                //弹出当前播放列表
-                new PlayListDialogFragment().show(fragmentManager, "playlist_dialog");
+                if (AudioPlayer.get().getPlayMusic() != null) {
+                    //弹出当前播放列表
+                    listDialogFragment.show(fragmentManager, "playlist_dialog");
+                } else {
+                    CommonUtil.toastShort("当前播放列表为空！！！");
+                }
                 break;
             case R.id.cl_bottom_bar:
-                //当前播放的音乐的详情页
-                new CurrentMusicDialogFragment().show(fragmentManager, "current_music_dialog");
+                if (AudioPlayer.get().getPlayMusic() != null) {
+                    //当前播放的音乐的详情页
+                    musicDialogFragment.show(fragmentManager, "current_music_dialog");
+                } else {
+                    CommonUtil.toastShort("当前尚未有歌曲在播放！！！");
+                }
                 break;
         }
     }
@@ -120,7 +134,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     public void onChange(Music music) {
         setMusic(music);
         setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-         if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
+        if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
             musicInfoListener.songUrlIsEmpty(music);
         }
     }
