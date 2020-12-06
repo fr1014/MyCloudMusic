@@ -82,7 +82,8 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
                             SearchActivity.this.getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 //                    viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
-                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0, 10);
+//                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0, 10);
+                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(),  20);
                     return true;
                 }
                 return false;

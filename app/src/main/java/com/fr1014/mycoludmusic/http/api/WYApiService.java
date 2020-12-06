@@ -1,8 +1,9 @@
 package com.fr1014.mycoludmusic.http.api;
 
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -58,7 +59,7 @@ public interface WYApiService {
      * @return
      */
     @GET("/search")
-    Observable<SearchEntity> getSearch(@Query("keywords") String keywords, @Query("offset") int offset);
+    Observable<WYSearchEntity> getSearch(@Query("keywords") String keywords, @Query("offset") int offset);
 
 
     /**
@@ -69,5 +70,5 @@ public interface WYApiService {
      * @return SearchEntity
      */
     @GET("http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&rformat=json&encoding=utf8")
-    Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearchEntity(@Query("all") String name, @Query("qn") int page, @Query("rn") int count);
+    Observable<KWSearchEntity> getSearchEntity(@Query("all") String name, @Query("qn") int page, @Query("rn") int count);
 }

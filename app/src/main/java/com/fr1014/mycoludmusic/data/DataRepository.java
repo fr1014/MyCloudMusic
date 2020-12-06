@@ -2,11 +2,12 @@ package com.fr1014.mycoludmusic.data;
 
 import androidx.lifecycle.LiveData;
 
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -17,7 +18,6 @@ import com.fr1014.mymvvm.base.BaseModel;
 import java.util.List;
 
 import io.reactivex.Observable;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
@@ -83,18 +83,23 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<SearchEntity> getSearch(String keywords, int offset) {
+    public Observable<WYSearchEntity> getSearch(String keywords, int offset) {
         return httpDataSource.getSearch(keywords, offset);
     }
 
     @Override
-    public Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearch(String name, int page, int count) {
+    public Observable<KWSearchEntity> getSearch(String name, int page, int count) {
         return httpDataSource.getSearch(name, page, count);
     }
 
     @Override
     public Observable<ResponseBody> getSongUrl(String rid) {
         return httpDataSource.getSongUrl(rid);
+    }
+
+    @Override
+    public Observable<ResponseBody> getSearchResult(String name, int count) {
+        return httpDataSource.getSearchResult(name, count);
     }
 
     @Override

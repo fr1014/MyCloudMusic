@@ -9,19 +9,21 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.LogUtil;
 import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
+import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
@@ -211,14 +212,14 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     //获取搜索结果（网易）
     public void getSearchEntityWYY(String keywords, int offset) {
         model.getSearch(keywords, offset)
-                .map(new Function<SearchEntity, List<Music>>() {
+                .map(new Function<WYSearchEntity, List<Music>>() {
                     @Override
-                    public List<Music> apply(SearchEntity searchEntity) throws Exception {
+                    public List<Music> apply(WYSearchEntity searchEntity) throws Exception {
                         List<Music> musics = new ArrayList<>();
-                        List<SearchEntity.ResultBean.SongsBean> songs = searchEntity.getResult().getSongs();
-                        for (SearchEntity.ResultBean.SongsBean song : songs) {
+                        List<WYSearchEntity.ResultBean.SongsBean> songs = searchEntity.getResult().getSongs();
+                        for (WYSearchEntity.ResultBean.SongsBean song : songs) {
                             Music music = new Music();
-                            List<SearchEntity.ResultBean.SongsBean.ArtistsBean> artists = song.getArtists();
+                            List<WYSearchEntity.ResultBean.SongsBean.ArtistsBean> artists = song.getArtists();
                             StringBuilder sb = new StringBuilder();
                             for (int i = 0; i < artists.size(); i++) {
                                 if (i < artists.size() - 1) {
@@ -330,22 +331,77 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 });
     }
 
+//    //获取搜索结果（酷我）
+//    public void getSearchEntityKW(String name, int page, int count) {
+//        model.getSearch(name, page, count)
+//                .map(searchEntity -> {
+//                    List<Music> musics = new ArrayList<>();
+//                    List<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
+//                    for (com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
+//                        Music music = new Music();
+//                        if (abslistBean.getAARTIST() != null) {
+//                            music.setArtist(abslistBean.getAARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "/"));
+//                        } else {
+//                            music.setArtist(abslistBean.getARTIST());
+//                        }
+//                        music.setTitle(abslistBean.getSONGNAME().replaceAll("&nbsp;", " "));
+//                        music.setImgUrl(abslistBean.getHts_MVPIC());
+//                        music.setMUSICRID(abslistBean.getMUSICRID());
+//                        musics.add(music);
+//                    }
+//                    return musics;
+//                }).compose(RxSchedulers.apply())
+//                .subscribe(new Observer<List<Music>>() {
+//                    @Override
+//                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(@io.reactivex.annotations.NonNull List<Music> music) {
+//                        getSearch().postValue(music);
+//                    }
+//
+//                    @Override
+//                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+//                        Log.d(TAG, "----onError: " + e.getMessage());
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
+
     //获取搜索结果（酷我）
-    public void getSearchEntityKW(String name, int page, int count) {
-        model.getSearch(name, page, count)
-                .map(searchEntity -> {
-                    List<Music> musics = new ArrayList<>();
-                    List<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
-                    for (com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
-                        Music music = new Music();
-                        String artist = abslistBean.getAARTIST().replaceAll("&nbsp;", " ");
-                        String title = abslistBean.getSONGNAME().replaceAll("&nbsp;", " ");
-                        music.setArtist(artist.replaceAll("###", "/"));
-                        music.setTitle(title);
-                        music.setMUSICRID(abslistBean.getMUSICRID());
-                        musics.add(music);
+    public void getSearchEntityKW(String name, int count) {
+        model.getSearchResult(name, count)
+                .map(new Function<ResponseBody, List<Music>>() {
+                    @Override
+                    public List<Music> apply(@io.reactivex.annotations.NonNull ResponseBody responseBody) throws Exception {
+                        String result = responseBody.string();
+                        String replace1 = result.replace("try{var jsondata=", "");
+                        String replace2 = replace1.replace("; song(jsondata);}catch(e){jsonError(e)}", "");
+                        String json = replace2.replaceAll("'", "\"");
+                        Gson gson = new Gson();
+                        KWSearchEntity searchEntity = gson.fromJson(json, KWSearchEntity.class);
+                        LogUtil.e("search", searchEntity.toString());
+                        List<Music> musics = new ArrayList<>();
+                        List<KWSearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
+                        for (KWSearchEntity.AbslistBean abslistBean : abslistBeanList) {
+                            Music music = new Music();
+                            if (!TextUtils.isEmpty(abslistBean.getARTIST())) {
+                                music.setArtist(abslistBean.getARTIST());
+                            } else {
+                                music.setArtist(abslistBean.getAARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "/"));
+                            }
+                            music.setTitle(abslistBean.getSONGNAME().replaceAll("&nbsp;", " "));
+                            music.setImgUrl(abslistBean.getHts_MVPIC());
+                            music.setMUSICRID(abslistBean.getMUSICRID());
+                            musics.add(music);
+                        }
+                        return musics;
                     }
-                    return musics;
                 }).compose(RxSchedulers.apply())
                 .subscribe(new Observer<List<Music>>() {
                     @Override
@@ -373,6 +429,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     /**
      * 酷我
+     *
      * @param music
      */
     public void getSongUrl(Music music) {

@@ -1,8 +1,9 @@
 package com.fr1014.mycoludmusic.data.source.http;
 
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -34,11 +35,12 @@ public interface HttpDataSource {
 
     Observable<SongUrlEntity> getSongUrl(long id);
 
-    Observable<SearchEntity> getSearch(String keywords, int offset);
+    Observable<WYSearchEntity> getSearch(String keywords, int offset);
 
 /*
 ===============================酷我========================================
  */
-    Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearch(String name, int page, int count);
+    Observable<KWSearchEntity> getSearch(String name, int page, int count);
     Observable<ResponseBody> getSongUrl(String rid);
+    Observable<ResponseBody> getSearchResult(String name,int count);
 }
