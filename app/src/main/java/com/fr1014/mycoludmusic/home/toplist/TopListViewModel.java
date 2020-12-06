@@ -25,6 +25,7 @@ import com.fr1014.mymvvm.base.BusLiveData;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -154,13 +155,22 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 .map(new Function<SongUrlEntity, List<Music>>() {
                     @Override
                     public List<Music> apply(SongUrlEntity songUrlEntity) throws Exception {
-                        for (int index = 0; index < musicList.size(); index++) {
-                            String url = songUrlEntity.getData().get(index).getUrl();
-                            Music m = musicList.get(index);
-                            if (TextUtils.isEmpty(url)) {
-                                musicList.remove(m);
-                            } else {
-                                m.setSongUrl(url);
+                        List<SongUrlEntity.DataBean> data = songUrlEntity.getData();
+                        for (int index = 0; index < data.size(); index++) {
+                            for (int mIndex = 0; mIndex < musicList.size(); mIndex++) {
+                                Music music = musicList.get(mIndex);
+                                if (TextUtils.isEmpty(music.getSongUrl())) {
+                                    SongUrlEntity.DataBean dataBean = data.get(index);
+                                    if (dataBean.getId() == music.getId()) {
+                                        String url = data.get(index).getUrl();
+                                        if (TextUtils.isEmpty(url)) {
+                                            musicList.remove(music);
+                                        } else {
+                                            music.setSongUrl(url);
+                                        }
+                                        break;
+                                    }
+                                }
                             }
                         }
                         return musicList;
@@ -537,7 +547,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Music music) {
-                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getId(), music.getMUSICRID());
+                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getSongUrl(), music.getId(), music.getMUSICRID());
                         model.insert(musicEntity);
                     }
 

@@ -27,6 +27,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -81,7 +82,7 @@ public class PlayListDetailFragment extends Fragment implements OnPlayerEventLis
         adapter.setHeaderView(header);
 
         header.setOnClickListener(v -> {
-            List<Music> datas = adapter.getDatas();
+            List<Music> datas = new ArrayList<>(adapter.getDatas());
             if (datas.size() >= 1) {
 //                AudioPlayer.get().addAndPlay(datas);
 //                viewModel.checkSong(datas.get(0));

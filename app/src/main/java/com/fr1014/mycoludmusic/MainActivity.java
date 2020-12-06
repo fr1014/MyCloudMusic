@@ -29,7 +29,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
-    private Observer<Music> musicObserver;
+//    private Observer<Music> musicObserver;
 
     @Override
     protected void initView() {
@@ -73,23 +73,27 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
             }
         });
 
-//        viewModel.getSongUrl().observe(this, new Observer<Music>() {
-//            @Override
-//            public void onChanged(Music music) {
-//                AudioPlayer.get().addAndPlay(music);
-//            }
-//        });
-        musicObserver = new Observer<Music>() {
+        viewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
-                if (!TextUtils.isEmpty(music.getSongUrl())){
+                if (!TextUtils.isEmpty(music.getSongUrl())) {
                     AudioPlayer.get().addAndPlay(music);
-                }else{
+                } else {
                     AudioPlayer.get().playNext();
                 }
             }
-        };
-        viewModel.getSongUrl().observeForever(musicObserver);
+        });
+//        musicObserver = new Observer<Music>() {
+//            @Override
+//            public void onChanged(Music music) {
+//                if (!TextUtils.isEmpty(music.getSongUrl())){
+//                    AudioPlayer.get().addAndPlay(music);
+//                }else{
+//                    AudioPlayer.get().playNext();
+//                }
+//            }
+//        };
+//        viewModel.getSongUrl().observeForever(musicObserver);
     }
 
 
@@ -126,11 +130,11 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
 
     @Override
     public void songUrlIsEmpty(Music music) {
-        if (!TextUtils.isEmpty(music.getMUSICRID())) {  //酷我的歌
-            viewModel.getSongUrl(music);
-        } else if (music.getId() != 0) {           //网易的歌
-            viewModel.checkSong(music);
-        }
+//        if (!TextUtils.isEmpty(music.getMUSICRID())) {  //酷我的歌
+//            viewModel.getSongUrl(music);
+//        } else if (music.getId() != 0) {           //网易的歌
+//            viewModel.checkSong(music);
+//        }
     }
 
     @Override
@@ -148,7 +152,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        viewModel.getSongUrl().removeObserver(musicObserver);
+//        viewModel.getSongUrl().removeObserver(musicObserver);
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
         }

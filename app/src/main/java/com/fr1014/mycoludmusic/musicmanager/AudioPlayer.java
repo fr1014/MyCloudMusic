@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.LogUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -101,11 +102,14 @@ public class AudioPlayer {
     }
 
     public void addAndPlay(List<Music> musics) {
-        if (CommonUtil.isEmptyList(musicList)) return;
-        if (musicList != null){
+        if (CommonUtil.isEmptyList(musics)) return;
+        if (CommonUtil.isEmptyList(musicList)) {
             musicList.clear();
         }
         musicList = musics;
+        for (Music music : musicList) {
+            LogUtil.e("----", music.toString());
+        }
         play(0);
     }
 
@@ -124,14 +128,14 @@ public class AudioPlayer {
         Music music = getPlayMusic();
 
         try {
-            for (OnPlayerEventListener listener : listeners) {
-                listener.onChange(music);
-            }
             if (TextUtils.isEmpty(music.getSongUrl())) return;
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
             state = STATE_PREPARING;
+            for (OnPlayerEventListener listener : listeners) {
+                listener.onChange(music);
+            }
             Notifier.get().showPlay(music);
             MediaSessionManager.get().updateMetaData(music);
             MediaSessionManager.get().updatePlaybackState();

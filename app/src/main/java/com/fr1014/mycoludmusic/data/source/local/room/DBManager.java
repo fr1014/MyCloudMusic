@@ -45,7 +45,7 @@ public class DBManager {
                     public void onNext(@io.reactivex.annotations.NonNull Music music) {
                         MusicEntity entity = model.getItem(music.getTitle(), music.getArtist());
                         if (entity == null) {
-                            MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getId(), music.getMUSICRID());
+                            MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(),music.getSongUrl(), music.getId(), music.getMUSICRID());
                             model.insert(musicEntity);
                         }
                     }
@@ -74,7 +74,7 @@ public class DBManager {
 
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Music music) {
-                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getId(), music.getMUSICRID());
+                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getSongUrl(),music.getId(), music.getMUSICRID());
                         model.delete(musicEntity);
                     }
 

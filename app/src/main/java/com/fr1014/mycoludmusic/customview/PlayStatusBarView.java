@@ -139,9 +139,9 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     public void onChange(Music music) {
         setMusic(music);
         setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-        if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
-            musicInfoListener.songUrlIsEmpty(music);
-        }
+//        if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
+//            musicInfoListener.songUrlIsEmpty(music);
+//        }
     }
 
     @Override
