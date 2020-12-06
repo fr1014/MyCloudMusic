@@ -67,8 +67,13 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<SongUrlEntity> getSongUrl(long id) {
-        return wyApiService.getSongUrl(id);
+    public Observable<SongUrlEntity> getWYSongUrl(String ids) {
+        return wyApiService.getWYSongUrl(ids);
+    }
+
+    @Override
+    public Observable<SongUrlEntity> getWYSongUrl(long id) {
+        return wyApiService.getWYSongUrl(id);
     }
 
     @Override
@@ -82,8 +87,8 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<ResponseBody> getSongUrl(String rid) {
-        return kwApiService.getSongUrl(rid);
+    public Observable<ResponseBody> getKWSongUrl(String rid) {
+        return kwApiService.getKWSongUrl(rid);
     }
 
     @Override

@@ -33,7 +33,8 @@ public interface HttpDataSource {
 
     Observable<CheckEntity> checkMusic(long id);
 
-    Observable<SongUrlEntity> getSongUrl(long id);
+    Observable<SongUrlEntity> getWYSongUrl(String id);
+    Observable<SongUrlEntity> getWYSongUrl(long id);
 
     Observable<WYSearchEntity> getSearch(String keywords, int offset);
 
@@ -41,6 +42,6 @@ public interface HttpDataSource {
 ===============================酷我========================================
  */
     Observable<KWSearchEntity> getSearch(String name, int page, int count);
-    Observable<ResponseBody> getSongUrl(String rid);
+    Observable<ResponseBody> getKWSongUrl(String rid);
     Observable<ResponseBody> getSearchResult(String name,int count);
 }

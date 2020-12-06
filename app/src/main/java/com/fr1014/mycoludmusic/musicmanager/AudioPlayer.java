@@ -102,7 +102,9 @@ public class AudioPlayer {
 
     public void addAndPlay(List<Music> musics) {
         if (CommonUtil.isEmptyList(musicList)) return;
-        musics.addAll(musicList);
+        if (musicList != null){
+            musicList.clear();
+        }
         musicList = musics;
         play(0);
     }

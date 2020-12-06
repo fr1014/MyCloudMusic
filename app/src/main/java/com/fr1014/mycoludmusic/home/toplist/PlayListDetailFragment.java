@@ -79,13 +79,21 @@ public class PlayListDetailFragment extends Fragment implements OnPlayerEventLis
         adapter = new PlayListDetailAdapter();
         View header = getLayoutInflater().inflate(R.layout.item_playlist_detail_header, binding.getRoot(), false);
         adapter.setHeaderView(header);
+
         header.setOnClickListener(v -> {
             List<Music> datas = adapter.getDatas();
             if (datas.size() >= 1) {
-                AudioPlayer.get().addAndPlay(datas);
-                viewModel.checkSong(datas.get(0));
+//                AudioPlayer.get().addAndPlay(datas);
+//                viewModel.checkSong(datas.get(0));
+                viewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
+                    @Override
+                    public void onChanged(List<Music> musicList) {
+                        AudioPlayer.get().addAndPlay(musicList);
+                    }
+                });
             }
         });
+
         adapter.setOnItemClickListener((adapter, view, position) -> {
             Music music = (Music) adapter.getData(position);
             if (TextUtils.isEmpty(music.getSongUrl())) {

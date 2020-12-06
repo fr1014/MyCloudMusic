@@ -43,6 +43,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
     private BusLiveData<List<Music>> getPlayListDetail;
     private BusLiveData<Music> getSongUrl;
+    private BusLiveData<List<Music>> getSongListUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
     private LiveData<List<MusicEntity>> getMusicRoom;
@@ -74,6 +75,14 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getSongUrl;
     }
 
+    public BusLiveData<List<Music>> getSongListUrl(List<Music> musicList) {
+        if (getSongListUrl == null) {
+            getSongListUrl = new BusLiveData<>();
+        }
+        getSongUrlEntity(musicList);
+        return getSongListUrl;
+    }
+
     public BusLiveData<List<Music>> getPlayListDetail(long id) {
         if (getPlayListDetail == null) {
             getPlayListDetail = new BusLiveData<>();
@@ -92,8 +101,8 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     private static final String TAG = "TopListViewModel";
 
-    private void getSongUrlEntity(Music music) {
-        model.getSongUrl(music.getId())
+    public void getSongUrlEntity(Music music) {
+        model.getWYSongUrl(music.getId())
                 .compose(RxSchedulers.apply())
                 .map(new Function<SongUrlEntity, Music>() {
                     @Override
@@ -119,6 +128,57 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    /**
+     * @param musicList 需要获取url的歌曲集合
+     */
+    private void getSongUrlEntity(List<Music> musicList) {
+        StringBuilder ids = new StringBuilder();
+        for (int index = 0; index < musicList.size(); index++) {
+            ids.append(musicList.get(index).getId());
+            if (index != musicList.size() - 1) {
+                ids.append(",");
+            }
+        }
+        model.getWYSongUrl(ids.toString())
+                .compose(RxSchedulers.apply())
+                .map(new Function<SongUrlEntity, List<Music>>() {
+                    @Override
+                    public List<Music> apply(SongUrlEntity songUrlEntity) throws Exception {
+                        for (int index = 0; index < musicList.size(); index++) {
+                            String url = songUrlEntity.getData().get(index).getUrl();
+                            Music m = musicList.get(index);
+                            if (TextUtils.isEmpty(url)) {
+                                musicList.remove(m);
+                            } else {
+                                m.setSongUrl(url);
+                            }
+                        }
+                        return musicList;
+                    }
+                })
+                .subscribe(new Observer<List<Music>>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
+                        getSongListUrl.setValue(musicList);
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
 
                     }
 
@@ -435,7 +495,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     public void getSongUrl(Music music) {
         if (TextUtils.isEmpty(music.getMUSICRID())) return;
 
-        model.getSongUrl(music.getMUSICRID())
+        model.getKWSongUrl(music.getMUSICRID())
                 .compose(RxSchedulers.applyIO())
                 .subscribe(new Observer<ResponseBody>() {
                     @Override

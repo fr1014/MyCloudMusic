@@ -72,9 +72,12 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
         return httpDataSource.getSongDetail(ids);
     }
 
-    @Override
-    public Observable<SongUrlEntity> getSongUrl(long id) {
-        return httpDataSource.getSongUrl(id);
+    public Observable<SongUrlEntity> getWYSongUrl(String ids) {
+        return httpDataSource.getWYSongUrl(ids);
+    }
+
+    public Observable<SongUrlEntity> getWYSongUrl(long id) {
+        return httpDataSource.getWYSongUrl(id);
     }
 
     @Override
@@ -92,9 +95,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
         return httpDataSource.getSearch(name, page, count);
     }
 
-    @Override
-    public Observable<ResponseBody> getSongUrl(String rid) {
-        return httpDataSource.getSongUrl(rid);
+    public Observable<ResponseBody> getKWSongUrl(String rid) {
+        return httpDataSource.getKWSongUrl(rid);
     }
 
     @Override
