@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data;
 import androidx.lifecycle.LiveData;
 
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
@@ -102,6 +103,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<ResponseBody> getSearchResult(String name, int count) {
         return httpDataSource.getSearchResult(name, count);
+    }
+
+    @Override
+    public Observable<KWSongDetailEntity> getKWSongDetail(long mid) {
+        return httpDataSource.getKWSongDetail(mid);
     }
 
     @Override

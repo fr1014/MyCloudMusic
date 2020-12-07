@@ -59,7 +59,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
             }
         });
 
-        viewModel.getSongUrl().observe(this, new Observer<Music>() {
+        viewModel.getKWSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
                 if (!TextUtils.isEmpty(music.getSongUrl())) {
@@ -101,7 +101,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
             public void onItemClick(BaseAdapter adapter, View view, int position) {
 //                viewModel.getSongUrlEntity((Music) adapter.getData(position));
 //                viewModel.checkSong((Music) adapter.getData(position));
-                viewModel.getSongUrl((Music) adapter.getData(position));
+                viewModel.getKWSongUrl((Music) adapter.getData(position));
             }
         });
     }

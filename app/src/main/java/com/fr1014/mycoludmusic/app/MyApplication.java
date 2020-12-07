@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import static com.fr1014.mycoludmusic.http.WYYServiceProvider.DEFAULT_TIMEOUT;
@@ -53,7 +54,7 @@ public class MyApplication extends BaseApplication {
     private Retrofit.Builder createKWRetrofitBuilder() {
         return new Retrofit.Builder()
                 .client(createOkHttpClient())
-                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
@@ -61,6 +62,19 @@ public class MyApplication extends BaseApplication {
         try {
             return new OkHttpClient.Builder()
                     .sslSocketFactory(SSLUtils.getSSLSocketFactory())
+                    .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                    .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private OkHttpClient createKWOkHttpClient(){
+        try {
+            return new OkHttpClient.Builder()
                     .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                     .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                     .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())

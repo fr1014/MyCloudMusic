@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
@@ -25,7 +26,6 @@ import com.fr1014.mymvvm.base.BusLiveData;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -69,7 +69,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getSearch;
     }
 
-    public BusLiveData<Music> getSongUrl() {
+    public BusLiveData<Music> getKWSongUrl() {
         if (getSongUrl == null) {
             getSongUrl = new BusLiveData<>();
         }
@@ -348,7 +348,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     @Override
                     public void onNext(Music music) {
-                        getSongUrl().postValue(music);
+                        getKWSongUrl().postValue(music);
                     }
 
                     @Override
@@ -499,10 +499,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     /**
      * 酷我
-     *
      * @param music
      */
-    public void getSongUrl(Music music) {
+    public void getKWSongUrl(Music music) {
         if (TextUtils.isEmpty(music.getMUSICRID())) return;
 
         model.getKWSongUrl(music.getMUSICRID())
@@ -518,7 +517,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         try {
                             String url = body.string();
                             music.setSongUrl(url);
-                            getSongUrl().postValue(music);
+                            getKWSongDetail(music);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -534,6 +533,38 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
                     }
                 });
+    }
+
+    public void getKWSongDetail(Music music){
+        try {
+            long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_",""));
+            model.getKWSongDetail(mid)
+                    .compose(RxSchedulers.apply())
+                    .subscribe(new Observer<KWSongDetailEntity>() {
+                        @Override
+                        public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(@io.reactivex.annotations.NonNull KWSongDetailEntity kwSongDetailEntity) {
+                            music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
+                            getKWSongUrl().postValue(music);
+                        }
+
+                        @Override
+                        public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveMusicLocal(Music music) {
