@@ -31,7 +31,9 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
 import okhttp3.ResponseBody;
 
 /**
@@ -103,7 +105,8 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private static final String TAG = "TopListViewModel";
 
     public void getSongUrlEntity(Music music) {
-        model.getWYSongUrl(music.getId())
+        //可以调用addSubscribe()添加Disposable，请求与View周期同步
+        addSubscribe(model.getWYSongUrl(music.getId())
                 .compose(RxSchedulers.apply())
                 .map(new Function<SongUrlEntity, Music>() {
                     @Override
@@ -112,31 +115,16 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         return music;
                     }
                 })
-                .subscribe(new Observer<Music>() {
+                .subscribe(new Consumer<Music>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Music music) {
+                    public void accept(Music music) throws Exception {
                         if (TextUtils.isEmpty(music.getSongUrl())) {
                             CommonUtil.toastShort("该歌曲暂不支持播放");
                         } else {
                             getSongDetailEntity(music);
                         }
                     }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 
     /**
@@ -150,7 +138,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 ids.append(",");
             }
         }
-        model.getWYSongUrl(ids.toString())
+        addSubscribe(model.getWYSongUrl(ids.toString())
                 .compose(RxSchedulers.apply())
                 .map(new Function<SongUrlEntity, List<Music>>() {
                     @Override
@@ -176,32 +164,17 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         return musicList;
                     }
                 })
-                .subscribe(new Observer<List<Music>>() {
+                .subscribe(new Consumer<List<Music>>() {
                     @Override
-                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
+                    public void accept(List<Music> musicList) throws Exception {
                         getSongListUrl.setValue(musicList);
                     }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 
     //获取排行榜歌单详情
     private void getPlayListDetailEntity(final long id) {
-        model.getTopList(id)
+        addSubscribe(model.getTopList(id)
                 .map(new Function<PlayListDetailEntity, List<Music>>() {
                     @Override
                     public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
@@ -229,27 +202,12 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     }
                 })
                 .compose(RxSchedulers.apply())
-                .subscribe(new Observer<List<Music>>() {
+                .subscribe(new Consumer<List<Music>>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
+                    public void accept(List<Music> musicList) throws Exception {
+                        getPlayListDetail.postValue(musicList);
                     }
-
-                    @Override
-                    public void onNext(List<Music> musics) {
-                        getPlayListDetail.postValue(musics);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d(TAG, "----onError: getPlayListDetailEntity: " + e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 
     //获取榜单
@@ -281,7 +239,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     //获取搜索结果（网易）
     public void getSearchEntityWYY(String keywords, int offset) {
-        model.getSearch(keywords, offset)
+        addSubscribe(model.getSearch(keywords, offset)
                 .map(new Function<WYSearchEntity, List<Music>>() {
                     @Override
                     public List<Music> apply(WYSearchEntity searchEntity) throws Exception {
@@ -307,32 +265,17 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     }
                 })
                 .compose(RxSchedulers.apply())
-                .subscribe(new Observer<List<Music>>() {
+                .subscribe(new Consumer<List<Music>>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
+                    public void accept(List<Music> musicList) throws Exception {
+                        getSearch.postValue(musicList);
                     }
-
-                    @Override
-                    public void onNext(List<Music> musics) {
-                        getSearch.postValue(musics);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d(TAG, "----onError: " + e.toString());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 
     //通过搜索得到的歌曲，需要通过获取歌曲详情来获取音乐专辑图片
     private void getSongDetailEntity(Music music) {
-        model.getSongDetail(music.getId())
+        addSubscribe(model.getSongDetail(music.getId())
                 .map(songDetailEntity -> {
                     if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
                         music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
@@ -340,41 +283,21 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     return music;
                 })
                 .compose(RxSchedulers.apply())
-                .subscribe(new Observer<Music>() {
+                .subscribe(new Consumer<Music>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Music music) {
+                    public void accept(Music music) throws Exception {
                         getKWSongUrl().postValue(music);
                     }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 
     //检索歌曲是否可以听
     public void checkSong(Music item) {
-        model.checkMusic(item.getId())
+        addSubscribe(model.checkMusic(item.getId())
                 .compose(RxSchedulers.apply())
-                .subscribe(new Observer<CheckEntity>() {
+                .subscribe(new Consumer<CheckEntity>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(CheckEntity checkEntity) {
+                    public void accept(CheckEntity checkEntity) throws Exception {
                         if (checkEntity.isSuccess()) {
                             getSongUrlEntity(item);
                         } else {
@@ -384,68 +307,21 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                             getCheckSongResult.postValue(false);
                         }
                     }
-
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void onError(Throwable e) {
+                    public void accept(Throwable throwable) throws Exception {
                         // TODO: 2020/9/18
                         // retrofit2.adapter.rxjava2.HttpException: HTTP 404 Not Found
                         CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
-                        Log.d(TAG, "------onError: " + e.toString());
+                        Log.d(TAG, "------onError: " + throwable.getMessage());
                         getCheckSongResult.postValue(false);
                     }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
-
-//    //获取搜索结果（酷我）
-//    public void getSearchEntityKW(String name, int page, int count) {
-//        model.getSearch(name, page, count)
-//                .map(searchEntity -> {
-//                    List<Music> musics = new ArrayList<>();
-//                    List<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
-//                    for (com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity.AbslistBean abslistBean : abslistBeanList) {
-//                        Music music = new Music();
-//                        if (abslistBean.getAARTIST() != null) {
-//                            music.setArtist(abslistBean.getAARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "/"));
-//                        } else {
-//                            music.setArtist(abslistBean.getARTIST());
-//                        }
-//                        music.setTitle(abslistBean.getSONGNAME().replaceAll("&nbsp;", " "));
-//                        music.setImgUrl(abslistBean.getHts_MVPIC());
-//                        music.setMUSICRID(abslistBean.getMUSICRID());
-//                        musics.add(music);
-//                    }
-//                    return musics;
-//                }).compose(RxSchedulers.apply())
-//                .subscribe(new Observer<List<Music>>() {
-//                    @Override
-//                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onNext(@io.reactivex.annotations.NonNull List<Music> music) {
-//                        getSearch().postValue(music);
-//                    }
-//
-//                    @Override
-//                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-//                        Log.d(TAG, "----onError: " + e.getMessage());
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//
-//                    }
-//                });
 
     //获取搜索结果（酷我）
     public void getSearchEntityKW(String name, int count) {
-        model.getSearchResult(name, count)
+        addSubscribe(model.getSearchResult(name, count)
                 .map(new Function<ResponseBody, List<Music>>() {
                     @Override
                     public List<Music> apply(@io.reactivex.annotations.NonNull ResponseBody responseBody) throws Exception {
@@ -473,27 +349,12 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         return musics;
                     }
                 }).compose(RxSchedulers.apply())
-                .subscribe(new Observer<List<Music>>() {
+                .subscribe(new Consumer<List<Music>>() {
                     @Override
-                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-
+                    public void accept(List<Music> musicList) throws Exception {
+                        getSearch().postValue(musicList);
                     }
-
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull List<Music> music) {
-                        getSearch().postValue(music);
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.d(TAG, "----onError: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
 
     }
 
@@ -504,64 +365,34 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     public void getKWSongUrl(Music music) {
         if (TextUtils.isEmpty(music.getMUSICRID())) return;
 
-        model.getKWSongUrl(music.getMUSICRID())
+        addSubscribe(model.getKWSongUrl(music.getMUSICRID())
                 .compose(RxSchedulers.applyIO())
-                .subscribe(new Observer<ResponseBody>() {
+                .subscribe(new Consumer<ResponseBody>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(ResponseBody body) {
+                    public void accept(ResponseBody responseBody) throws Exception {
                         try {
-                            String url = body.string();
+                            String url = responseBody.string();
                             music.setSongUrl(url);
                             getKWSongDetail(music);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-                        Log.d(TAG, "----onError: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 
     public void getKWSongDetail(Music music){
         try {
             long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_",""));
-            model.getKWSongDetail(mid)
+            addSubscribe(model.getKWSongDetail(mid)
                     .compose(RxSchedulers.apply())
-                    .subscribe(new Observer<KWSongDetailEntity>() {
+                    .subscribe(new Consumer<KWSongDetailEntity>() {
                         @Override
-                        public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onNext(@io.reactivex.annotations.NonNull KWSongDetailEntity kwSongDetailEntity) {
+                        public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
                             music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
                             getKWSongUrl().postValue(music);
                         }
-
-                        @Override
-                        public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onComplete() {
-
-                        }
-                    });
+                    }));
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -570,12 +401,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     public void saveMusicLocal(Music music) {
         Observable.just(music)
                 .compose(RxSchedulers.applyIO())
-                .subscribe(new Observer<Music>() {
-                    @Override
-                    public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
-
-                    }
-
+                .subscribe(new DisposableObserver<Music>() {
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Music music) {
                         MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getSongUrl(), music.getId(), music.getMUSICRID());

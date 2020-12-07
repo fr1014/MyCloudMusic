@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
@@ -128,6 +129,7 @@ public class AudioPlayer {
         Music music = getPlayMusic();
 
         try {
+            LogUtil.e("----",music.getSongUrl());
             if (TextUtils.isEmpty(music.getSongUrl())) return;
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
