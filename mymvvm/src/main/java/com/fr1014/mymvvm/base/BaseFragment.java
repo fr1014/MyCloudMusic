@@ -37,7 +37,7 @@ public abstract class BaseFragment<VB extends ViewBinding,VM extends BaseViewMod
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mViewBinding = getViewBinding();
+        mViewBinding = getViewBinding(container);
         return mViewBinding.getRoot();
     }
 
@@ -146,10 +146,11 @@ public abstract class BaseFragment<VB extends ViewBinding,VM extends BaseViewMod
     }
     /**
      * =====================================================================
-     **/
+     *
+     * @param container*/
 
 
-    protected abstract VB getViewBinding();
+    protected abstract VB getViewBinding(ViewGroup container);
 
     @Override
     public void initParam() {
@@ -170,9 +171,12 @@ public abstract class BaseFragment<VB extends ViewBinding,VM extends BaseViewMod
             }
             mViewModel = (VM) createViewModel(getActivity(), modelClass);
         }
+        initView();
         //让ViewModel拥有View的生命周期感应
         getLifecycle().addObserver(mViewModel);
     }
+
+    protected abstract void initView();
 
     /**
      * 初始化ViewModel

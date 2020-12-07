@@ -172,7 +172,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 }));
     }
 
-    //获取排行榜歌单详情
+    //获取排行榜歌单详情(网易)
     private void getPlayListDetailEntity(final long id) {
         addSubscribe(model.getTopList(id)
                 .map(new Function<PlayListDetailEntity, List<Music>>() {
@@ -202,39 +202,38 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     }
                 })
                 .compose(RxSchedulers.apply())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+                        showDialog();
+                    }
+                })
                 .subscribe(new Consumer<List<Music>>() {
                     @Override
                     public void accept(List<Music> musicList) throws Exception {
+                        dismissDialog();
                         getPlayListDetail.postValue(musicList);
                     }
                 }));
     }
 
-    //获取榜单
+    //获取榜单（网易）
     private void getTopListDetailEntity() {
-        model.getTopListDetail()
+        addSubscribe(model.getTopListDetail()
                 .compose(RxSchedulers.apply())
-                .subscribe(new Observer<TopListDetailEntity>() {
+                .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
+                    public void accept(Disposable disposable) throws Exception {
+                        showDialog();
                     }
-
+                })
+                .subscribe(new Consumer<TopListDetailEntity>() {
                     @Override
-                    public void onNext(TopListDetailEntity topListDetailEntity) {
+                    public void accept(TopListDetailEntity topListDetailEntity) throws Exception {
+                        dismissDialog();
                         getTopListDetail.postValue(topListDetailEntity);
                     }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d(TAG, "----onError: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+                }));
     }
 
     //获取搜索结果（网易）
@@ -349,9 +348,16 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         return musics;
                     }
                 }).compose(RxSchedulers.apply())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+//                        showDialog();
+                    }
+                })
                 .subscribe(new Consumer<List<Music>>() {
                     @Override
                     public void accept(List<Music> musicList) throws Exception {
+//                        dismissDialog();
                         getSearch().postValue(musicList);
                     }
                 }));

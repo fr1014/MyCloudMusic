@@ -1,21 +1,12 @@
 package com.fr1014.mycoludmusic.home.toplist;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.os.IBinder;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,18 +17,17 @@ import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
+import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 //排行榜详情页面
-public class PlayListDetailFragment extends Fragment implements OnPlayerEventListener {
+public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding,TopListViewModel> implements OnPlayerEventListener {
     public static final String KEY_ID = "ID";
     private long id = 0L;
-    private TopListViewModel viewModel;
     private PlayListDetailAdapter adapter;
-    private FragmentPlaylistDetailBinding binding;
 
     public PlayListDetailFragment() {
         // Required empty public constructor
@@ -52,33 +42,33 @@ public class PlayListDetailFragment extends Fragment implements OnPlayerEventLis
 //    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void initParam() {
         if (getArguments() != null) {
             id = getArguments().getLong(KEY_ID);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        initViewModel();
-        // Inflate the layout for this fragment
-        binding = FragmentPlaylistDetailBinding.inflate(getLayoutInflater(), container, false);
-        binding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
-        initAdapter();
-        binding.rvPlaylistDetail.setAdapter(adapter);
-        return binding.getRoot();
+    protected FragmentPlaylistDetailBinding getViewBinding(ViewGroup container) {
+        return FragmentPlaylistDetailBinding.inflate(getLayoutInflater(), container, false);
     }
 
-    private void initViewModel() {
+    @Override
+    protected TopListViewModel initViewModel() {
         AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(getActivity(), factory).get(TopListViewModel.class);
+        return new ViewModelProvider(getActivity(), factory).get(TopListViewModel.class);
+    }
+
+    @Override
+    protected void initView() {
+        mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
+        initAdapter();
+        mViewBinding.rvPlaylistDetail.setAdapter(adapter);
     }
 
     private void initAdapter() {
         adapter = new PlayListDetailAdapter();
-        View header = getLayoutInflater().inflate(R.layout.item_playlist_detail_header, binding.getRoot(), false);
+        View header = getLayoutInflater().inflate(R.layout.item_playlist_detail_header, mViewBinding.getRoot(), false);
         adapter.setHeaderView(header);
 
         header.setOnClickListener(v -> {
@@ -86,7 +76,7 @@ public class PlayListDetailFragment extends Fragment implements OnPlayerEventLis
             if (datas.size() >= 1) {
 //                AudioPlayer.get().addAndPlay(datas);
 //                viewModel.checkSong(datas.get(0));
-                viewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
+                mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
                     @Override
                     public void onChanged(List<Music> musicList) {
                         AudioPlayer.get().addAndPlay(musicList);
@@ -98,7 +88,7 @@ public class PlayListDetailFragment extends Fragment implements OnPlayerEventLis
         adapter.setOnItemClickListener((adapter, view, position) -> {
             Music music = (Music) adapter.getData(position);
             if (TextUtils.isEmpty(music.getSongUrl())) {
-                viewModel.checkSong(music);
+                mViewModel.checkSong(music);
             } else {
                 AudioPlayer.get().addAndPlay(music);
             }
@@ -109,15 +99,17 @@ public class PlayListDetailFragment extends Fragment implements OnPlayerEventLis
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         AudioPlayer.get().addOnPlayEventListener(this);
+    }
 
-        viewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
+    @Override
+    public void initViewObservable() {
+        mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> musics) {
                 adapter.setData(musics);
             }
         });
     }
-
 
     @Override
     public void onChange(Music music) {
