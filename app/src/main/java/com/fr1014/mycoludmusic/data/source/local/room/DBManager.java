@@ -1,13 +1,10 @@
 package com.fr1014.mycoludmusic.data.source.local.room;
 
-import androidx.lifecycle.LiveData;
-
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +102,7 @@ public class DBManager {
                     public void onNext(@NonNull String s) {
                         List<MusicEntity> musicEntities = model.getAll();
                         for (MusicEntity musicEntity : musicEntities) {
-                            musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(), "", musicEntity.getImgUrl(), musicEntity.getMusicRid()));
+                            musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(), musicEntity.getSongUrl(), musicEntity.getImgUrl(), musicEntity.getMusicRid()));
                         }
                     }
 
