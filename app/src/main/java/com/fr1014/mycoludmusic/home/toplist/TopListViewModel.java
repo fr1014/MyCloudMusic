@@ -404,7 +404,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 .subscribe(new DisposableObserver<Music>() {
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Music music) {
-                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getSongUrl(), music.getId(), music.getMUSICRID());
+                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getId(), music.getMUSICRID());
                         model.insert(musicEntity);
                     }
 

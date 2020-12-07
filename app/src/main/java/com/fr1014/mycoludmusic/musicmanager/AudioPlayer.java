@@ -9,8 +9,13 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
+import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
+import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.LogUtil;
 
@@ -18,6 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
+import okhttp3.ResponseBody;
 
 /**
  * 创建时间:2020/9/28
@@ -79,7 +89,12 @@ public class AudioPlayer {
             }
         });
         //必写，不然不会拦截error，会到onCompletion中处理，导致逻辑问题
-        mediaPlayer.setOnErrorListener((mp, what, extra) -> true);
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                return true;
+            }
+        });
     }
 
     public void addOnPlayEventListener(OnPlayerEventListener listener) {
@@ -108,9 +123,6 @@ public class AudioPlayer {
             musicList.clear();
         }
         musicList = musics;
-        for (Music music : musicList) {
-            LogUtil.e("----", music.toString());
-        }
         play(0);
     }
 
@@ -129,8 +141,7 @@ public class AudioPlayer {
         Music music = getPlayMusic();
 
         try {
-            LogUtil.e("----",music.getSongUrl());
-            if (TextUtils.isEmpty(music.getSongUrl())) return;
+            if (isEmptySongUrl(music)) return;
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
@@ -144,6 +155,39 @@ public class AudioPlayer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isEmptySongUrl(Music music) {
+        if (TextUtils.isEmpty(music.getSongUrl())){
+            DataRepository dataRepository = MyApplication.provideRepository();
+            if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
+                dataRepository.getKWSongUrl(music.getMUSICRID())
+                        .compose(RxSchedulers.apply())
+                        .subscribe(new MyDisposableObserver<ResponseBody>(){
+                            @Override
+                            public void onNext(@NonNull ResponseBody responseBody) {
+                                try {
+                                    music.setSongUrl(responseBody.string());
+                                    AudioPlayer.get().addAndPlay(music);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+            } else if (music.getId() != 0) {//网易的歌
+                dataRepository.getWYSongUrl(music.getId())
+                        .compose(RxSchedulers.apply())
+                        .subscribe(new MyDisposableObserver<SongUrlEntity>(){
+                            @Override
+                            public void onNext(@NonNull SongUrlEntity songUrlEntity) {
+                                music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
+                                AudioPlayer.get().addAndPlay(music);
+                            }
+                        });
+            }
+            return true;
+        }
+        return false;
     }
 
     public void delete(int position) {
