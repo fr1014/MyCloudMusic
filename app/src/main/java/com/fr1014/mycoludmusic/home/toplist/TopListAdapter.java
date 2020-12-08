@@ -55,6 +55,9 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
 
     @Override
     protected void convert(BaseViewHolder holder, TopListDetailEntity.ListBean data) {
+        //是否显示底部的MarginView
+        holder.getView(R.id.margin_barsize).setVisibility(isShowDivider(holder) ? View.VISIBLE : View.GONE);
+
         if (data.getTracks() != null && data.getTracks().size() == 3) {
             holder.getView(R.id.ll_tv).setVisibility(View.VISIBLE);
             holder.getView(R.id.tv_title).setVisibility(View.GONE);
@@ -80,5 +83,9 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
         Bundle bundle = new Bundle();
         bundle.putLong(PlayListDetailFragment.KEY_ID, mData.get(position).getId());
         Navigation.findNavController(view).navigate(R.id.playListDetailFragment, bundle);
+    }
+
+    private boolean isShowDivider(BaseViewHolder holder) {
+        return getRealPosition(holder) == getDatas().size() - 1;
     }
 }
