@@ -15,14 +15,17 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
  */
 public class PlayListDetailAdapter extends BaseAdapter<Music, BaseViewHolder> {
     //默认显示序号
-    private boolean isisDisplaySeq = true;
+    private boolean isDisplaySeq = true;
+
+    //是否显示底部的View
+    private boolean isDisplayMarginView = false;
 
     /**
      * @param isDisplaySeq 是否显示序号
      */
     public PlayListDetailAdapter(boolean isDisplaySeq) {
         this();
-        this.isisDisplaySeq = isDisplaySeq;
+        this.isDisplaySeq = isDisplaySeq;
     }
 
     public PlayListDetailAdapter() {
@@ -33,11 +36,27 @@ public class PlayListDetailAdapter extends BaseAdapter<Music, BaseViewHolder> {
 
     @Override
     protected void convert(BaseViewHolder holder, Music data) {
-        if (isisDisplaySeq) {
+        if (isDisplaySeq) {
             holder.getView(R.id.tv_rank).setVisibility(View.VISIBLE);
             holder.setText(R.id.tv_rank, holder.getLayoutPosition() + "");
         }
         holder.setText(R.id.tv_song_name, data.getTitle());
         holder.setText(R.id.tv_author, data.getArtist());
+
+        if (isDisplayMarginView) {
+            holder.getView(R.id.margin_barsize).setVisibility(isShowDivider(holder) ? View.VISIBLE : View.GONE);
+        }
+
+    }
+
+    private boolean isShowDivider(BaseViewHolder holder) {
+//        Log.d(TAG, "----isShowDivider1: " + (holder.getLayoutPosition() == getDatas().size() - 1));
+//        Log.d(TAG, "----isShowDivider2: " + "holder.getLayoutPosition():" + holder.getLayoutPosition());
+//        Log.d(TAG, "----isShowDivider3: " + "getDatas().size() - 1:" + (getDatas().size() - 1));
+        return holder.getLayoutPosition() == getDatas().size() - 1;
+    }
+
+    public void setDisplayMarginView(boolean displayMarginView) {
+        isDisplayMarginView = displayMarginView;
     }
 }

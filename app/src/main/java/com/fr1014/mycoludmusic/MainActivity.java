@@ -34,9 +34,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     @Override
     protected void initView() {
         setSupportActionBar(mViewBinding.appBarMain.toolbar);
-        statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
-        statusBar.setMusicInfoListener(this);
-        mViewBinding.appBarMain.contentMain.llPlaystatus.addView(statusBar);
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -61,6 +58,16 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     protected ActivityMainBinding getViewBinding() {
         return ActivityMainBinding.inflate(getLayoutInflater());
     }
+
+    //首次绑定Service时该方法被调用
+    @Override
+    protected void onServiceBound() {
+        statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
+        AudioPlayer.get().addOnPlayEventListener(statusBar);
+        mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
+        AudioPlayer.get().addOnPlayEventListener(statusBar);
+    }
+
 
     @Override
     protected void initData() {
@@ -120,12 +127,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
-    }
-
-    //首次绑定Service时该方法被调用
-    @Override
-    protected void onServiceBound() {
-        AudioPlayer.get().addOnPlayEventListener(statusBar);
     }
 
     @Override

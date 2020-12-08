@@ -55,8 +55,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         addView(mViewBinding.getRoot());
         listDialogFragment = new PlayListDialogFragment();
         musicDialogFragment = new CurrentMusicDialogFragment();
-        setMusic(AudioPlayer.get().getPlayMusic());
-        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
+        onChange(AudioPlayer.get().getPlayMusic());
         initClickListener();
     }
 

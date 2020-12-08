@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="?actionBarSize"
-    android:gravity="bottom"
-    android:orientation="vertical">
+    android:background="@color/white_alpha">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorLightGray"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_bottom_bar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="match_parent"
         android:layout_gravity="bottom"
-        android:background="@color/colorLightGray"
         android:foreground="?attr/selectableItemBackground">
 
         <com.fr1014.mycoludmusic.customview.RemoteCircleImageView
@@ -93,4 +96,4 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.85" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
+</FrameLayout>

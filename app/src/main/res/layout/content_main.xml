@@ -17,8 +17,8 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/mobile_navigation" />
 
-    <LinearLayout
-        android:id="@+id/ll_playstatus"
+    <FrameLayout
+        android:id="@+id/fl_playstatus"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:orientation="vertical" />

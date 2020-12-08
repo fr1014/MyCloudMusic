@@ -32,9 +32,6 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
 
     @Override
     protected void initView() {
-        statusBarView = new PlayStatusBarView(this, getSupportFragmentManager());
-        AudioPlayer.get().addOnPlayEventListener(statusBarView);
-        mViewBinding.llPlaystatus.addView(statusBarView);
         initAdapter();
         initEditText();
     }
@@ -48,6 +45,13 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
     @Override
     protected ActivitySearchBinding getViewBinding() {
         return mViewBinding = ActivitySearchBinding.inflate(getLayoutInflater());
+    }
+
+    @Override
+    protected void onServiceBound() {
+        statusBarView = new PlayStatusBarView(this, getSupportFragmentManager());
+        AudioPlayer.get().addOnPlayEventListener(statusBarView);
+        mViewBinding.flPlaystatus.addView(statusBarView);
     }
 
     @Override
@@ -93,6 +97,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
 
     private void initAdapter() {
         adapter = new PlayListDetailAdapter(false);
+        adapter.setDisplayMarginView(true);
         mViewBinding.rvSearch.setLayoutManager(new LinearLayoutManager(this));
         mViewBinding.rvSearch.setAdapter(adapter);
 
