@@ -153,8 +153,6 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                                         String url = data.get(index).getUrl();
                                         if (TextUtils.isEmpty(url)) {
                                             musicList.remove(music);
-                                        } else {
-                                            music.setSongUrl(url);
                                         }
                                         break;
                                     }
