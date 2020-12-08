@@ -1,56 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".SearchActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:layout_weight="0.2"
-        android:background="@color/colorPrimaryDark"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/iv_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_back" />
-
-        <com.fr1014.mycoludmusic.customview.SearchView
-            android:id="@+id/et_keywords"
-            style="@style/Widget.AppCompat.EditText"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:padding="8dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/bg_edittext"
-            android:hint="@string/search"
-            android:textColor="@android:color/holo_orange_dark"
-            android:imeOptions="actionSearch"
-            android:maxLines="1"
-            android:singleLine="true"
-            app:closeIcon="@drawable/ic_clear_24" />
+            android:layout_height="?actionBarSize"
+            android:layout_weight="0.2"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:src="@drawable/ic_back" />
+
+            <com.fr1014.mycoludmusic.customview.SearchView
+                android:id="@+id/et_keywords"
+                style="@style/Widget.AppCompat.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/bg_edittext"
+                android:hint="@string/search"
+                android:imeOptions="actionSearch"
+                android:maxLines="1"
+                android:padding="8dp"
+                android:singleLine="true"
+                android:textColor="@android:color/holo_orange_dark"
+                app:closeIcon="@drawable/ic_clear_24" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="9.8" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_search"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="9.8" />
-
-    <LinearLayout
-        android:id="@+id/ll_playstatus"
+    <FrameLayout
+        android:id="@+id/fl_playstatus"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        android:orientation="vertical"
         android:layout_gravity="bottom"/>
-
-</LinearLayout>
+</FrameLayout>
