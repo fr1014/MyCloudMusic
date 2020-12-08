@@ -121,7 +121,7 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder> extends Recycler
         return TYPE_NORMAL;
     }
 
-    private int getRealPosition(VH holder) {
+    protected int getRealPosition(VH holder) {
         int position = holder.getAdapterPosition();
         return mHeaderView == null ? position : position - 1;
     }

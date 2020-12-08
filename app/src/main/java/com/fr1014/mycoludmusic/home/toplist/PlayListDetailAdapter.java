@@ -53,7 +53,7 @@ public class PlayListDetailAdapter extends BaseAdapter<Music, BaseViewHolder> {
 //        Log.d(TAG, "----isShowDivider1: " + (holder.getLayoutPosition() == getDatas().size() - 1));
 //        Log.d(TAG, "----isShowDivider2: " + "holder.getLayoutPosition():" + holder.getLayoutPosition());
 //        Log.d(TAG, "----isShowDivider3: " + "getDatas().size() - 1:" + (getDatas().size() - 1));
-        return holder.getLayoutPosition() == getDatas().size() - 1;
+        return getRealPosition(holder) == getDatas().size() - 1;
     }
 
     public void setDisplayMarginView(boolean displayMarginView) {

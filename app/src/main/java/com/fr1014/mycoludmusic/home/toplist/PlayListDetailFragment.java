@@ -68,6 +68,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     private void initAdapter() {
         adapter = new PlayListDetailAdapter();
+        adapter.setDisplayMarginView(true);
         View header = getLayoutInflater().inflate(R.layout.item_playlist_detail_header, mViewBinding.getRoot(), false);
         adapter.setHeaderView(header);
 
