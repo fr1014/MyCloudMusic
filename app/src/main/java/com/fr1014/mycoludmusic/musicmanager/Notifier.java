@@ -78,36 +78,27 @@ public class Notifier {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //构建通知渠道
-        NotificationChannel channel = null;
+        // 适配 >= 8.0
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             //设定的通知渠道名称
             String channelName = context.getString(R.string.channel_name);
             //设置通知的重要程度
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            channel = new NotificationChannel(CHANNEL_ID, channelName, importance);
+            //构建通知渠道
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, channelName, importance);
             //是否允许震动
             channel.enableVibration(false);
             //设置通知无声音
             channel.setSound(null, null);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             notificationManager.createNotificationChannel(channel);
-            return new Notification.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_notifier) //设置通知图标
-                    .setContentTitle(music.getTitle())//设置通知标题
-                    .setContentIntent(pendingIntent)
-                    .setCustomContentView(getRemoteViews(context, music, isPlaying))
-                    .build();//设置处于运行状态
         }
-        else {
-            // TODO: 2020/9/23 适配8.0以下的notification
-            return new NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_notifier)
-                    .setContentTitle(music.getTitle())//设置通知标题
-                    .setContentIntent(pendingIntent)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .build();
-        }
-
+        return new NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notifier) //设置通知图标
+                .setContentTitle(music.getTitle())//设置通知标题
+                .setContentIntent(pendingIntent)
+                .setCustomContentView(getRemoteViews(context, music, isPlaying))
+                .build();//设置处于运行状态
     }
 
     private RemoteViews getRemoteViews(Context context, Music music, boolean isPlaying) {
