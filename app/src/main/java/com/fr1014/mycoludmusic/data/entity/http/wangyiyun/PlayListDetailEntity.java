@@ -118,7 +118,7 @@ public class PlayListDetailEntity {
         private boolean opRecommend;
         private int adType;
         private long trackNumberUpdateTime;
-        private int userId;
+        private long userId;
         private long createTime;
         private boolean highQuality;
         private long updateTime;
@@ -235,11 +235,11 @@ public class PlayListDetailEntity {
             this.trackNumberUpdateTime = trackNumberUpdateTime;
         }
 
-        public int getUserId() {
+        public long getUserId() {
             return userId;
         }
 
-        public void setUserId(int userId) {
+        public void setUserId(long userId) {
             this.userId = userId;
         }
 
@@ -501,7 +501,7 @@ public class PlayListDetailEntity {
             private int gender;
             private int city;
             private long birthday;
-            private int userId;
+            private long userId;
             private int userType;
             private String nickname;
             private String signature;
@@ -593,11 +593,11 @@ public class PlayListDetailEntity {
                 this.birthday = birthday;
             }
 
-            public int getUserId() {
+            public long getUserId() {
                 return userId;
             }
 
-            public void setUserId(int userId) {
+            public void setUserId(long userId) {
                 this.userId = userId;
             }
 
