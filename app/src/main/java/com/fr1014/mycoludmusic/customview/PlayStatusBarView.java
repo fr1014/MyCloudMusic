@@ -29,7 +29,6 @@ import com.fr1014.mycoludmusic.utils.CommonUtil;
 public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
-    private MusicInfoListener musicInfoListener;
     private PlayListDialogFragment listDialogFragment;
     private CurrentMusicDialogFragment musicDialogFragment;
     private Music oldMusic;
@@ -98,10 +97,6 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     private void setImageUrl(String imgUrl) {
         mViewBinding.ivCoverImg.setImageUrl(imgUrl);
-    }
-
-    public void setMusicInfoListener(MusicInfoListener musicInfoListener) {
-        this.musicInfoListener = musicInfoListener;
     }
 
     @Override

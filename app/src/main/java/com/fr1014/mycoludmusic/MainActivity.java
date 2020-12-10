@@ -23,13 +23,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener, MusicInfoListener {
+public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener{
     private static final String TAG = "MainActivity";
 
     private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
-//    private Observer<Music> musicObserver;
 
     @Override
     protected void initView() {
@@ -90,17 +89,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
                 }
             }
         });
-//        musicObserver = new Observer<Music>() {
-//            @Override
-//            public void onChanged(Music music) {
-//                if (!TextUtils.isEmpty(music.getSongUrl())){
-//                    AudioPlayer.get().addAndPlay(music);
-//                }else{
-//                    AudioPlayer.get().playNext();
-//                }
-//            }
-//        };
-//        viewModel.getSongUrl().observeForever(musicObserver);
     }
 
 
@@ -130,30 +118,12 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     }
 
     @Override
-    public void songUrlIsEmpty(Music music) {
-//        if (!TextUtils.isEmpty(music.getMUSICRID())) {  //酷我的歌
-//            viewModel.getSongUrl(music);
-//        } else if (music.getId() != 0) {           //网易的歌
-//            viewModel.checkSong(music);
-//        }
-    }
-
-    @Override
     public void onClick(View v) {
     }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        if (AudioPlayer.get().isPlaying()){
-//            statusBar.setMusic(AudioPlayer.get().getPlayMusic());
-//        }
-//    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        viewModel.getSongUrl().removeObserver(musicObserver);
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
         }
