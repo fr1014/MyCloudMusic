@@ -11,13 +11,17 @@ import com.fr1014.mycoludmusic.http.LenientGsonConverterFactory;
 import com.fr1014.mycoludmusic.http.SSLUtils;
 import com.fr1014.mycoludmusic.http.api.KWApiService;
 import com.fr1014.mycoludmusic.http.api.WYApiService;
+import com.fr1014.mycoludmusic.http.interceptor.NetCacheInterceptor;
+import com.fr1014.mycoludmusic.http.interceptor.OfflineCacheInterceptor;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.http.WYYServiceProvider;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
 import com.fr1014.mymvvm.base.BaseApplication;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -60,7 +64,14 @@ public class MyApplication extends BaseApplication {
 
     private OkHttpClient createOkHttpClient(){
         try {
+            //setup cache
+            File httpCacheDirectory = new File(getCacheDir(), "okHttpCache");
+            int cacheSize = 10 * 1024 * 1024; // 10 MiB
+            Cache cache = new Cache(httpCacheDirectory, cacheSize);
             return new OkHttpClient.Builder()
+                    .addNetworkInterceptor(new NetCacheInterceptor())
+                    .addInterceptor(new OfflineCacheInterceptor())
+                    .cache(cache)
                     .sslSocketFactory(SSLUtils.getSSLSocketFactory())
                     .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                     .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
