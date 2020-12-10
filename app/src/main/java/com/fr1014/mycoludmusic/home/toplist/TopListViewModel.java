@@ -71,7 +71,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getSearch;
     }
 
-    public BusLiveData<Music> getKWSongUrl() {
+    public BusLiveData<Music> getSongUrl() {
         if (getSongUrl == null) {
             getSongUrl = new BusLiveData<>();
         }
@@ -283,7 +283,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 .subscribe(new Consumer<Music>() {
                     @Override
                     public void accept(Music music) throws Exception {
-                        getKWSongUrl().postValue(music);
+                        getSongUrl().postValue(music);
                     }
                 }));
     }
@@ -300,18 +300,8 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         } else {
                             CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
                             //播放下一首
-                            // TODO: 2020/9/17
                             getCheckSongResult.postValue(false);
                         }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        // TODO: 2020/9/18
-                        // retrofit2.adapter.rxjava2.HttpException: HTTP 404 Not Found
-                        CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
-                        Log.d(TAG, "------onError: " + throwable.getMessage());
-                        getCheckSongResult.postValue(false);
                     }
                 }));
     }
@@ -394,7 +384,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         @Override
                         public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
                             music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
-                            getKWSongUrl().postValue(music);
+                            getSongUrl().postValue(music);
                         }
                     }));
         } catch (NumberFormatException e) {

@@ -6,13 +6,14 @@ package com.fr1014.mycoludmusic.musicmanager;
  * 邮箱:1546352238@qq.com
  */
 public class Music {
-    private long id;            //网易歌曲id
-    private String artist;     //歌手
-    private String title;      //歌曲名
-    private String songUrl;    //歌曲地址
-    private String imgUrl;     //专辑图片地址
-    private String MUSICRID;   //酷我musicID
-    private boolean isOnlineMusic;
+    private long id;                //网易歌曲id
+    private String artist;          //歌手
+    private String title;           //歌曲名
+    private String songUrl;         //歌曲地址
+    private String imgUrl;          //专辑图片地址
+    private String MUSICRID;        //酷我musicID
+    private long duration;          // 持续时间
+    private boolean isOnlineMusic;  //是否为在线歌曲
 
     public Music() {
     }
@@ -88,6 +89,14 @@ public class Music {
 
     public void setOnlineMusic(boolean onlineMusic) {
         isOnlineMusic = onlineMusic;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
     }
 
     @Override

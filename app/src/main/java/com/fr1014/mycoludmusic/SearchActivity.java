@@ -63,7 +63,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
             }
         });
 
-        viewModel.getKWSongUrl().observe(this, new Observer<Music>() {
+        viewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
                 if (!TextUtils.isEmpty(music.getSongUrl())) {
