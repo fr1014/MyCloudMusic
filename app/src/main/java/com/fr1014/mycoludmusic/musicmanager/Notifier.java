@@ -7,18 +7,21 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.text.TextUtils;
+import android.graphics.drawable.Drawable;
 import android.widget.RemoteViews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.MainActivity;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.musicmanager.receiver.StatusBarReceiver;
 import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
-
-import java.io.File;
 
 /**
  * 创建时间:2020/9/22
@@ -94,7 +97,8 @@ public class Notifier {
                     .setContentIntent(pendingIntent)
                     .setCustomContentView(getRemoteViews(context, music, isPlaying))
                     .build();//设置处于运行状态
-        } else {
+        }
+        else {
             // TODO: 2020/9/23 适配8.0以下的notification
             return new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_notifier)
@@ -112,33 +116,51 @@ public class Notifier {
 //        Bitmap cover = CoverLoader.get().loadThumb(music);
 
         Bitmap cover = null;
-        if (!TextUtils.isEmpty(music.getImgUrl())){
-            File imgFile = DataCacheKey.getCacheFile2(music.getImgUrl());
-            if (imgFile != null) {
-                cover = BitmapFactory.decodeFile(imgFile.getPath());
-            }
+        Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
+        if (cacheBitmap != null) {
+            cover = cacheBitmap;
+        } else {
+            Glide.with(context)
+                    .asBitmap()
+                    .load(music.getImgUrl())
+                    .format(DecodeFormat.PREFER_ARGB_8888)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            showPlay(music);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                        }
+                    });
+            return null;
         }
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);
-        if (cover != null) {
-            remoteViews.setImageViewBitmap(R.id.iv_icon, cover);
-        } else {
-            remoteViews.setImageViewResource(R.id.iv_icon, R.mipmap.ic_launcher);
-        }
+        remoteViews.setImageViewBitmap(R.id.iv_icon, cover);
         remoteViews.setTextViewText(R.id.tv_title, title);
 //        remoteViews.setTextViewText(R.id.tv_subtitle, subtitle);
 
-//        boolean isLightNotificationTheme = isLightNotificationTheme(playService);
+        Intent backIntent = new Intent(context,StatusBarReceiver.class);
+        backIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
+        backIntent.putExtra(StatusBarReceiver.EXTRA, StatusBarReceiver.EXTRA_BACK);
+        PendingIntent backPendingIntent = PendingIntent.getBroadcast(context, 0, backIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setImageViewResource(R.id.iv_back, R.drawable.ic_song_back_black);
+        remoteViews.setOnClickPendingIntent(R.id.iv_back, backPendingIntent);
 
-        Intent playIntent = new Intent(StatusBarReceiver.ACTION_STATUS_BAR);
+        Intent playIntent = new Intent(context,StatusBarReceiver.class);
+        playIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
         playIntent.putExtra(StatusBarReceiver.EXTRA, StatusBarReceiver.EXTRA_PLAY_PAUSE);
-        PendingIntent playPendingIntent = PendingIntent.getBroadcast(context, 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        remoteViews.setImageViewResource(R.id.iv_play_pause, getPlayIconRes(isLightNotificationTheme, isPlaying));
+        PendingIntent playPendingIntent = PendingIntent.getBroadcast(context, 1, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setImageViewResource(R.id.iv_play_pause, isPlaying ? R.drawable.ic_stop_black : R.drawable.ic_play_black);
         remoteViews.setOnClickPendingIntent(R.id.iv_play_pause, playPendingIntent);
 
-        Intent nextIntent = new Intent(StatusBarReceiver.ACTION_STATUS_BAR);
+        Intent nextIntent = new Intent(context,StatusBarReceiver.class);
+        nextIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
         nextIntent.putExtra(StatusBarReceiver.EXTRA, StatusBarReceiver.EXTRA_NEXT);
-        PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 1, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        remoteViews.setImageViewResource(R.id.iv_next, getNextIconRes(isLightNotificationTheme));
+        PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 2, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setImageViewResource(R.id.iv_next, R.drawable.ic_song_next_black);
         remoteViews.setOnClickPendingIntent(R.id.iv_next, nextPendingIntent);
 
         return remoteViews;

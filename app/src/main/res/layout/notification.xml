@@ -18,7 +18,7 @@
         android:layout_width="0.0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="8.5"
+        android:layout_weight="8"
         android:orientation="vertical"
         android:paddingTop="2.0dp"
         android:paddingBottom="2.0dp">
@@ -42,12 +42,21 @@
             android:textAppearance="@android:style/TextAppearance.StatusBar.EventContent" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="12dp"
+        android:layout_weight="0.5"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_song_back_black" />
 
     <ImageView
         android:id="@+id/iv_play_pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="12dp"
         android:layout_weight="0.5"
         android:contentDescription="@null"
         android:scaleType="center"
@@ -55,11 +64,11 @@
 
     <ImageView
         android:id="@+id/iv_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="32dp"
         android:layout_weight="0.5"
         android:contentDescription="@null"
-        android:scaleType="center"
-        android:src="@drawable/ic_song_next" />
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_song_next_black" />
 </LinearLayout>

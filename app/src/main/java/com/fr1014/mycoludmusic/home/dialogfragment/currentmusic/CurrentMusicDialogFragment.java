@@ -40,6 +40,7 @@ import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 
 public class CurrentMusicDialogFragment extends DialogFragment implements View.OnClickListener, OnPlayerEventListener {
 
@@ -204,25 +205,34 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         }
         binding.sbProgress.setMax((int) duration);
         binding.tvDuration.setText(CommonUtil.formatTime(duration));
-        Glide.with(CurrentMusicDialogFragment.this)
-                .asBitmap()
-                .load(music.getImgUrl())
-                .placeholder(R.drawable.bg_play)
-                .error(R.drawable.film)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        binding.civSongImg.setImageBitmap(resource);
-                        binding.biBackground.setBitmap(resource);
-                        oldResource = resource;
-                    }
+        Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
+        if (cacheBitmap == null){
+            Glide.with(CurrentMusicDialogFragment.this)
+                    .asBitmap()
+                    .load(music.getImgUrl())
+                    .placeholder(R.drawable.bg_play)
+                    .error(R.drawable.film)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            setBitmap(resource);
+                        }
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
 
-                    }
-                });
+                        }
+                    });
+        }else {
+            setBitmap(cacheBitmap);
+        }
+    }
+
+    private void setBitmap(Bitmap resource){
+        binding.civSongImg.setImageBitmap(resource);
+        binding.biBackground.setBitmap(resource);
+        oldResource = resource;
     }
 
     private void endAnimator() {

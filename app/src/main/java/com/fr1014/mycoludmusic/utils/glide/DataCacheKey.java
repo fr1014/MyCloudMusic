@@ -1,5 +1,9 @@
 package com.fr1014.mycoludmusic.utils.glide;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.text.TextUtils;
+
 import com.bumptech.glide.disklrucache.DiskLruCache;
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.load.engine.cache.DiskCache;
@@ -74,6 +78,16 @@ public class DataCacheKey implements Key {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Bitmap getCacheBitmap(String url){
+        if (!TextUtils.isEmpty(url)){
+            File imgFile = DataCacheKey.getCacheFile2(url);
+            if (imgFile != null) {
+                return BitmapFactory.decodeFile(imgFile.getPath());
+            }
         }
         return null;
     }

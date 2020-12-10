@@ -19,12 +19,13 @@
         <service
             android:name=".musicmanager.PlayService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
 
-        <receiver
-            android:name=".musicmanager.receiver.StatusBarReceiver"
-            android:enabled="true"
-            android:exported="true" />
+        <receiver android:name=".musicmanager.receiver.StatusBarReceiver">
+            <intent-filter>
+                <action android:name="com.fr1014.music.STATUS_BAR_ACTIONS" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".SearchActivity"
