@@ -16,6 +16,7 @@ import com.fr1014.mycoludmusic.http.interceptor.OfflineCacheInterceptor;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.http.WYYServiceProvider;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
+import com.fr1014.mycoludmusic.rx.RxJavaError;
 import com.fr1014.mymvvm.base.BaseApplication;
 
 import java.io.File;
@@ -46,6 +47,7 @@ public class MyApplication extends BaseApplication {
 
         WYYServiceProvider.init(createWYYRetrofitBuilder());
         KWServiceProvider.init(createKWRetrofitBuilder());
+        RxJavaError.setRxJavaErrorHandler();
     }
 
     private Retrofit.Builder createWYYRetrofitBuilder() {
