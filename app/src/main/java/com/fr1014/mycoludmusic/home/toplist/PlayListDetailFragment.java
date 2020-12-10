@@ -104,6 +104,26 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     @Override
     public void initViewObservable() {
+        mViewModel.getCheckSongResult().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isCanPlay) {
+                if (!isCanPlay) {
+                    AudioPlayer.get().playNext();
+                }
+            }
+        });
+
+        mViewModel.getSongUrl().observe(this, new Observer<Music>() {
+            @Override
+            public void onChanged(Music music) {
+                if (!TextUtils.isEmpty(music.getSongUrl())) {
+                    AudioPlayer.get().addAndPlay(music);
+                } else {
+                    AudioPlayer.get().playNext();
+                }
+            }
+        });
+
         mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> musics) {

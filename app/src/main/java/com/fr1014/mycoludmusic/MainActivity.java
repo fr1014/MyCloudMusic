@@ -1,6 +1,5 @@
 package com.fr1014.mycoludmusic;
 
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,12 +10,9 @@ import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
-import com.fr1014.mycoludmusic.listener.MusicInfoListener;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
-import com.fr1014.mycoludmusic.musicmanager.Music;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -43,8 +39,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(mViewBinding.navView, navController);
-
-//        initClickListener();
     }
 
     @Override
@@ -70,25 +64,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
 
     @Override
     protected void initData() {
-        viewModel.getCheckSongResult().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isCanPlay) {
-                if (!isCanPlay) {
-                    AudioPlayer.get().playNext();
-                }
-            }
-        });
 
-        viewModel.getSongUrl().observe(this, new Observer<Music>() {
-            @Override
-            public void onChanged(Music music) {
-                if (!TextUtils.isEmpty(music.getSongUrl())) {
-                    AudioPlayer.get().addAndPlay(music);
-                } else {
-                    AudioPlayer.get().playNext();
-                }
-            }
-        });
     }
 
 
