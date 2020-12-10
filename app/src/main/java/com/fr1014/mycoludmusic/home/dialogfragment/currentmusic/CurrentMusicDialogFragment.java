@@ -48,6 +48,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     private Music oldMusic;
     private Bitmap oldResource = null;
     ObjectAnimator rotationAnimator;
+    private  MediaPlayer player;
 
     public CurrentMusicDialogFragment() {
         // Required empty public constructor
@@ -84,7 +85,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        player = AudioPlayer.get().getMediaPlayer();
         oldMusic = AudioPlayer.get().getPlayMusic();
         if (oldMusic == null) return;
 
@@ -197,6 +198,12 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         binding.civSongImg.setImageDrawable(getContext().getDrawable(R.drawable.bg_play));
         binding.tvTitle.setText(music.getTitle());
         binding.tvArtist.setText(music.getArtist());
+        long duration = music.getDuration();
+        if (duration == 0){
+            duration = player.getDuration();
+        }
+        binding.sbProgress.setMax((int) duration);
+        binding.tvDuration.setText(CommonUtil.formatTime(duration));
         Glide.with(CurrentMusicDialogFragment.this)
                 .asBitmap()
                 .load(music.getImgUrl())
@@ -258,10 +265,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
 
     @Override
     public void onPublish(int progress) {
-        MediaPlayer player = AudioPlayer.get().getMediaPlayer();
-        binding.sbProgress.setMax((int) player.getDuration());
         binding.tvNowTime.setText(CommonUtil.formatTime(player.getCurrentPosition()));
-        binding.tvDuration.setText(CommonUtil.formatTime(player.getDuration()));
         binding.sbProgress.setProgress((int) progress);
     }
 

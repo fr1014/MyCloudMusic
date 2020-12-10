@@ -49,8 +49,6 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private BusLiveData<List<Music>> getSongListUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
-    private LiveData<List<MusicEntity>> getMusicRoom;
-    private LiveData<MusicEntity> getItemRoom;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
@@ -193,6 +191,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                             music.setArtist(sb.toString());
                             music.setTitle(data.getName());
                             music.setImgUrl(data.getAl().getPicUrl());
+                            music.setDuration(data.getDt());
                             musics.add(music);
                         }
 
@@ -276,6 +275,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 .map(songDetailEntity -> {
                     if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
                         music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
+                        music.setDuration(songDetailEntity.getSongs().get(0).getDt());
                     }
                     return music;
                 })
@@ -390,36 +390,5 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-    }
-
-    public void saveMusicLocal(Music music) {
-        Observable.just(music)
-                .compose(RxSchedulers.applyIO())
-                .subscribe(new DisposableObserver<Music>() {
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull Music music) {
-                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getId(), music.getMUSICRID());
-                        model.insert(musicEntity);
-                    }
-
-                    @Override
-                    public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
-    }
-
-    public LiveData<List<MusicEntity>> getMusicLocal() {
-        return getMusicRoom = model.getAllLive();
-    }
-
-    public LiveData<MusicEntity> getItemLocal(String title, String artist) {
-        return getItemRoom = model.getItemLive(title, artist);
     }
 }

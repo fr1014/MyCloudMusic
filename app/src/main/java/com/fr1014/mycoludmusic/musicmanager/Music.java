@@ -35,6 +35,16 @@ public class Music {
         this.MUSICRID = MUSICRID;
     }
 
+    public Music(long id, String artist, String title, String songUrl, String imgUrl, String MUSICRID, long duration) {
+        this.id = id;
+        this.artist = artist;
+        this.title = title;
+        this.songUrl = songUrl;
+        this.imgUrl = imgUrl;
+        this.MUSICRID = MUSICRID;
+        this.duration = duration;
+    }
+
     public String getMUSICRID() {
         return MUSICRID;
     }
