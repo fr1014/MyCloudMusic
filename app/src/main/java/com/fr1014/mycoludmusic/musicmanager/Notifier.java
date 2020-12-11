@@ -97,7 +97,10 @@ public class Notifier {
                 .setSmallIcon(R.drawable.ic_notifier) //设置通知图标
                 .setContentTitle(music.getTitle())//设置通知标题
                 .setContentIntent(pendingIntent)
-                .setCustomContentView(getRemoteViews(context, music, isPlaying))
+                .setContent(getRemoteViews(context, music, isPlaying)) //设置普通notification视图
+//                .setCustomBigContentView(getRemoteViews(context, music, isPlaying)) //设置显示bigView的notification视图
+                .setOngoing(true) //true使notification变为ongoing,用户不能手动清除
+                .setPriority(NotificationCompat.PRIORITY_MAX)//设置最大优先级
                 .build();//设置处于运行状态
     }
 
