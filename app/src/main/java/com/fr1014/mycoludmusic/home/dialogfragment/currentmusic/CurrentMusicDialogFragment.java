@@ -1,7 +1,5 @@
 package com.fr1014.mycoludmusic.home.dialogfragment.currentmusic;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,24 +12,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.LinearInterpolator;
 import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.R;
-import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
@@ -43,12 +34,9 @@ import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 
 public class CurrentMusicDialogFragment extends DialogFragment implements View.OnClickListener, OnPlayerEventListener {
-
-    private int FIRST_START_ANIMATION = 0; //旋转的动画是否已经start,0-noStart,1-start
     private FragmentCurrentMusicBinding binding;
     private Music oldMusic;
     private Bitmap oldResource = null;
-    ObjectAnimator rotationAnimator;
     private  MediaPlayer player;
 
     public CurrentMusicDialogFragment() {
@@ -67,6 +55,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCurrentMusicBinding.inflate(inflater, container, false);
+
         binding.icBack.setOnClickListener(this);
         binding.ivState.setOnClickListener(this);
         binding.ivMusicMenu.setOnClickListener(this);
@@ -92,14 +81,8 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
 
         initView(oldMusic);
 
-        rotationAnimator = ObjectAnimator.ofFloat(binding.civSongImg, "rotation", 0f, 360f);//旋转的角度可有多个
-        rotationAnimator.setDuration(20000);
-        rotationAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        rotationAnimator.setRepeatMode(ObjectAnimator.RESTART);//匀速
-        //让旋转动画一直转，不停顿的重点
-        rotationAnimator.setInterpolator(new LinearInterpolator());
         if (AudioPlayer.get().isPlaying()) {
-            startAnimator();
+            binding.albumCoverView.startAnimator();
             binding.ivState.setImageResource(R.drawable.ic_stop_white);
         } else {
             binding.ivState.setImageResource(R.drawable.ic_play_white);
@@ -173,7 +156,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 break;
             case R.id.ic_back:
                 if (getDialog() != null) {
-                    endAnimator();
+                    binding.albumCoverView.endAnimator();
                     getDialog().dismiss();
                 }
                 break;
@@ -196,7 +179,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         if (oldResource == null || TextUtils.isEmpty(music.getImgUrl())) {
             binding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
         }
-        binding.civSongImg.setImageDrawable(getContext().getDrawable(R.drawable.bg_play));
+        binding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.bg_play));
         binding.tvTitle.setText(music.getTitle());
         binding.tvArtist.setText(music.getArtist());
         long duration = music.getDuration();
@@ -230,19 +213,9 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     }
 
     private void setBitmap(Bitmap resource){
-        binding.civSongImg.setImageBitmap(resource);
+        binding.albumCoverView.songImgSetBitmap(resource);
         binding.biBackground.setBitmap(resource);
         oldResource = resource;
-    }
-
-    private void endAnimator() {
-        rotationAnimator.end();//结束（回到原始位置）
-        FIRST_START_ANIMATION = 0;
-    }
-
-    private void startAnimator() {
-        rotationAnimator.start();
-        FIRST_START_ANIMATION = 1;
     }
 
     @Override
@@ -251,7 +224,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
             initView(music);
             oldMusic = music;
         }
-        endAnimator();
+        binding.albumCoverView.endAnimator();
     }
 
     @Override
@@ -259,17 +232,13 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         binding.ivState.setImageResource(R.drawable.ic_stop_white);
         Music music = AudioPlayer.get().getPlayMusic();
         if (music == oldMusic) { //选择播放的音乐与当前音乐相同
-            if (FIRST_START_ANIMATION == 1) { //动画已经start过
-                rotationAnimator.resume();//继续（在暂停的位置继续动画）
-            } else {
-                startAnimator();
-            }
+            binding.albumCoverView.resumeOrStartAnimator();
         }
     }
 
     @Override
     public void onPlayerPause() {
-        rotationAnimator.pause();//暂停
+        binding.albumCoverView.pauseAnimator();
         binding.ivState.setImageResource(R.drawable.ic_play_white);
     }
 
@@ -287,17 +256,15 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     @Override
     public void onResume() {
         super.onResume();
-        if (rotationAnimator != null && rotationAnimator.isPaused() && AudioPlayer.get().isPlaying()) {
-            rotationAnimator.resume();
+        if (AudioPlayer.get().isPlaying()) {
+            binding.albumCoverView.resumeAnimator();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (rotationAnimator != null && rotationAnimator.isRunning()) {
-            rotationAnimator.pause();
-        }
+        binding.albumCoverView.pauseAnimator();
     }
 
     @Override
