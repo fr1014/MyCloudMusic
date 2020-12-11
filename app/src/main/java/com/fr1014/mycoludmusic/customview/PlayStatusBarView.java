@@ -85,14 +85,15 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     public void setMusic(Music music) {
         if (music != oldMusic) {
-            setTitle(music.getTitle());
+            setText(music);
             setImageUrl(music.getImgUrl());
         }
         oldMusic = music;
     }
 
-    private void setTitle(String title) {
-        mViewBinding.tvName.setText(title);
+    private void setText(Music music) {
+        mViewBinding.tvName.setText(music.getTitle());
+        mViewBinding.tvAuthor.setText(music.getArtist());
     }
 
     private void setImageUrl(String imgUrl) {
