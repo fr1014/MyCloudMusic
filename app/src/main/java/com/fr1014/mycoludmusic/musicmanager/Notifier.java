@@ -106,10 +106,8 @@ public class Notifier {
 
     private RemoteViews getRemoteViews(Context context, Music music, boolean isPlaying) {
         String title = music.getTitle();
-//        String subtitle = FileUtils.getArtistAndAlbum(music.getArtist(), music.getAlbum());
-//        Bitmap cover = CoverLoader.get().loadThumb(music);
-
-        Bitmap cover = null;
+        String artist = music.getArtist();
+        Bitmap cover;
         Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
         if (cacheBitmap != null) {
             cover = cacheBitmap;
@@ -134,7 +132,7 @@ public class Notifier {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);
         remoteViews.setImageViewBitmap(R.id.iv_icon, cover);
         remoteViews.setTextViewText(R.id.tv_title, title);
-//        remoteViews.setTextViewText(R.id.tv_subtitle, subtitle);
+        remoteViews.setTextViewText(R.id.tv_author, artist);
 
         Intent backIntent = new Intent(context,StatusBarReceiver.class);
         backIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
