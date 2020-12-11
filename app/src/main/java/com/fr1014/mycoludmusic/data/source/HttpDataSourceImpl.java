@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.data.source;
 
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
@@ -95,6 +96,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<ResponseBody> getSearchResult(String name, int count) {
         return kwApiService.getSearchResult(name, count);
+    }
+
+    @Override
+    public Observable<KWNewSearchEntity> getKWSearchResult(String name, int page, int count) {
+        return kwApiService.getKWSearchResult(name, page, count);
     }
 
     @Override

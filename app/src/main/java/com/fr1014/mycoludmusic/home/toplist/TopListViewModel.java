@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
@@ -318,13 +319,13 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         String json = replace2.replaceAll("'", "\"");
                         Gson gson = new Gson();
                         KWSearchEntity searchEntity = gson.fromJson(json, KWSearchEntity.class);
-                        LogUtil.e("search", searchEntity.toString());
                         List<Music> musics = new ArrayList<>();
                         List<KWSearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
                         for (KWSearchEntity.AbslistBean abslistBean : abslistBeanList) {
                             Music music = new Music();
                             if (!TextUtils.isEmpty(abslistBean.getARTIST())) {
-                                music.setArtist(abslistBean.getARTIST());
+//                                music.setArtist(abslistBean.getARTIST());
+                                music.setArtist(abslistBean.getARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "/"));
                             } else {
                                 music.setArtist(abslistBean.getAARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "/"));
                             }
@@ -334,6 +335,40 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                             musics.add(music);
                         }
                         return musics;
+                    }
+                }).compose(RxSchedulers.apply())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+//                        showDialog();
+                    }
+                })
+                .subscribe(new Consumer<List<Music>>() {
+                    @Override
+                    public void accept(List<Music> musicList) throws Exception {
+//                        dismissDialog();
+                        getSearch().postValue(musicList);
+                    }
+                }));
+
+    }
+
+    //获取搜索结果（酷我）新的接口
+    public void getSearchEntityKW(String name, int page, int count) {
+        addSubscribe(model.getKWSearchResult(name,page,count)
+                .map(new Function<KWNewSearchEntity, List<Music>>() {
+                    @Override
+                    public List<Music> apply(@io.reactivex.annotations.NonNull KWNewSearchEntity kwNewSearchEntity) throws Exception {
+                        List<KWNewSearchEntity.AbslistBean> list = kwNewSearchEntity.getAbslist();
+                        List<Music> musicList = new ArrayList<>();
+                        for (KWNewSearchEntity.AbslistBean bean : list){
+                            Music music = new Music();
+                            music.setMUSICRID(bean.getMUSICRID());
+                            music.setTitle(bean.getNAME());
+                            music.setArtist(bean.getARTIST());
+                            musicList.add(music);
+                        }
+                        return musicList;
                     }
                 }).compose(RxSchedulers.apply())
                 .doOnSubscribe(new Consumer<Disposable>() {
