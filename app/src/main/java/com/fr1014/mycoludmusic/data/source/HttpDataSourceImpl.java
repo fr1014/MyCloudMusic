@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data.source;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
@@ -106,5 +107,10 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<KWSongDetailEntity> getKWSongDetail(long mid) {
         return kwApiService.getKWSongDetail(mid);
+    }
+
+    @Override
+    public Observable<KWSongInfoAndLrcEntity> getKWSongInfoAndLrc(String mid) {
+        return kwApiService.getKWSongInfoAndLrc(mid);
     }
 }
