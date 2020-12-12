@@ -1245,17 +1245,38 @@ public class KWSongInfoAndLrcEntity {
                 return lineLyric;
             }
 
-            public void setLineLyric(String lineLyric) {
-                this.lineLyric = lineLyric;
-            }
-
             public String getTime() {
                 return time;
             }
 
-            public void setTime(String time) {
-                this.time = time;
+            @Override
+            public String toString() {
+                return "LrclistBean{" +
+                        "lineLyric='" + lineLyric + '\'' +
+                        ", time='" + time + '\'' +
+                        '}';
             }
         }
+
+        @Override
+        public String toString() {
+            return "DataBean{" +
+                    "simpl=" + simpl +
+                    ", songinfo=" + songinfo +
+                    ", lrclist=" + lrclist +
+                    '}';
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "KWSongInfoAndLrcEntity{" +
+                "data=" + data +
+                ", msg='" + msg + '\'' +
+                ", msgs=" + msgs +
+                ", profileid='" + profileid + '\'' +
+                ", reqid='" + reqid + '\'' +
+                ", status=" + status +
+                '}';
     }
 }
