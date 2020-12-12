@@ -26,17 +26,9 @@ import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import java.util.List;
 
-public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
-    private TopListViewModel viewModel;
+public class SearchActivity extends BasePlayActivity<ActivitySearchBinding,TopListViewModel> {
     private PlayListDetailAdapter adapter;
     private PlayStatusBarView statusBarView;
-
-    @Override
-    protected void initView() {
-        initAdapter();
-        initEditText();
-        initSystemBar();
-    }
 
     /**
      * 沉浸式状态栏
@@ -47,14 +39,21 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
     }
 
     @Override
-    protected void initViewModel() {
-        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    protected ActivitySearchBinding getViewBinding() {
+        return mViewBinding = ActivitySearchBinding.inflate(getLayoutInflater());
     }
 
     @Override
-    protected ActivitySearchBinding getViewBinding() {
-        return mViewBinding = ActivitySearchBinding.inflate(getLayoutInflater());
+    public TopListViewModel initViewModel() {
+        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
+        return new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    }
+
+    @Override
+    protected void initView() {
+        initAdapter();
+        initEditText();
+        initSystemBar();
     }
 
     @Override
@@ -65,15 +64,15 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
     }
 
     @Override
-    protected void initData() {
-        viewModel.getSearch().observe(this, new Observer<List<Music>>() {
+    public void initData() {
+        mViewModel.getSearch().observe(this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> music) {
                 adapter.setData(music);
             }
         });
 
-        viewModel.getSongUrl().observe(this, new Observer<Music>() {
+        mViewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
                 if (!TextUtils.isEmpty(music.getSongUrl())) {
@@ -97,7 +96,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
                             InputMethodManager.HIDE_NOT_ALWAYS);
 //                    viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
 //                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 30);
-                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0, 30);
+                    mViewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0, 30);
                     return true;
                 }
                 return false;
@@ -116,7 +115,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
             public void onItemClick(BaseAdapter adapter, View view, int position) {
 //                viewModel.getSongUrlEntity((Music) adapter.getData(position));
 //                viewModel.checkSong((Music) adapter.getData(position));
-                viewModel.getKWSongUrl((Music) adapter.getData(position));
+                mViewModel.getKWSongUrl((Music) adapter.getData(position));
             }
         });
     }

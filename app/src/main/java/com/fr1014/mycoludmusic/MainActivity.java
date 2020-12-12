@@ -23,14 +23,23 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener {
+public class MainActivity extends BasePlayActivity<ActivityMainBinding,TopListViewModel> implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_PERMISSION_CODE = 100;
 
-    private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
 
+    @Override
+    protected ActivityMainBinding getViewBinding() {
+        return ActivityMainBinding.inflate(getLayoutInflater());
+    }
+
+    @Override
+    public TopListViewModel initViewModel() {
+        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
+        return new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    }
 
     @Override
     protected void initView() {
@@ -47,17 +56,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         NavigationUI.setupWithNavController(mViewBinding.navView, navController);
     }
 
-    @Override
-    protected void initViewModel() {
-        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
-    }
-
-    @Override
-    protected ActivityMainBinding getViewBinding() {
-        return ActivityMainBinding.inflate(getLayoutInflater());
-    }
-
     //首次绑定Service时该方法被调用
     @Override
     protected void onServiceBound() {
@@ -67,12 +65,10 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         AudioPlayer.get().addOnPlayEventListener(statusBar);
     }
 
-
     @Override
-    protected void initData() {
+    public void initData() {
         requestMyPermissions();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
