@@ -117,6 +117,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void onChanged(String lrcPath) {
                 mViewBinding.lrcView.loadLrc(new File(lrcPath));
+                mViewBinding.lrcView.setLabel("暂无歌词");
             }
         });
     }
@@ -186,7 +187,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                 if (mViewBinding.albumCoverView.getVisibility() == View.VISIBLE) {
                     mViewBinding.albumCoverView.setVisibility(View.GONE);
                     mViewBinding.llLrc.setVisibility(View.VISIBLE);
-                    mViewModel.getSongLrc(oldMusic);
+                    getSongLrc(oldMusic);
                 }
                 break;
         }
@@ -256,8 +257,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     public void onChange(Music music) {
         if (music != oldMusic) {
             initViewData(music);
+            getSongLrc(music); //切换歌时，请求歌词
             oldMusic = music;
-            mViewModel.getSongLrc(music); //切换歌时，请求歌词
         }
         mViewBinding.albumCoverView.endAnimator();
     }
@@ -291,6 +292,11 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onBufferingUpdate(int percent) {
 
+    }
+
+    private void getSongLrc(Music music){
+        mViewBinding.lrcView.setLabel("正在搜索歌词");
+        mViewModel.getSongLrc(music);
     }
 
     @Override
