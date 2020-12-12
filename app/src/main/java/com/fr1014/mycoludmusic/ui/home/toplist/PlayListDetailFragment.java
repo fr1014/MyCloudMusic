@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.home.toplist;
+package com.fr1014.mycoludmusic.ui.home.toplist;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;

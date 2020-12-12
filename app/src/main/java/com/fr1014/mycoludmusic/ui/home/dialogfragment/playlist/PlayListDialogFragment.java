@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.home.dialogfragment.playlist;
+package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -19,7 +19,6 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
-import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;

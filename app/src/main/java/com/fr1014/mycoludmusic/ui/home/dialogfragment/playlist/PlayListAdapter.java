@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.home.dialogfragment.playlist;
+package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
 
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;

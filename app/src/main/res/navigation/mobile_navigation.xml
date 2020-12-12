@@ -29,7 +29,7 @@
 
     <fragment
         android:id="@+id/topListFragment"
-        android:name="com.fr1014.mycoludmusic.home.toplist.TopListFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.toplist.TopListFragment"
         android:label="排行榜"
         tools:layout="@layout/fragment_top_list" >
         <action
@@ -38,7 +38,7 @@
     </fragment>
     <fragment
         android:id="@+id/playListDetailFragment"
-        android:name="com.fr1014.mycoludmusic.home.toplist.PlayListDetailFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment"
         android:label="歌单列表"
         tools:layout="@layout/fragment_playlist_detail" />
 </navigation>

@@ -1,6 +1,5 @@
-package com.fr1014.mycoludmusic.home.toplist;
+package com.fr1014.mycoludmusic.ui.home.toplist;
 
-import android.util.Log;
 import android.view.View;
 
 import com.fr1014.frecyclerviewadapter.BaseAdapter;

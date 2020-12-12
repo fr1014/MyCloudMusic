@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.home;
+package com.fr1014.mycoludmusic.ui.home;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -22,7 +22,6 @@ public class HomeFragmentPagerAdapter extends FragmentPagerAdapter {
         this(fm, behavior);
         this.fragments = fragments;
     }
-
 
     public HomeFragmentPagerAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);

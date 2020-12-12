@@ -1,6 +1,5 @@
-package com.fr1014.mycoludmusic.home.dialogfragment.currentmusic;
+package com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic;
 
-import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -11,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +23,8 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
-import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
-import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
+import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;

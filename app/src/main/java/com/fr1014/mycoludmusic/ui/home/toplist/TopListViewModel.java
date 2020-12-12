@@ -1,11 +1,10 @@
-package com.fr1014.mycoludmusic.home.toplist;
+package com.fr1014.mycoludmusic.ui.home.toplist;
 
 import android.app.Application;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
-import androidx.room.util.FileUtil;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
@@ -26,7 +25,6 @@ import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
 import com.google.gson.Gson;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
