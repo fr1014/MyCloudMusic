@@ -2,39 +2,40 @@ package com.fr1014.mycoludmusic.home.toplist;
 
 import android.app.Application;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.room.util.FileUtil;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
-import com.fr1014.mycoludmusic.utils.LogUtil;
+import com.fr1014.mycoludmusic.utils.FileUtils;
 import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 
 /**
@@ -50,9 +51,17 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private BusLiveData<List<Music>> getSongListUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
+    private BusLiveData<String> getSongLrcPath;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
+    }
+
+    public BusLiveData<String> getSongLrcPath() {
+        if (getSongLrcPath == null) {
+            getSongLrcPath = new BusLiveData<>();
+        }
+        return getSongLrcPath;
     }
 
     public BusLiveData<Boolean> getCheckSongResult() {
@@ -355,13 +364,13 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     //获取搜索结果（酷我）新的接口
     public void getSearchEntityKW(String name, int page, int count) {
-        addSubscribe(model.getKWSearchResult(name,page,count)
+        addSubscribe(model.getKWSearchResult(name, page, count)
                 .map(new Function<KWNewSearchEntity, List<Music>>() {
                     @Override
                     public List<Music> apply(@io.reactivex.annotations.NonNull KWNewSearchEntity kwNewSearchEntity) throws Exception {
                         List<KWNewSearchEntity.AbslistBean> list = kwNewSearchEntity.getAbslist();
                         List<Music> musicList = new ArrayList<>();
-                        for (KWNewSearchEntity.AbslistBean bean : list){
+                        for (KWNewSearchEntity.AbslistBean bean : list) {
                             Music music = new Music();
                             music.setMUSICRID(bean.getMUSICRID());
                             music.setTitle(bean.getNAME());
@@ -389,6 +398,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     /**
      * 酷我
+     *
      * @param music
      */
     public void getKWSongUrl(Music music) {
@@ -410,9 +420,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 }));
     }
 
-    public void getKWSongDetail(Music music){
+    public void getKWSongDetail(Music music) {
         try {
-            long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_",""));
+            long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_", ""));
             addSubscribe(model.getKWSongDetail(mid)
                     .compose(RxSchedulers.apply())
                     .subscribe(new Consumer<KWSongDetailEntity>() {
@@ -424,6 +434,55 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     }));
         } catch (NumberFormatException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void getSongLrc(Music music) {
+        String filePath = FileUtils.getLrcDir() + FileUtils.getLrcFileName(music.getArtist(), music.getTitle());
+        if (!FileUtils.isFileEmpty(filePath)){
+            getSongLrcPath().setValue(filePath);
+            return;
+        }
+        if (!TextUtils.isEmpty(music.getMUSICRID())) {
+            String mid = music.getMUSICRID().replace("MUSIC_", "");
+            addSubscribe(model.getKWSongInfoAndLrc(mid)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map(new Function<KWSongInfoAndLrcEntity, String>() {
+                        @Override
+                        public String apply(@io.reactivex.annotations.NonNull KWSongInfoAndLrcEntity kwSongInfoAndLrcEntity) throws Exception {
+                            List<KWSongInfoAndLrcEntity.DataBean.LrclistBean> lrcList = kwSongInfoAndLrcEntity.getData().getLrclist();
+                            StringBuilder content = new StringBuilder();
+                            //正则格式化KW服务器返回的歌词时间
+                            String rgex = "\\d+\\.\\d{1,3}";
+                            Pattern pattern = Pattern.compile(rgex);
+                            for (KWSongInfoAndLrcEntity.DataBean.LrclistBean lrcListBean : lrcList) {
+                                content.append("[");
+                                String time = lrcListBean.getTime();
+                                Matcher m = pattern.matcher(time);
+                                if (m.matches()){
+                                    content.append(CommonUtil.strFormatTime(m.group()));
+                                }else {   //如果正则匹配失败，取.前和.后2位的字符
+                                    int index = time.indexOf(".");
+                                    int endIndex = index + 2;
+                                    content.append(CommonUtil.strFormatTime(time.substring(0,endIndex)));
+                                }
+                                content.append("]");
+                                content.append(lrcListBean.getLineLyric().trim());
+                                content.append("\n");
+                            }
+                            FileUtils.saveLrcFile(filePath, content.toString());
+                            return filePath;
+                        }
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(String filePath) throws Exception {
+                            getSongLrcPath().setValue(filePath);
+                        }
+                    })
+            );
         }
     }
 }

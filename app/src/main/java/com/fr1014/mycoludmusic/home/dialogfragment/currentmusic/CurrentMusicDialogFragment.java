@@ -10,9 +10,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -23,21 +26,28 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.R;
+import com.fr1014.mycoludmusic.app.AppViewModelFactory;
+import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
+import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 
-public class CurrentMusicDialogFragment extends DialogFragment implements View.OnClickListener, OnPlayerEventListener {
+import java.io.File;
+
+public class CurrentMusicDialogFragment extends DialogFragment implements View.OnClickListener, OnPlayerEventListener,LrcView.OnPlayClickListener {
     private FragmentCurrentMusicBinding binding;
     private Music oldMusic;
     private Bitmap oldResource = null;
-    private  MediaPlayer player;
+    private MediaPlayer player;
+    private TopListViewModel viewModel;
 
     public CurrentMusicDialogFragment() {
         // Required empty public constructor
@@ -48,6 +58,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), R.style.CurrentMusicDialog);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //设置content前设定
+        viewModel = new ViewModelProvider(getActivity(), AppViewModelFactory.getInstance(MyApplication.getInstance())).get(TopListViewModel.class);
         return dialog;
     }
 
@@ -62,13 +73,21 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         binding.ivMode.setOnClickListener(this);
         binding.ivPre.setOnClickListener(this);
         binding.ivNext.setOnClickListener(this);
+        binding.albumCoverView.setOnClickListener(this);
+        binding.lrcView.setDraggable(true,this);
+        binding.lrcView.setOnTapListener(new LrcView.OnTapListener() {
+            @Override
+            public void onTap(LrcView view, float x, float y) {
+                binding.albumCoverView.setVisibility(View.VISIBLE);
+                binding.llLrc.setVisibility(View.GONE);
+            }
+        });
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         AudioPlayer.get().addOnPlayEventListener(this);
     }
 
@@ -105,6 +124,13 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 AudioPlayer.get().seekTo(seekBar.getProgress());
+            }
+        });
+
+        viewModel.getSongLrcPath().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String lrcPath) {
+                binding.lrcView.loadLrc(new File(lrcPath));
             }
         });
     }
@@ -171,6 +197,13 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 break;
             case R.id.iv_music_menu:
                 new PlayListDialogFragment().show(getParentFragmentManager(), "playlist_dialog");
+                break;
+            case R.id.album_cover_view:
+                if (binding.albumCoverView.getVisibility() == View.VISIBLE){
+                    binding.albumCoverView.setVisibility(View.GONE);
+                    binding.llLrc.setVisibility(View.VISIBLE);
+                    viewModel.getSongLrc(oldMusic);
+                }
                 break;
         }
     }
@@ -246,6 +279,10 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     public void onPublish(int progress) {
         binding.tvNowTime.setText(CommonUtil.formatTime(player.getCurrentPosition()));
         binding.sbProgress.setProgress((int) progress);
+
+        if (binding.lrcView.hasLrc()) {
+            binding.lrcView.updateTime(progress);
+        }
     }
 
     @Override
@@ -271,5 +308,10 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     public void onDestroy() {
         super.onDestroy();
         AudioPlayer.get().removeOnPlayEventListener(this);
+    }
+
+    @Override
+    public boolean onPlayClick(LrcView view, long time) {
+        return false;
     }
 }
