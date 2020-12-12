@@ -31,10 +31,17 @@ public class CommonUtil {
         return dateFormat.format(data);
     }
 
-    public static long stringToDuration(String str) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
+//    public static long stringToDuration(String str) throws ParseException {
+//        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
+//        Date date = (Date) formatter.parse(str);
+//        return date.getTime();
+//    }
+
+    public static String strFormatTime(String str) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("ss.SSS");
+        SimpleDateFormat f = new SimpleDateFormat("mm:ss.SSS");
         Date date = (Date) formatter.parse(str);
-        return date.getTime();
+        return f.format(date);
     }
 
     public static boolean isEmptyList(List list) {
