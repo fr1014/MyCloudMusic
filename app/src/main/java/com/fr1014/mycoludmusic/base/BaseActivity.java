@@ -39,6 +39,5 @@ public abstract class BaseActivity<VB extends ViewBinding> extends AppCompatActi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Glide.with(MyApplication.getInstance()).pauseAllRequests();
     }
 }

@@ -12,15 +12,20 @@ import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModel;
 import androidx.viewbinding.ViewBinding;
 
+import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.R;
+import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
+import com.fr1014.mymvvm.base.BaseActivity;
+import com.fr1014.mymvvm.base.BaseViewModel;
 
 import java.lang.ref.WeakReference;
 
-public abstract class BasePlayActivity<VB extends ViewBinding> extends BaseActivity<VB> {
+public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseViewModel> extends BaseActivity<VB,VM> {
 
     protected PlayService playService;
     private ServiceConnection serviceConnection;
@@ -110,5 +115,6 @@ public abstract class BasePlayActivity<VB extends ViewBinding> extends BaseActiv
             unbindService(serviceConnection);
         }
         super.onDestroy();
+        Glide.with(MyApplication.getInstance()).pauseAllRequests();
     }
 }

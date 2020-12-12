@@ -58,9 +58,12 @@ public abstract class BaseActivity<VB extends ViewBinding,VM extends BaseViewMod
             }
             mViewModel = (VM) createViewModel(this, modelClass);
         }
+        initView();
         //让ViewModel拥有View的生命周期感应
         getLifecycle().addObserver(mViewModel);
     }
+
+    protected abstract void initView();
 
 
     /**
