@@ -17,6 +17,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
@@ -439,7 +440,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     public void getSongLrc(Music music) {
         String filePath = FileUtils.getLrcDir() + FileUtils.getLrcFileName(music.getArtist(), music.getTitle());
-        if (!FileUtils.isFileEmpty(filePath)){
+        if (!FileUtils.isFileEmpty(filePath)) {
             getSongLrcPath().setValue(filePath);
             return;
         }
@@ -460,12 +461,12 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                                 content.append("[");
                                 String time = lrcListBean.getTime();
                                 Matcher m = pattern.matcher(time);
-                                if (m.matches()){
+                                if (m.matches()) {
                                     content.append(CommonUtil.strFormatTime(m.group()));
-                                }else {   //如果正则匹配失败，取.前和.后2位的字符
+                                } else {   //如果正则匹配失败，取.前和.后2位的字符
                                     int index = time.indexOf(".");
                                     int endIndex = index + 2;
-                                    content.append(CommonUtil.strFormatTime(time.substring(0,endIndex)));
+                                    content.append(CommonUtil.strFormatTime(time.substring(0, endIndex)));
                                 }
                                 content.append("]");
                                 content.append(lrcListBean.getLineLyric().trim());
@@ -479,6 +480,26 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     .subscribe(new Consumer<String>() {
                         @Override
                         public void accept(String filePath) throws Exception {
+                            getSongLrcPath().setValue(filePath);
+                        }
+                    })
+            );
+        } else {
+            addSubscribe(model.getWYSongLrcEntity(music.getId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .map(new Function<WYSongLrcEntity, String>() {
+                        @Override
+                        public String apply(@io.reactivex.annotations.NonNull WYSongLrcEntity wySongLrcEntity) throws Exception {
+                            String lyric = wySongLrcEntity.getLrc().getLyric();
+                            FileUtils.saveLrcFile(filePath, lyric);
+                            return filePath;
+                        }
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) throws Exception {
                             getSongLrcPath().setValue(filePath);
                         }
                     })

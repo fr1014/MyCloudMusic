@@ -8,6 +8,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -64,14 +65,16 @@ public interface WYApiService {
     @GET("/search")
     Observable<WYSearchEntity> getSearch(@Query("keywords") String keywords, @Query("offset") int offset);
 
+    @GET("/lyric")
+    Observable<WYSongLrcEntity> getWYSongLrcEntity(@Query("id")long id);
 
-    /**
-     * KW的api 返回的为json
-     * @param name  需要搜索的歌曲或歌手
-     * @param page  查询的页码数
-     * @param count 当前页的返回数量
-     * @return SearchEntity
-     */
-    @GET("http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&rformat=json&encoding=utf8")
-    Observable<KWSearchEntity> getSearchEntity(@Query("all") String name, @Query("qn") int page, @Query("rn") int count);
+//    /**
+//     * KW的api 返回的为json
+//     * @param name  需要搜索的歌曲或歌手
+//     * @param page  查询的页码数
+//     * @param count 当前页的返回数量
+//     * @return SearchEntity
+//     */
+//    @GET("http://search.kuwo.cn/r.s?ft=music&itemset=web_2013&client=kt&rformat=json&encoding=utf8")
+//    Observable<KWSearchEntity> getSearchEntity(@Query("all") String name, @Query("qn") int page, @Query("rn") int count);
 }

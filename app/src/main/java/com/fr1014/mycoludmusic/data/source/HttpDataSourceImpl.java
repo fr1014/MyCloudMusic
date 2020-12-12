@@ -11,6 +11,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.http.api.KWApiService;
 import com.fr1014.mycoludmusic.http.api.WYApiService;
@@ -85,9 +86,14 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<KWSearchEntity> getSearch(String name, int page, int count) {
-        return wyApiService.getSearchEntity(name, page, count);
+    public Observable<WYSongLrcEntity> getWYSongLrcEntity(long id) {
+        return wyApiService.getWYSongLrcEntity(id);
     }
+
+//    @Override
+//    public Observable<KWSearchEntity> getSearch(String name, int page, int count) {
+//        return wyApiService.getSearchEntity(name, page, count);
+//    }
 
     @Override
     public Observable<ResponseBody> getKWSongUrl(String rid) {

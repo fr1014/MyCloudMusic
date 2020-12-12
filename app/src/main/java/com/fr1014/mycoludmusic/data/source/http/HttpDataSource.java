@@ -11,9 +11,11 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -41,10 +43,12 @@ public interface HttpDataSource {
 
     Observable<WYSearchEntity> getSearch(String keywords, int offset);
 
+    Observable<WYSongLrcEntity> getWYSongLrcEntity(long id);
+
 /*
 ===============================酷我========================================
 */
-    Observable<KWSearchEntity> getSearch(String name, int page, int count);
+//    Observable<KWSearchEntity> getSearch(String name, int page, int count);
     Observable<ResponseBody> getKWSongUrl(String rid);
     Observable<ResponseBody> getSearchResult(String name,int count);
     Observable<KWNewSearchEntity> getKWSearchResult(String name, int page, int count);
