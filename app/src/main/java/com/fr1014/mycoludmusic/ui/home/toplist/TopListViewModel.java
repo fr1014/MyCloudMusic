@@ -382,13 +382,13 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable disposable) throws Exception {
-//                        showDialog();
+                        showDialog();
                     }
                 })
                 .subscribe(new Consumer<List<Music>>() {
                     @Override
                     public void accept(List<Music> musicList) throws Exception {
-//                        dismissDialog();
+                        dismissDialog();
                         getSearch().postValue(musicList);
                     }
                 }));
