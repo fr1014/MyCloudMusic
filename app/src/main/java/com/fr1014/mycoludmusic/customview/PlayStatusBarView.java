@@ -1,9 +1,7 @@
 package com.fr1014.mycoludmusic.customview;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -11,13 +9,11 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.fr1014.mycoludmusic.R;
+import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
-import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
+import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
-import com.fr1014.mycoludmusic.listener.MusicInfoListener;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
@@ -25,16 +21,20 @@ import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 /**
  * 底部播放状态栏
+ *
+ * 仅可在继承了BasePlayActivity的Activity中使用
  */
 public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
     private PlayListDialogFragment listDialogFragment;
-    private CurrentMusicDialogFragment musicDialogFragment;
+    private CurrentPlayMusicFragment musicDialogFragment;
     private Music oldMusic;
+    private Context mContext;
 
     public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
         super(context);
+        mContext = context;
         this.fragmentManager = fragmentManager;
         initView();
     }
@@ -53,7 +53,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         mViewBinding = CustomviewPlaystatusbarBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
         listDialogFragment = new PlayListDialogFragment();
-        musicDialogFragment = new CurrentMusicDialogFragment();
+        musicDialogFragment = new CurrentPlayMusicFragment();
         onChange(AudioPlayer.get().getPlayMusic());
         initClickListener();
     }
@@ -121,7 +121,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 if (AudioPlayer.get().getPlayMusic() != null) {
                     if (!musicDialogFragment.isAdded()) {
                         //当前播放的音乐的详情页
-                        musicDialogFragment.show(fragmentManager, "current_music_dialog");
+                        ((BasePlayActivity)mContext).showPlayingFragment();
                     }
                 } else {
                     CommonUtil.toastShort("当前尚未有歌曲在播放！！！");

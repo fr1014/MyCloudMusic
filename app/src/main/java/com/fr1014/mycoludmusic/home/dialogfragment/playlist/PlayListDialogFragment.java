@@ -17,8 +17,9 @@ import android.view.WindowManager;
 
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
-import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
+import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
@@ -113,8 +114,10 @@ public class PlayListDialogFragment extends DialogFragment implements OnPlayerEv
                         AudioPlayer.get().addAndPlay(item);
                     } else {
                         //点击的为当前播放的歌曲
-                        new CurrentMusicDialogFragment().show(getParentFragmentManager(), "current_music_dialog");
-                        dismissDialog();
+                        if (getActivity() instanceof BasePlayActivity) {
+                            ((BasePlayActivity) getActivity()).showPlayingFragment();
+                            dismissDialog();
+                        }
                     }
                     break;
                 case R.id.iv_del:

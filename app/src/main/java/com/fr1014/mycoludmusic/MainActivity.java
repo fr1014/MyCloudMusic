@@ -11,12 +11,14 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
+import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -30,6 +32,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
     private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
+
 
     @Override
     protected void initView() {
@@ -130,5 +133,4 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
 //            }
         }
     }
-
 }

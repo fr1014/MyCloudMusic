@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
     <com.fr1014.mycoludmusic.customview.blurimageview.BlurImageView
         android:id="@+id/bi_background"
@@ -12,11 +13,11 @@
         android:background="#00BCD4" />
 
     <LinearLayout
+        android:id="@+id/ll_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="40dp"
         android:orientation="vertical"
-        tools:context=".home.dialogfragment.currentmusic.CurrentMusicDialogFragment">
+        tools:context=".home.dialogfragment.currentmusic.CurrentPlayMusicFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

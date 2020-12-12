@@ -5,19 +5,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Build;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
@@ -37,75 +34,63 @@ import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
+import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.io.File;
 
-public class CurrentMusicDialogFragment extends DialogFragment implements View.OnClickListener, OnPlayerEventListener,LrcView.OnPlayClickListener {
-    private FragmentCurrentMusicBinding binding;
+public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, TopListViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener {
     private Music oldMusic;
     private Bitmap oldResource = null;
     private MediaPlayer player;
-    private TopListViewModel viewModel;
 
-    public CurrentMusicDialogFragment() {
+    public CurrentPlayMusicFragment() {
         // Required empty public constructor
     }
 
-    @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Dialog dialog = new Dialog(getActivity(), R.style.CurrentMusicDialog);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //设置content前设定
-        viewModel = new ViewModelProvider(getActivity(), AppViewModelFactory.getInstance(MyApplication.getInstance())).get(TopListViewModel.class);
-        return dialog;
+    protected FragmentCurrentMusicBinding getViewBinding(ViewGroup container) {
+        return FragmentCurrentMusicBinding.inflate(getLayoutInflater(), container, false);
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentCurrentMusicBinding.inflate(inflater, container, false);
-
-        binding.icBack.setOnClickListener(this);
-        binding.ivState.setOnClickListener(this);
-        binding.ivMusicMenu.setOnClickListener(this);
-        binding.ivMode.setOnClickListener(this);
-        binding.ivPre.setOnClickListener(this);
-        binding.ivNext.setOnClickListener(this);
-        binding.albumCoverView.setOnClickListener(this);
-
-        return binding.getRoot();
+    protected TopListViewModel initViewModel() {
+        return new ViewModelProvider(getActivity(), AppViewModelFactory.getInstance(MyApplication.getInstance())).get(TopListViewModel.class);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    protected void initView() {
+        initSystemBar();
+        initListener();
+        initCoverLrc();
         AudioPlayer.get().addOnPlayEventListener(this);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         player = AudioPlayer.get().getMediaPlayer();
         oldMusic = AudioPlayer.get().getPlayMusic();
         if (oldMusic == null) return;
-
-        initView(oldMusic);
-
+        initViewData(oldMusic);
         if (AudioPlayer.get().isPlaying()) {
-            binding.albumCoverView.startAnimator();
-            binding.ivState.setImageResource(R.drawable.ic_stop_white);
+            mViewBinding.albumCoverView.startAnimator();
+            mViewBinding.ivState.setImageResource(R.drawable.ic_stop_white);
         } else {
-            binding.ivState.setImageResource(R.drawable.ic_play_white);
+            mViewBinding.ivState.setImageResource(R.drawable.ic_play_white);
         }
-
         initPlayMode();
+    }
 
-        binding.sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+    private void initListener() {
+        mViewBinding.icBack.setOnClickListener(this);
+        mViewBinding.ivState.setOnClickListener(this);
+        mViewBinding.ivMusicMenu.setOnClickListener(this);
+        mViewBinding.ivMode.setOnClickListener(this);
+        mViewBinding.ivPre.setOnClickListener(this);
+        mViewBinding.ivNext.setOnClickListener(this);
+        mViewBinding.albumCoverView.setOnClickListener(this);
+        mViewBinding.sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //拖动进度条
-                binding.tvNowTime.setText(CommonUtil.formatTime(progress));
+                mViewBinding.tvNowTime.setText(CommonUtil.formatTime(progress));
             }
 
             @Override
@@ -118,11 +103,22 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 AudioPlayer.get().seekTo(seekBar.getProgress());
             }
         });
+    }
 
-        viewModel.getSongLrcPath().observe(getViewLifecycleOwner(), new Observer<String>() {
+    /**
+     * 沉浸式状态栏
+     */
+    private void initSystemBar() {
+        int top = ScreenUtil.getStatusHeight(MyApplication.getInstance());
+        mViewBinding.llContent.setPadding(0, top, 0, 0);
+    }
+
+    @Override
+    public void initViewObservable() {
+        mViewModel.getSongLrcPath().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String lrcPath) {
-                binding.lrcView.loadLrc(new File(lrcPath));
+                mViewBinding.lrcView.loadLrc(new File(lrcPath));
             }
         });
     }
@@ -155,13 +151,13 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     private void setImageMode(int mode) {
         switch (mode) {
             case 0:
-                binding.ivMode.setImageResource(R.drawable.ic_loop_white);
+                mViewBinding.ivMode.setImageResource(R.drawable.ic_loop_white);
                 break;
             case 1:
-                binding.ivMode.setImageResource(R.drawable.ic_random_white);
+                mViewBinding.ivMode.setImageResource(R.drawable.ic_random_white);
                 break;
             case 2:
-                binding.ivMode.setImageResource(R.drawable.ic_cycle_white);
+                mViewBinding.ivMode.setImageResource(R.drawable.ic_cycle_white);
                 break;
         }
     }
@@ -173,10 +169,8 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 switchPlayMode();
                 break;
             case R.id.ic_back:
-                if (getDialog() != null) {
-                    binding.albumCoverView.endAnimator();
-                    getDialog().dismiss();
-                }
+                mViewBinding.albumCoverView.endAnimator();
+                getActivity().onBackPressed();
                 break;
             case R.id.iv_pre:
                 AudioPlayer.get().playPre();
@@ -191,23 +185,23 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
                 new PlayListDialogFragment().show(getParentFragmentManager(), "playlist_dialog");
                 break;
             case R.id.album_cover_view:
-                if (binding.albumCoverView.getVisibility() == View.VISIBLE){
-                    binding.albumCoverView.setVisibility(View.GONE);
-                    binding.llLrc.setVisibility(View.VISIBLE);
-                    viewModel.getSongLrc(oldMusic);
+                if (mViewBinding.albumCoverView.getVisibility() == View.VISIBLE) {
+                    mViewBinding.albumCoverView.setVisibility(View.GONE);
+                    mViewBinding.llLrc.setVisibility(View.VISIBLE);
+                    mViewModel.getSongLrc(oldMusic);
                 }
                 break;
         }
     }
 
-    private void initView(Music music) {
-        if (oldResource == null || TextUtils.isEmpty(music.getImgUrl())) {
-            binding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
+    private void initViewData(Music music) {
+        if (TextUtils.isEmpty(music.getImgUrl())) {
+            mViewBinding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
+            return;
         }
-
         Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
-        if (cacheBitmap == null){
-            Glide.with(CurrentMusicDialogFragment.this)
+        if (cacheBitmap == null) {
+            Glide.with(CurrentPlayMusicFragment.this)
                     .asBitmap()
                     .load(music.getImgUrl())
                     .placeholder(R.drawable.bg_play)
@@ -224,72 +218,74 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
 
                         }
                     });
-        }else {
+        } else {
             setBitmap(cacheBitmap);
         }
+        mViewBinding.tvTitle.setText(music.getTitle());
+        mViewBinding.tvArtist.setText(music.getArtist());
+        initSeekBarData(music);
+    }
 
-        binding.tvTitle.setText(music.getTitle());
-        binding.tvArtist.setText(music.getArtist());
-        initCoverLrc();
+    private void initSeekBarData(Music music) {
         long duration = music.getDuration();
-        if (duration == 0){
+        if (duration == 0) {
             duration = player.getDuration();
         }
-        binding.sbProgress.setMax((int) duration);
-        binding.tvDuration.setText(CommonUtil.formatTime(duration));
+        mViewBinding.sbProgress.setMax((int) duration);
+        mViewBinding.tvDuration.setText(CommonUtil.formatTime(duration));
     }
 
     //音乐旋转图、歌词
     private void initCoverLrc() {
-        binding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.bg_play));
-        binding.lrcView.setDraggable(true,this);
-        binding.lrcView.setOnTapListener(new LrcView.OnTapListener() {
+        mViewBinding.lrcView.setDraggable(true, this);
+        mViewBinding.lrcView.setOnTapListener(new LrcView.OnTapListener() {
             @Override
             public void onTap(LrcView view, float x, float y) {
-                binding.albumCoverView.setVisibility(View.VISIBLE);
-                binding.llLrc.setVisibility(View.GONE);
+                mViewBinding.albumCoverView.setVisibility(View.VISIBLE);
+                mViewBinding.llLrc.setVisibility(View.GONE);
             }
         });
     }
 
-    private void setBitmap(Bitmap resource){
-        binding.albumCoverView.songImgSetBitmap(resource);
-        binding.biBackground.setBitmap(resource);
+    private void setBitmap(Bitmap resource) {
+        mViewBinding.albumCoverView.songImgSetBitmap(resource);
+        mViewBinding.biBackground.setBitmap(resource);
         oldResource = resource;
     }
 
     @Override
     public void onChange(Music music) {
         if (music != oldMusic) {
-            initView(music);
+            initViewData(music);
             oldMusic = music;
-            viewModel.getSongLrc(music); //切换歌时，请求歌词
+            mViewModel.getSongLrc(music); //切换歌时，请求歌词
         }
-        binding.albumCoverView.endAnimator();
+        mViewBinding.albumCoverView.endAnimator();
     }
 
     @Override
     public void onPlayerStart() {
-        binding.ivState.setImageResource(R.drawable.ic_stop_white);
+        mViewBinding.ivState.setImageResource(R.drawable.ic_stop_white);
         Music music = AudioPlayer.get().getPlayMusic();
         if (music == oldMusic) { //选择播放的音乐与当前音乐相同
-            binding.albumCoverView.resumeOrStartAnimator();
+            mViewBinding.albumCoverView.resumeOrStartAnimator();
         }
+        initSeekBarData(music);
     }
 
     @Override
     public void onPlayerPause() {
-        binding.albumCoverView.pauseAnimator();
-        binding.ivState.setImageResource(R.drawable.ic_play_white);
+        mViewBinding.albumCoverView.pauseAnimator();
+        mViewBinding.ivState.setImageResource(R.drawable.ic_play_white);
     }
 
     @Override
     public void onPublish(int progress) {
-        binding.tvNowTime.setText(CommonUtil.formatTime(player.getCurrentPosition()));
-        binding.sbProgress.setProgress((int) progress);
+        mViewBinding.tvNowTime.setText(CommonUtil.formatTime(player.getCurrentPosition()));
+        mViewBinding.sbProgress.setProgress((int) progress);
 
-        if (binding.lrcView.hasLrc()) {
-            binding.lrcView.updateTime(progress);
+        if (mViewBinding.lrcView.hasLrc()) {
+            mViewBinding.lrcView.updateTime(progress);
         }
     }
 
@@ -302,14 +298,14 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
     public void onResume() {
         super.onResume();
         if (AudioPlayer.get().isPlaying()) {
-            binding.albumCoverView.resumeAnimator();
+            mViewBinding.albumCoverView.resumeAnimator();
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        binding.albumCoverView.pauseAnimator();
+        mViewBinding.albumCoverView.pauseAnimator();
     }
 
     @Override
