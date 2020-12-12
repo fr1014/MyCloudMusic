@@ -300,6 +300,16 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden){
+            mViewBinding.albumCoverView.endAnimator();
+        }else {
+            mViewBinding.albumCoverView.startAnimator();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (AudioPlayer.get().isPlaying()) {
@@ -316,6 +326,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mViewBinding.albumCoverView.endAnimator();
         AudioPlayer.get().removeOnPlayEventListener(this);
     }
 
