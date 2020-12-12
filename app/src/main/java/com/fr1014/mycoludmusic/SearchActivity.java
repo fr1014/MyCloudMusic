@@ -22,6 +22,7 @@ import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailAdapter;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import java.util.List;
 
@@ -34,6 +35,15 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding> {
     protected void initView() {
         initAdapter();
         initEditText();
+        initSystemBar();
+    }
+
+    /**
+     * 沉浸式状态栏
+     */
+    private void initSystemBar() {
+        int top = ScreenUtil.getStatusHeight(MyApplication.getInstance());
+        mViewBinding.llSearch.setPadding(0, top, 0, 0);
     }
 
     @Override
