@@ -1,5 +1,7 @@
 package com.fr1014.mycoludmusic;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,14 +15,17 @@ import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener{
+public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener {
     private static final String TAG = "MainActivity";
+    private static final int REQUEST_PERMISSION_CODE = 100;
 
     private TopListViewModel viewModel;
     private AppBarConfiguration mAppBarConfiguration;
@@ -64,7 +69,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
 
     @Override
     protected void initData() {
-
+        requestMyPermissions();
     }
 
 
@@ -102,6 +107,27 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         super.onDestroy();
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
+        }
+    }
+
+    private void requestMyPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //没有授权，编写申请权限代码
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //没有授权，编写申请权限代码
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+//            for (int i = 0; i < permissions.length; i++) {
+//                Log.i("MainActivity", "申请的权限为：" + permissions[i] + ",申请结果：" + grantResults[i]);
+//            }
         }
     }
 
