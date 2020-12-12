@@ -18,7 +18,7 @@
         android:layout_gravity="bottom"
         android:foreground="?attr/selectableItemBackground">
 
-        <com.fr1014.mycoludmusic.customview.RemoteCircleImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_coverImg"
             android:layout_width="40dp"
             android:layout_height="40dp"

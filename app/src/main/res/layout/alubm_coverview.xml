@@ -4,11 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.fr1014.mycoludmusic.customview.RemoteCircleImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/civ_songImg"
         android:layout_width="280dp"
         android:layout_height="280dp"
         android:layout_centerInParent="true"
+        android:src="@drawable/bg_play"
         android:scaleType="centerCrop"
         app:civ_border_color="@color/black"
         app:civ_border_width="30dp" />

@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.customview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,10 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
@@ -18,6 +23,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 
 /**
  * 底部播放状态栏
@@ -97,7 +103,22 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     private void setImageUrl(String imgUrl) {
-        mViewBinding.ivCoverImg.setImageUrl(imgUrl);
+        Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(imgUrl);
+        if (cacheBitmap == null){
+            RequestOptions options = new RequestOptions()
+                    .centerCrop()
+                    .placeholder(R.drawable.film)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .error(R.drawable.bg_play)
+                    .format(DecodeFormat.PREFER_ARGB_8888);
+
+            Glide.with(getContext())
+                    .load(imgUrl)
+                    .apply(options)
+                    .into(mViewBinding.ivCoverImg);
+        }else{
+            mViewBinding.ivCoverImg.setImageBitmap(cacheBitmap);
+        }
     }
 
     @Override

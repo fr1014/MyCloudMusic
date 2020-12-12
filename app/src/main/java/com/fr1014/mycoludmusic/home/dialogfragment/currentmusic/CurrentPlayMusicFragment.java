@@ -200,12 +200,13 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             return;
         }
         Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
+        if (oldResource != null && cacheBitmap == null){    //加载网图时的替代图
+            mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
+        }
         if (cacheBitmap == null) {
             Glide.with(CurrentPlayMusicFragment.this)
                     .asBitmap()
                     .load(music.getImgUrl())
-                    .placeholder(R.drawable.bg_play)
-                    .error(R.drawable.film)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(new CustomTarget<Bitmap>() {
                         @Override
