@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -74,14 +73,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         binding.ivPre.setOnClickListener(this);
         binding.ivNext.setOnClickListener(this);
         binding.albumCoverView.setOnClickListener(this);
-        binding.lrcView.setDraggable(true,this);
-        binding.lrcView.setOnTapListener(new LrcView.OnTapListener() {
-            @Override
-            public void onTap(LrcView view, float x, float y) {
-                binding.albumCoverView.setVisibility(View.VISIBLE);
-                binding.llLrc.setVisibility(View.GONE);
-            }
-        });
+
         return binding.getRoot();
     }
 
@@ -212,15 +204,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         if (oldResource == null || TextUtils.isEmpty(music.getImgUrl())) {
             binding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
         }
-        binding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.bg_play));
-        binding.tvTitle.setText(music.getTitle());
-        binding.tvArtist.setText(music.getArtist());
-        long duration = music.getDuration();
-        if (duration == 0){
-            duration = player.getDuration();
-        }
-        binding.sbProgress.setMax((int) duration);
-        binding.tvDuration.setText(CommonUtil.formatTime(duration));
+
         Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
         if (cacheBitmap == null){
             Glide.with(CurrentMusicDialogFragment.this)
@@ -243,6 +227,29 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         }else {
             setBitmap(cacheBitmap);
         }
+
+        binding.tvTitle.setText(music.getTitle());
+        binding.tvArtist.setText(music.getArtist());
+        initCoverLrc();
+        long duration = music.getDuration();
+        if (duration == 0){
+            duration = player.getDuration();
+        }
+        binding.sbProgress.setMax((int) duration);
+        binding.tvDuration.setText(CommonUtil.formatTime(duration));
+    }
+
+    //音乐旋转图、歌词
+    private void initCoverLrc() {
+        binding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.bg_play));
+        binding.lrcView.setDraggable(true,this);
+        binding.lrcView.setOnTapListener(new LrcView.OnTapListener() {
+            @Override
+            public void onTap(LrcView view, float x, float y) {
+                binding.albumCoverView.setVisibility(View.VISIBLE);
+                binding.llLrc.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void setBitmap(Bitmap resource){
@@ -256,6 +263,7 @@ public class CurrentMusicDialogFragment extends DialogFragment implements View.O
         if (music != oldMusic) {
             initView(music);
             oldMusic = music;
+            viewModel.getSongLrc(music); //切换歌时，请求歌词
         }
         binding.albumCoverView.endAnimator();
     }
