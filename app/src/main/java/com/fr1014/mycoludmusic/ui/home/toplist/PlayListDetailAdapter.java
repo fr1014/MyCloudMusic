@@ -1,11 +1,16 @@
 package com.fr1014.mycoludmusic.ui.home.toplist;
 
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 /**
  * 创建时间:2020/9/5
@@ -36,12 +41,39 @@ public class PlayListDetailAdapter extends BaseAdapter<Music, BaseViewHolder> {
     @Override
     protected void convert(BaseViewHolder holder, Music data) {
         if (isDisplaySeq) {
-            holder.getView(R.id.tv_rank).setVisibility(View.VISIBLE);
+            holder.getView(R.id.cl_status).setVisibility(View.VISIBLE);
             holder.setText(R.id.tv_rank, holder.getLayoutPosition() + "");
+        } else {
+            holder.getView(R.id.cl_status).setVisibility(View.GONE);
         }
         holder.setText(R.id.tv_song_name, data.getTitle());
-        holder.setText(R.id.tv_author, data.getArtist());
 
+        //歌手 - 专辑
+        if (TextUtils.isEmpty(data.getAlbum())) {
+            holder.setText(R.id.tv_author, data.getArtist());
+        } else {
+            holder.setText(R.id.tv_author, data.getArtist() + " - " + data.getAlbum());
+        }
+
+        //是否为原唱
+        if (TextUtils.equals(data.getOriginal(), "1")) {
+            holder.getView(R.id.tv_prompt).setVisibility(View.VISIBLE);
+            holder.setText(R.id.tv_prompt, mContext.getString(R.string.original));
+            setAuthorLeftMargin(holder, 4);
+        } else {
+            holder.getView(R.id.tv_prompt).setVisibility(View.GONE);
+            setAuthorLeftMargin(holder, 0);
+        }
+
+        //别名/介绍
+        if (TextUtils.isEmpty(data.getSubTitle())) {
+            holder.getView(R.id.tv_subtitle).setVisibility(View.GONE);
+        } else {
+            holder.getView(R.id.tv_subtitle).setVisibility(View.VISIBLE);
+            holder.setText(R.id.tv_subtitle, data.getSubTitle());
+        }
+
+        //是否显示最底部的MarginView
         if (isDisplayMarginView) {
             holder.getView(R.id.margin_barsize).setVisibility(isShowDivider(holder) ? View.VISIBLE : View.GONE);
         }
@@ -57,5 +89,11 @@ public class PlayListDetailAdapter extends BaseAdapter<Music, BaseViewHolder> {
 
     public void setDisplayMarginView(boolean displayMarginView) {
         isDisplayMarginView = displayMarginView;
+    }
+
+    private void setAuthorLeftMargin(BaseViewHolder holder, int dp) {
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.getView(R.id.tv_author).getLayoutParams();
+        layoutParams.leftMargin = ScreenUtil.dp2px(mContext, dp);
+        holder.getView(R.id.tv_author).setLayoutParams(layoutParams);
     }
 }

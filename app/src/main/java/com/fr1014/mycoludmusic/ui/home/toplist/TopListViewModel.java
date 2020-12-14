@@ -201,6 +201,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                             music.setTitle(data.getName());
                             music.setImgUrl(data.getAl().getPicUrl());
                             music.setDuration(data.getDt());
+                            music.setAlbum(data.getAl().getName());
                             musics.add(music);
                         }
 
@@ -369,11 +370,22 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     public List<Music> apply(@io.reactivex.annotations.NonNull KWNewSearchEntity kwNewSearchEntity) throws Exception {
                         List<KWNewSearchEntity.AbslistBean> list = kwNewSearchEntity.getAbslist();
                         List<Music> musicList = new ArrayList<>();
+                        String pattern = "([\\s\\S]+)-([\\s\\S]+)";
+                        Pattern r = Pattern.compile(pattern);
                         for (KWNewSearchEntity.AbslistBean bean : list) {
                             Music music = new Music();
                             music.setMUSICRID(bean.getMUSICRID());
-                            music.setTitle(bean.getNAME());
                             music.setArtist(bean.getARTIST());
+                            music.setOriginal(bean.getOriginalsongtype());
+                            music.setAlbum(bean.getALBUM());
+                            Matcher m = r.matcher(bean.getNAME());
+                            if(m.matches()){
+                                music.setTitle(m.group(1));
+                                music.setSubTitle(m.group(2));
+                            }else {
+                                music.setTitle(bean.getNAME());
+                            }
+                            music.setSubTitle(music.getSubTitle());
                             musicList.add(music);
                         }
                         return musicList;

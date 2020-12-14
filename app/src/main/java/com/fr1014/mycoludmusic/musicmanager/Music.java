@@ -9,10 +9,13 @@ public class Music {
     private long id;                //网易歌曲id
     private String artist;          //歌手
     private String title;           //歌曲名
+    private String subTitle;        //
     private String songUrl;         //歌曲地址
-    private String imgUrl;          //专辑图片地址
+    private String imgUrl;          //歌曲图片地址
     private String MUSICRID;        //酷我musicID
     private long duration;          // 持续时间
+    private String original;        //是否为原唱
+    private String album;           //歌曲专辑
     private boolean isOnlineMusic;  //是否为在线歌曲
 
     public Music() {
@@ -109,15 +112,43 @@ public class Music {
         this.duration = duration;
     }
 
+    public String getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(String original) {
+        this.original = original;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
+
+    public String getSubTitle() {
+        return subTitle;
+    }
+
+    public void setSubTitle(String subTitle) {
+        this.subTitle = subTitle;
+    }
+
     @Override
     public String toString() {
         return "Music{" +
                 "id=" + id +
                 ", artist='" + artist + '\'' +
                 ", title='" + title + '\'' +
+                ", subTitle='" + subTitle + '\'' +
                 ", songUrl='" + songUrl + '\'' +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", MUSICRID='" + MUSICRID + '\'' +
+                ", duration=" + duration +
+                ", original='" + original + '\'' +
+                ", album='" + album + '\'' +
                 ", isOnlineMusic=" + isOnlineMusic +
                 '}';
     }

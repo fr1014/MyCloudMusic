@@ -18,6 +18,8 @@
     <string name="play_all">播放全部</string>
     <string name="channel_name">音乐前台服务</string>
 
+    <string name="original">原唱</string>
+
     <!--LrcView-->
     <string name="lrc_label">暂无歌词</string>
     <!--LrcView-->
