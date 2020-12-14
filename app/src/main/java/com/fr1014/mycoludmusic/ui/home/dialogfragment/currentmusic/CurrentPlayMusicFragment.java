@@ -199,7 +199,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             return;
         }
         Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
-        if (oldResource != null && cacheBitmap == null){    //加载网图时的替代图
+        if (oldResource != null && cacheBitmap == null) {    //加载网图时的替代图
             mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
         }
         if (cacheBitmap == null) {
@@ -284,7 +284,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewBinding.tvNowTime.setText(CommonUtil.formatTime(player.getCurrentPosition()));
         mViewBinding.sbProgress.setProgress((int) progress);
 
-        if (mViewBinding.lrcView.hasLrc()) {
+        if (isVisible() && (mViewBinding.llLrc.getVisibility() == View.VISIBLE) && mViewBinding.lrcView.hasLrc()) {
             mViewBinding.lrcView.updateTime(progress);
         }
     }
@@ -294,7 +294,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     }
 
-    private void getSongLrc(Music music){
+    private void getSongLrc(Music music) {
         mViewBinding.lrcView.setLabel("正在搜索歌词");
         mViewModel.getSongLrc(music);
     }
@@ -302,9 +302,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        if (hidden){
+        if (hidden) {
             mViewBinding.albumCoverView.endAnimator();
-        }else {
+        } else {
             mViewBinding.albumCoverView.startAnimator();
         }
     }
