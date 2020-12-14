@@ -305,7 +305,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         if (hidden) {
             mViewBinding.albumCoverView.endAnimator();
         } else {
-            mViewBinding.albumCoverView.startAnimator();
+            if (AudioPlayer.get().isPlaying()){
+                mViewBinding.albumCoverView.startAnimator();
+            }
         }
     }
 
