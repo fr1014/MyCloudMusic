@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
@@ -54,6 +55,15 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding,TopListVi
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(mViewBinding.navView, navController);
+        mViewBinding.appBarMain.etKeywords.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP){
+                    startActivity(SearchActivity.class);
+                }
+                return true;
+            }
+        });
     }
 
     //首次绑定Service时该方法被调用
@@ -70,23 +80,23 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding,TopListVi
         requestMyPermissions();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                startActivity(SearchActivity.class);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.action_search:
+//                startActivity(SearchActivity.class);
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -97,6 +107,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding,TopListVi
 
     @Override
     public void onClick(View v) {
+
     }
 
     @Override
