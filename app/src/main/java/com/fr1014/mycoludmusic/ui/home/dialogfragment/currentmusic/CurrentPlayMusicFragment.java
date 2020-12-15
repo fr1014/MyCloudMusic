@@ -33,6 +33,7 @@ import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 import com.fr1014.mymvvm.base.BaseFragment;
 
@@ -59,6 +60,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     protected void initView() {
+        StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(),false);
         initSystemBar();
         initListener();
         initCoverLrc();
@@ -303,9 +305,11 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
+            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(),true);
             mViewBinding.albumCoverView.endAnimator();
         } else {
             if (AudioPlayer.get().isPlaying()){
+                StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(),false);
                 mViewBinding.albumCoverView.startAnimator();
             }
         }

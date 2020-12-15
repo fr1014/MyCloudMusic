@@ -20,6 +20,7 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
+import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseActivity;
 import com.fr1014.mymvvm.base.BaseViewModel;
 
@@ -35,7 +36,8 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSystemBarTransparent();  //设置系统状态栏透明
+        //设置statusBar字体为黑色
+        StatusBarUtils.setImmersiveStatusBar(getWindow(),true);
         bindService();
     }
 
@@ -103,6 +105,7 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
         super.onBackPressed();
     }
 
+    //设置系统状态栏为透明
     private void setSystemBarTransparent() {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);

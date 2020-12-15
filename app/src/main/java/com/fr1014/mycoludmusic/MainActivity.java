@@ -3,8 +3,6 @@ package com.fr1014.mycoludmusic;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,6 +14,7 @@ import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
