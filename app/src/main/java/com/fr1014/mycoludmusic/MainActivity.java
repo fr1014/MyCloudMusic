@@ -27,7 +27,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends BasePlayActivity<ActivityMainBinding,TopListViewModel> implements View.OnClickListener {
+public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListViewModel> implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_PERMISSION_CODE = 100;
 
@@ -61,17 +61,23 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding,TopListVi
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                if (destination.getId() == R.id.topListFragment || destination.getId() == R.id.playListDetailFragment){
+                if (destination.getId() == R.id.playListDetailFragment) {
                     mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
-                }else {
+                } else if (destination.getId() == R.id.topListFragment) {
+                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getColor(R.color.white));
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                    mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
+                } else {
+                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getColor(R.color.colorPrimary));
+                    mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                    mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
                 }
             }
         });
         mViewBinding.appBarMain.etKeywords.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP){
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     startActivity(SearchActivity.class);
                 }
                 return true;
@@ -99,12 +105,11 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding,TopListVi
 //        getMenuInflater().inflate(R.menu.main, menu);
 //        return true;
 //    }
-
+//
 //    @Override
 //    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 //        switch (item.getItemId()) {
 //            case R.id.action_search:
-//                startActivity(SearchActivity.class);
 //                return true;
 //            default:
 //                return super.onOptionsItemSelected(item);
