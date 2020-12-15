@@ -54,6 +54,16 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding,TopLi
         initAdapter();
         initEditText();
         initSystemBar();
+        initListener();
+    }
+
+    private void initListener() {
+        mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
