@@ -43,7 +43,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1.5"
-                    android:src="@drawable/ic_switch"/>
+                    android:layout_gravity="end|center_vertical"
+                    android:src="@drawable/ic_switch" />
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
 
