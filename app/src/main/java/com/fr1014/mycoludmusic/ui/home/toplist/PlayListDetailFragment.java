@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
@@ -17,6 +18,7 @@ import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.util.ArrayList;
@@ -26,7 +28,11 @@ import java.util.List;
 //排行榜详情页面
 public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding,TopListViewModel> implements OnPlayerEventListener {
     public static final String KEY_ID = "ID";
+    public static final String KEY_NAME = "NAME";
+    public static final String KEY_COVER = "COVER";
     private long id = 0L;
+    private String name;
+    private String cover;
     private PlayListDetailAdapter adapter;
 
     public PlayListDetailFragment() {
@@ -45,6 +51,8 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     public void initParam() {
         if (getArguments() != null) {
             id = getArguments().getLong(KEY_ID);
+            name = getArguments().getString(KEY_NAME);
+            cover = getArguments().getString(KEY_COVER);
         }
     }
 
@@ -61,6 +69,12 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     @Override
     protected void initView() {
+        mViewBinding.toolbar.setPadding(0, ScreenUtil.getStatusHeight(MyApplication.getInstance()),0,0);
+        mViewBinding.name.setText(name);
+        Glide.with(this)
+                .load(cover)
+                .error(R.drawable.bg_play)
+                .into(mViewBinding.ivCover);
         mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         initAdapter();
         mViewBinding.rvPlaylistDetail.setAdapter(adapter);

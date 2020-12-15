@@ -15,7 +15,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             app:elevation="0dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat"
@@ -33,7 +33,7 @@
                     style="@style/Widget.AppCompat.EditText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="9"
+                    android:layout_weight="8.5"
                     android:background="@drawable/bg_edittext"
                     android:hint="@string/search"
                     android:padding="6dp"
@@ -42,7 +42,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1.5"
                     android:src="@drawable/ic_switch"/>
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>

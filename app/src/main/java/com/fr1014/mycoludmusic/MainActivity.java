@@ -15,6 +15,7 @@ import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +49,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     @Override
     protected void initView() {
         setSupportActionBar(mViewBinding.appBarMain.toolbar);
-
+        mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtil.getStatusHeight(this),0,0);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(

@@ -82,6 +82,8 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
         Toast.makeText(mContext, "" + position, Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
         bundle.putLong(PlayListDetailFragment.KEY_ID, mData.get(position).getId());
+        bundle.putString(PlayListDetailFragment.KEY_NAME,mData.get(position).getName());
+        bundle.putString(PlayListDetailFragment.KEY_COVER,mData.get(position).getCoverImgUrl());
         Navigation.findNavController(view).navigate(R.id.playListDetailFragment, bundle);
     }
 
