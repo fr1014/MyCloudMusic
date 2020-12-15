@@ -149,7 +149,7 @@ public class AudioPlayer {
             for (OnPlayerEventListener listener : listeners) {
                 listener.onChange(music);
             }
-//            Notifier.get().showPlay(music);
+            Notifier.get().showPlay(music);
             MediaSessionManager.get().updateMetaData(music);
             MediaSessionManager.get().updatePlaybackState();
         } catch (IOException e) {
