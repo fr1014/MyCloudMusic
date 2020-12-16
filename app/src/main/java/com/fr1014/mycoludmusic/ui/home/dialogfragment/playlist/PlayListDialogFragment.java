@@ -1,13 +1,22 @@
 package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
 
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.Gravity;
@@ -28,6 +37,7 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
@@ -40,15 +50,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Function;
 
 
-public class PlayListDialogFragment extends DialogFragment implements OnPlayerEventListener {
+public class PlayListDialogFragment extends DialogFragment implements PlayDialogPageFragment.OnDialogListener {
 
     private FragmentPlayListDialogBinding binding;
-    private PlayListAdapter playListAdapter;
-    private int oldPosition = -1;  //当前播放音乐的位置
+    private static final int NUM_PAGES = 2;
+    private FragmentStateAdapter pagerAdapter;
 
     public PlayListDialogFragment() {
         // Required empty public constructor
-
     }
 
     @NonNull
@@ -57,31 +66,37 @@ public class PlayListDialogFragment extends DialogFragment implements OnPlayerEv
         Dialog dialog = new Dialog(getActivity(), R.style.PayListDialog);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE); //设置content前设定
         dialog.setCanceledOnTouchOutside(true);  //外部点击取消
-
         return dialog;
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        if (getDialog().getWindow() != null) {
+            //背景透明
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            //背景蒙层
+            getDialog().getWindow().setDimAmount(0.7f);
+        }
+
         binding = FragmentPlayListDialogBinding.inflate(inflater, container, false);
+        pagerAdapter = new PlayDialogPagerAdapter(getActivity());
+        //设置Transformer
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        compositePageTransformer.addTransformer(new MarginPageTransformer(8));//添加边距Transformer
+        compositePageTransformer.addTransformer(new ZoomOutPageTransformer());//设置滑动动画
+        binding.pager.setPageTransformer(compositePageTransformer);
+        //设置滚动方向
+        binding.pager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+        //一屏多页
+        View recyclerView = binding.pager.getChildAt(0);
+        if(recyclerView instanceof RecyclerView){
+            recyclerView.setPadding(50, 0, 50, 0);
+            ((RecyclerView) recyclerView).setClipToPadding(false);
+        }
+        binding.pager.setAdapter(pagerAdapter);
         return binding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        AudioPlayer.get().addOnPlayEventListener(this);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initHeader();
-        initAdapter();
-        binding.rvPlaylist.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
-        binding.rvPlaylist.setAdapter(playListAdapter);
-        binding.rvPlaylist.scrollToPosition(oldPosition);
     }
 
     /**
@@ -90,6 +105,7 @@ public class PlayListDialogFragment extends DialogFragment implements OnPlayerEv
     @Override
     public void onStart() {
         super.onStart();
+
         resizeDialogFragment();
     }
 
@@ -109,121 +125,28 @@ public class PlayListDialogFragment extends DialogFragment implements OnPlayerEv
         }
     }
 
-    private void initAdapter() {
-        playListAdapter = new PlayListAdapter();
-        List<Music> playList = AudioPlayer.get().getMusicList();
-        if (playList != null) {
-            playListAdapter.setData(playList);
-            oldPosition = playList.indexOf(AudioPlayer.get().getPlayMusic());
-        }
-        playListAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
-
-        playListAdapter.setOnItemClickListener((adapter, view, position) -> {
-            switch (view.getId()) {
-                case R.id.ll_playlist:
-                    if (oldPosition != position) {
-                        Music item = (Music) adapter.getData(position);
-                        AudioPlayer.get().addAndPlay(item);
-                    } else {
-                        //点击的为当前播放的歌曲
-                        if (getActivity() instanceof BasePlayActivity) {
-                            ((BasePlayActivity) getActivity()).showPlayingFragment();
-                            dismissDialog();
-                        }
-                    }
-                    break;
-                case R.id.iv_del:
-                    Music music = (Music) adapter.getData(position);
-                    DBManager.get().getMusicEntityItem(music).observe(this, new Observer<MusicEntity>() {
-                        @Override
-                        public void onChanged(MusicEntity musicEntity) {
-                            if (musicEntity != null) {
-                                DBManager.get().delete(musicEntity);
-                            }
-                        }
-                    });
-                    break;
-            }
-        });
-
-        //删除之后刷新adapter中的数据
-        DBManager.get().getListMusicEntity().observe(this, new Observer<List<MusicEntity>>() {
-            @Override
-            public void onChanged(List<MusicEntity> musicEntities) {
-                if (!CommonUtil.isEmptyList(musicEntities)){
-                    Observable.just(musicEntities)
-                            .compose(RxSchedulers.applyIO())
-                            .map(new Function<List<MusicEntity>, List<Music>>() {
-                                @Override
-                                public List<Music> apply(@io.reactivex.annotations.NonNull List<MusicEntity> musicEntities) throws Exception {
-                                    List<Music> musicList = new ArrayList<>();
-                                    for (MusicEntity musicEntity : musicEntities) {
-                                        musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(),"", musicEntity.getImgUrl(), musicEntity.getMusicRid(),musicEntity.getDuration()));
-                                    }
-                                    Collections.reverse(musicList);
-                                    return musicList;
-                                }
-                            })
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new MyDisposableObserver<List<Music>>(){
-                                @Override
-                                public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
-                                    playListAdapter.setData(musicList);
-                                    playListAdapter.notifyDataSetChanged();
-                                }
-                            });
-                }
-            }
-        });
-    }
-
-    private void initHeader() {
-        int count = AudioPlayer.get().getMusicList().size();
-        binding.header.tvCount.setText(String.format("(%d)", count));
-    }
-
-    private static final String TAG = "PlayListDialogFragment";
-
-    private void dismissDialog() {
+    @Override
+    public void dialogDismiss() {
         if (getDialog() != null) {
             getDialog().dismiss();
         }
     }
 
-    @Override
-    public void onChange(Music music) {
-        int position = AudioPlayer.get().getMusicList().indexOf(music);
-        //oldPosition != position && music.getSongUrl() != null
-        if (oldPosition != position) {
-            playListAdapter.setCurrentMusic(music);
-            playListAdapter.notifyDataSetChanged();
-            oldPosition = position;
+    private class PlayDialogPagerAdapter extends FragmentStateAdapter {
+        public PlayDialogPagerAdapter(FragmentActivity fa) {
+            super(fa);
         }
-    }
 
-    @Override
-    public void onPlayerStart() {
+        @Override
+        public Fragment createFragment(int position) {
+            PlayDialogPageFragment playDialogPageFragment = PlayDialogPageFragment.getInstance(position);
+            playDialogPageFragment.setDialogListener(PlayListDialogFragment.this);
+            return playDialogPageFragment;
+        }
 
-    }
-
-    @Override
-    public void onPlayerPause() {
-
-    }
-
-    @Override
-    public void onPublish(int progress) {
-
-    }
-
-    @Override
-    public void onBufferingUpdate(int percent) {
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        AudioPlayer.get().removeOnPlayEventListener(this);
+        @Override
+        public int getItemCount() {
+            return NUM_PAGES;
+        }
     }
 }
