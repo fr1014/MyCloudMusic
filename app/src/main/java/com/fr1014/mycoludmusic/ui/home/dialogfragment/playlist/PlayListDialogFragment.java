@@ -6,8 +6,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,13 +20,24 @@ import android.view.WindowManager;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
+import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
+import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
 
 
 public class PlayListDialogFragment extends DialogFragment implements OnPlayerEventListener {
@@ -120,7 +133,46 @@ public class PlayListDialogFragment extends DialogFragment implements OnPlayerEv
                     }
                     break;
                 case R.id.iv_del:
+                    Music music = (Music) adapter.getData(position);
+                    DBManager.get().getMusicEntityItem(music).observe(this, new Observer<MusicEntity>() {
+                        @Override
+                        public void onChanged(MusicEntity musicEntity) {
+                            if (musicEntity != null) {
+                                DBManager.get().delete(musicEntity);
+                            }
+                        }
+                    });
                     break;
+            }
+        });
+
+        //删除之后刷新adapter中的数据
+        DBManager.get().getListMusicEntity().observe(this, new Observer<List<MusicEntity>>() {
+            @Override
+            public void onChanged(List<MusicEntity> musicEntities) {
+                if (!CommonUtil.isEmptyList(musicEntities)){
+                    Observable.just(musicEntities)
+                            .compose(RxSchedulers.applyIO())
+                            .map(new Function<List<MusicEntity>, List<Music>>() {
+                                @Override
+                                public List<Music> apply(@io.reactivex.annotations.NonNull List<MusicEntity> musicEntities) throws Exception {
+                                    List<Music> musicList = new ArrayList<>();
+                                    for (MusicEntity musicEntity : musicEntities) {
+                                        musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(),"", musicEntity.getImgUrl(), musicEntity.getMusicRid(),musicEntity.getDuration()));
+                                    }
+                                    Collections.reverse(musicList);
+                                    return musicList;
+                                }
+                            })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new MyDisposableObserver<List<Music>>(){
+                                @Override
+                                public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
+                                    playListAdapter.setData(musicList);
+                                    playListAdapter.notifyDataSetChanged();
+                                }
+                            });
+                }
             }
         });
     }

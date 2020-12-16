@@ -1,5 +1,7 @@
 package com.fr1014.mycoludmusic.data.source.local.room;
 
+import androidx.lifecycle.LiveData;
+
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
@@ -29,6 +31,14 @@ public class DBManager {
         private static final DBManager instance = new DBManager();
     }
 
+    public LiveData<MusicEntity> getMusicEntityItem(Music music){
+        return model.getItemLive(music.getTitle(), music.getArtist());
+    }
+
+    public LiveData<List<MusicEntity>> getListMusicEntity(){
+        return model.getAllLive();
+    }
+
     public void insert(Music music) {
         Observable.just(music)
                 .compose(RxSchedulers.applyIO())
@@ -45,13 +55,12 @@ public class DBManager {
 
     }
 
-    public void delete(Music music) {
-        Observable.just(music)
+    public void delete(MusicEntity musicEntity) {
+        Observable.just(musicEntity)
                 .compose(RxSchedulers.applyIO())
-                .subscribe(new MyDisposableObserver<Music>(){
+                .subscribe(new MyDisposableObserver<MusicEntity>(){
                     @Override
-                    public void onNext(@NonNull Music music) {
-                        MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(),music.getId(), music.getMUSICRID(),music.getDuration());
+                    public void onNext(@NonNull MusicEntity musicEntity) {
                         model.delete(musicEntity);
                     }
                 });

@@ -193,7 +193,7 @@ public class AudioPlayer {
     public void delete(int position) {
         int playPosition = getPlayPosition();
         Music music = musicList.remove(position);
-        DBManager.get().delete(music);
+//        DBManager.get().delete(music);
         if (playPosition > position) {
             setPlayPosition(playPosition - 1);
         } else if (playPosition == position) {
