@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.widget.RemoteViews;
 
@@ -109,46 +110,32 @@ public class Notifier {
         String artist = music.getArtist();
         Bitmap cover;
         Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
-        if (cacheBitmap != null) {
-            cover = cacheBitmap;
+        if (cacheBitmap == null) {
+            cover = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+            getCoverRemote(context, music);
         } else {
-            Glide.with(context)
-                    .asBitmap()
-                    .load(music.getImgUrl())
-                    .format(DecodeFormat.PREFER_ARGB_8888)
-                    .into(new CustomTarget<Bitmap>() {
-                        @Override
-                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                            showPlay(music);
-                        }
-
-                        @Override
-                        public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                        }
-                    });
-            return null;
+            cover = cacheBitmap;
         }
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);
         remoteViews.setImageViewBitmap(R.id.iv_icon, cover);
         remoteViews.setTextViewText(R.id.tv_title, title);
         remoteViews.setTextViewText(R.id.tv_author, artist);
 
-        Intent backIntent = new Intent(context,StatusBarReceiver.class);
+        Intent backIntent = new Intent(context, StatusBarReceiver.class);
         backIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
         backIntent.putExtra(StatusBarReceiver.EXTRA, StatusBarReceiver.EXTRA_BACK);
         PendingIntent backPendingIntent = PendingIntent.getBroadcast(context, 0, backIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setImageViewResource(R.id.iv_back, R.drawable.ic_song_back_black);
         remoteViews.setOnClickPendingIntent(R.id.iv_back, backPendingIntent);
 
-        Intent playIntent = new Intent(context,StatusBarReceiver.class);
+        Intent playIntent = new Intent(context, StatusBarReceiver.class);
         playIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
         playIntent.putExtra(StatusBarReceiver.EXTRA, StatusBarReceiver.EXTRA_PLAY_PAUSE);
         PendingIntent playPendingIntent = PendingIntent.getBroadcast(context, 1, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setImageViewResource(R.id.iv_play_pause, isPlaying ? R.drawable.ic_stop_black : R.drawable.ic_play_black);
         remoteViews.setOnClickPendingIntent(R.id.iv_play_pause, playPendingIntent);
 
-        Intent nextIntent = new Intent(context,StatusBarReceiver.class);
+        Intent nextIntent = new Intent(context, StatusBarReceiver.class);
         nextIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
         nextIntent.putExtra(StatusBarReceiver.EXTRA, StatusBarReceiver.EXTRA_NEXT);
         PendingIntent nextPendingIntent = PendingIntent.getBroadcast(context, 2, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -156,5 +143,23 @@ public class Notifier {
         remoteViews.setOnClickPendingIntent(R.id.iv_next, nextPendingIntent);
 
         return remoteViews;
+    }
+
+    private void getCoverRemote(Context context, Music music) {
+        Glide.with(context)
+                .asBitmap()
+                .load(music.getImgUrl())
+                .format(DecodeFormat.PREFER_ARGB_8888)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                        showPlay(music);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
     }
 }
