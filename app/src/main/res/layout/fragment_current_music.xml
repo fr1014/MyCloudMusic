@@ -163,14 +163,14 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_weight="1"
-                android:background="@drawable/selectableitem" />
+                android:foreground="?attr/selectableItemBackground" />
 
             <ImageView
                 android:id="@+id/iv_pre"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_weight="1"
-                android:background="@drawable/selectableitem"
+                android:foreground="?attr/selectableItemBackground"
                 android:src="@drawable/ic_song_back_white" />
 
             <ImageView
@@ -178,7 +178,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
-                android:background="@drawable/selectableitem"
+                android:foreground="?attr/selectableItemBackground"
                 android:src="@drawable/ic_stop_white" />
 
             <ImageView
@@ -186,7 +186,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_weight="1"
-                android:background="@drawable/selectableitem"
+                android:foreground="?attr/selectableItemBackground"
                 android:src="@drawable/ic_song_next_white" />
 
             <ImageView
@@ -194,7 +194,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_weight="1"
-                android:background="@drawable/selectableitem"
+                android:foreground="?attr/selectableItemBackground"
                 android:src="@drawable/ic_music_menu_white" />
 
         </LinearLayout>
