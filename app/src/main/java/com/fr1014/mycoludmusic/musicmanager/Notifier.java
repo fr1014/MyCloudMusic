@@ -8,21 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.widget.RemoteViews;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.MainActivity;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.musicmanager.receiver.StatusBarReceiver;
-import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
+import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
  * 创建时间:2020/9/22
@@ -109,12 +102,11 @@ public class Notifier {
         String title = music.getTitle();
         String artist = music.getArtist();
         Bitmap cover;
-        Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(music.getImgUrl());
-        if (cacheBitmap == null) {
-            cover = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-            getCoverRemote(context, music);
-        } else {
-            cover = cacheBitmap;
+        Bitmap coverLocal = FileUtils.getCoverLocal(music);
+        if (coverLocal == null){
+            cover = BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher);
+        }else {
+            cover = coverLocal;
         }
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);
         remoteViews.setImageViewBitmap(R.id.iv_icon, cover);
@@ -143,23 +135,5 @@ public class Notifier {
         remoteViews.setOnClickPendingIntent(R.id.iv_next, nextPendingIntent);
 
         return remoteViews;
-    }
-
-    private void getCoverRemote(Context context, Music music) {
-        Glide.with(context)
-                .asBitmap()
-                .load(music.getImgUrl())
-                .format(DecodeFormat.PREFER_ARGB_8888)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        showPlay(music);
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
-                });
     }
 }

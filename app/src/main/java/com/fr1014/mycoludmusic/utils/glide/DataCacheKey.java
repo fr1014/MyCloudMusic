@@ -4,9 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.disklrucache.DiskLruCache;
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.load.engine.cache.DiskCache;
+import com.bumptech.glide.load.engine.cache.DiskLruCacheWrapper;
 import com.bumptech.glide.load.engine.cache.SafeKeyGenerator;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.signature.EmptySignature;
@@ -65,8 +67,25 @@ public class DataCacheKey implements Key {
         signature.updateDiskCacheKey(messageDigest);
     }
 
-    public static File getCacheFile2(String id) {
-        DataCacheKey dataCacheKey = new DataCacheKey(new GlideUrl(id), EmptySignature.obtain());
+    public static boolean judgeIsDownload(String url) {
+        DataCacheKey dataCacheKey = new DataCacheKey(new GlideUrl(url), EmptySignature.obtain());
+        SafeKeyGenerator safeKeyGenerator = new SafeKeyGenerator();
+        String safeKey = safeKeyGenerator.getSafeKey(dataCacheKey);
+        try {
+            int cacheSize = 100 * 1000 * 1000;
+            DiskLruCache diskLruCache = DiskLruCache.open(new File(MyApplication.getInstance().getCacheDir(), DiskCache.Factory.DEFAULT_DISK_CACHE_DIR), 1, 1, cacheSize);
+            DiskLruCache.Value value = diskLruCache.get(safeKey);
+            if (value != null) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static File getCacheFile2(String url) {
+        DataCacheKey dataCacheKey = new DataCacheKey(new GlideUrl(url), EmptySignature.obtain());
         SafeKeyGenerator safeKeyGenerator = new SafeKeyGenerator();
         String safeKey = safeKeyGenerator.getSafeKey(dataCacheKey);
         try {

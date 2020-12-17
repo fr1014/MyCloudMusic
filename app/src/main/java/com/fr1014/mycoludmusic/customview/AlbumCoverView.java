@@ -42,12 +42,12 @@ public class AlbumCoverView extends RelativeLayout {
 
 
     private void initView() {
-        mViewBinding = AlubmCoverviewBinding.inflate(LayoutInflater.from(getContext()),this,false);
+        mViewBinding = AlubmCoverviewBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
         initAnimator();
     }
 
-    public void initAnimator(){
+    public void initAnimator() {
         rotationAnimator = ObjectAnimator.ofFloat(mViewBinding.civSongImg, "rotation", 0f, 360f);//旋转的角度可有多个
         rotationAnimator.setDuration(20000);
         rotationAnimator.setRepeatCount(ValueAnimator.INFINITE);
@@ -61,19 +61,19 @@ public class AlbumCoverView extends RelativeLayout {
         FIRST_START_ANIMATION = 1;
     }
 
-    public void pauseAnimator(){
+    public void pauseAnimator() {
         if (rotationAnimator != null && rotationAnimator.isRunning()) {
             rotationAnimator.pause();
         }
     }
 
-    public void resumeAnimator(){
+    public void resumeAnimator() {
         if (rotationAnimator != null && rotationAnimator.isPaused()) {
             rotationAnimator.resume();
         }
     }
 
-    public void resumeOrStartAnimator(){
+    public void resumeOrStartAnimator() {
         if (FIRST_START_ANIMATION == 1) { //动画已经start过
             rotationAnimator.resume();//继续（在暂停的位置继续动画）
         } else {
@@ -82,11 +82,13 @@ public class AlbumCoverView extends RelativeLayout {
     }
 
     public void endAnimator() {
-        rotationAnimator.end();//结束（回到原始位置）
-        FIRST_START_ANIMATION = 0;
+        if (rotationAnimator.isRunning() || rotationAnimator.isPaused()) {
+            rotationAnimator.end();//结束（回到原始位置）
+            FIRST_START_ANIMATION = 0;
+        }
     }
 
-    public void songImgSetBitmap(Bitmap resource){
+    public void songImgSetBitmap(Bitmap resource) {
         mViewBinding.civSongImg.setImageBitmap(resource);
     }
 }

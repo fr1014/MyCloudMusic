@@ -11,6 +11,8 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
+import com.fr1014.mycoludmusic.eventbus.CoverSaveEvent;
+import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
@@ -27,12 +29,22 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListViewModel> implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_PERMISSION_CODE = 100;
 
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
 
     @Override
     protected ActivityMainBinding getViewBinding() {
@@ -128,6 +140,14 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCoverSaveEvent(CoverSaveEvent coverSaveEvent){
+        if (coverSaveEvent.success){
+            Music music = AudioPlayer.get().getPlayMusic();
+            AudioPlayer.get().notifyShowPlay(music);
+        }
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -141,6 +161,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
         }
+        EventBus.getDefault().unregister(this);
     }
 
     private void requestMyPermissions() {

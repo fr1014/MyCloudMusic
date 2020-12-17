@@ -93,6 +93,10 @@ public class AudioPlayer {
         });
     }
 
+    public void notifyShowPlay(Music music){
+        Notifier.get().showPlay(music);
+    }
+
     public void addOnPlayEventListener(OnPlayerEventListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
@@ -148,7 +152,7 @@ public class AudioPlayer {
             for (OnPlayerEventListener listener : listeners) {
                 listener.onChange(music);
             }
-            Notifier.get().showPlay(music);
+//            notifyShowPlay(music);
             MediaSessionManager.get().updateMetaData(music);
             MediaSessionManager.get().updatePlaybackState();
         } catch (IOException e) {
@@ -230,7 +234,7 @@ public class AudioPlayer {
             mediaPlayer.start();
             state = STATE_PLAYING;
             handler.post(mPublishRunnable);
-            Notifier.get().showPlay(getPlayMusic());
+            notifyShowPlay(getPlayMusic());
             MediaSessionManager.get().updatePlaybackState();
             context.registerReceiver(noisyReceiver, noisyFilter);
 

@@ -11,9 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
@@ -23,7 +28,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
-import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
+import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
  * 底部播放状态栏
@@ -94,7 +99,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             if (music != oldMusic) {
                 setVisibility(VISIBLE);
                 setText(music);
-                setImageUrl(music.getImgUrl());
+                setImageUrl(music);
             }
         } else {
             setVisibility(GONE);
@@ -107,23 +112,32 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         mViewBinding.tvAuthor.setText(music.getArtist());
     }
 
-    private void setImageUrl(String imgUrl) {
-        Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(imgUrl);
-        if (cacheBitmap == null) {
-            RequestOptions options = new RequestOptions()
-                    .centerCrop()
-                    .placeholder(R.drawable.film)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .error(R.drawable.bg_play)
-                    .format(DecodeFormat.PREFER_ARGB_8888);
+    private void setImageUrl(Music music) {
 
-            Glide.with(getContext())
-                    .load(imgUrl)
-                    .apply(options)
-                    .into(mViewBinding.ivCoverImg);
-        } else {
-            mViewBinding.ivCoverImg.setImageBitmap(cacheBitmap);
-        }
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.film)
+                .error(R.drawable.bg_play)
+                .priority(Priority.HIGH)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
+
+        Glide.with(mContext)
+                .asBitmap()
+                .load(music.getImgUrl())
+                .apply(options)
+                .addListener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        FileUtils.saveCoverToLocal(resource, music);
+                        return false;
+                    }
+                })
+                .into(mViewBinding.ivCoverImg);
     }
 
     @Override
