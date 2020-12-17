@@ -76,7 +76,7 @@ public class AudioPlayer {
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
-                DBManager.get().insert(getPlayMusic(),true);
+                DBManager.get().insert(getPlayMusic(), true);
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
@@ -93,7 +93,7 @@ public class AudioPlayer {
         });
     }
 
-    public void notifyShowPlay(Music music){
+    public void notifyShowPlay(Music music) {
         Notifier.get().showPlay(music);
     }
 
@@ -161,12 +161,12 @@ public class AudioPlayer {
     }
 
     private boolean isEmptySongUrl(Music music) {
-        if (TextUtils.isEmpty(music.getSongUrl())){
+        if (TextUtils.isEmpty(music.getSongUrl())) {
             DataRepository dataRepository = MyApplication.provideRepository();
             if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
                 dataRepository.getKWSongUrl(music.getMUSICRID())
                         .compose(RxSchedulers.apply())
-                        .subscribe(new MyDisposableObserver<ResponseBody>(){
+                        .subscribe(new MyDisposableObserver<ResponseBody>() {
                             @Override
                             public void onNext(@NonNull ResponseBody responseBody) {
                                 try {
@@ -180,7 +180,7 @@ public class AudioPlayer {
             } else if (music.getId() != 0) {//网易的歌
                 dataRepository.getWYSongUrl(music.getId())
                         .compose(RxSchedulers.apply())
-                        .subscribe(new MyDisposableObserver<SongUrlEntity>(){
+                        .subscribe(new MyDisposableObserver<SongUrlEntity>() {
                             @Override
                             public void onNext(@NonNull SongUrlEntity songUrlEntity) {
                                 music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
@@ -278,44 +278,54 @@ public class AudioPlayer {
         state = STATE_IDLE;
     }
 
-    public void playNext() {
+    public int playNext() {
+        pausePlayer();
+        int nextPosition = -1;
         if (musicList.isEmpty()) {
-            return;
+            play(nextPosition);
+            return nextPosition;
         }
 
         PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
         switch (mode) {
             case SHUFFLE:
-                play(new Random().nextInt(musicList.size()));
+                nextPosition = new Random().nextInt(musicList.size());
                 break;
             case SINGLE:
-                play(getPlayPosition());
+                nextPosition = getPlayPosition();
                 break;
             case LOOP:
             default:
-                play(getPlayPosition() + 1);
+                nextPosition = getPlayPosition() + 1;
                 break;
         }
+        play(nextPosition);
+        return nextPosition;
     }
 
-    public void playPre() {
+    public int playPre() {
+        pausePlayer();
+        int prePosition = -1;
         if (musicList.isEmpty()) {
-            return;
+            play(prePosition);
+            return prePosition;
         }
 
         PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
         switch (mode) {
             case SHUFFLE:
-                play(new Random().nextInt(musicList.size()));
+                prePosition = new Random().nextInt(musicList.size());
                 break;
             case SINGLE:
-                play(getPlayPosition());
+                prePosition = getPlayPosition();
                 break;
             case LOOP:
             default:
-                play(getPlayPosition() - 1);
+                prePosition = getPlayPosition() - 1;
                 break;
         }
+        play(prePosition);
+        return prePosition;
     }
 
     /**

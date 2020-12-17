@@ -177,11 +177,11 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                 getActivity().onBackPressed();
                 break;
             case R.id.iv_pre:
-                AudioPlayer.get().playPre();
+                playPreMusic();
                 mViewBinding.albumCoverView.endAnimator();
                 break;
             case R.id.iv_next:
-                AudioPlayer.get().playNext();
+                playNextMusic();
                 mViewBinding.albumCoverView.endAnimator();
                 break;
             case R.id.iv_state:
@@ -261,13 +261,26 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         oldResource = resource;
     }
 
+    public void playPreMusic() {
+        int playPosition = AudioPlayer.get().playPre();
+        Music pre = AudioPlayer.get().getMusicList().get(playPosition);
+        playOtherMusic(pre);
+    }
+
+    public void playNextMusic() {
+        int playPosition = AudioPlayer.get().playNext();
+        Music next = AudioPlayer.get().getMusicList().get(playPosition);
+        playOtherMusic(next);
+    }
+
+    public void playOtherMusic(Music music){
+        initViewData(music);
+        oldMusic = music;
+    }
+
     @Override
     public void onChange(Music music) {
-        if (music != oldMusic) {
-            initViewData(music);
-            getSongLrc(music); //切换歌时，请求歌词
-            oldMusic = music;
-        }
+        getSongLrc(music); //切换歌时，请求歌词
     }
 
     @Override
