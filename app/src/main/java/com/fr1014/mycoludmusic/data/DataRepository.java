@@ -134,6 +134,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
+    public LiveData<List<MusicEntity>> getAllHistoryOrCurrentLive(boolean history) {
+        return localDataSource.getAllHistoryOrCurrentLive(history);
+    }
+
+    @Override
     public LiveData<MusicEntity> getItemLive(String title, String artist) {
         return localDataSource.getItemLive(title, artist);
     }
@@ -144,8 +149,13 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public MusicEntity getItem(String title, String artist) {
-        return localDataSource.getItem(title, artist);
+    public List<MusicEntity> getAllHistoryOrCurrent(boolean history) {
+        return localDataSource.getAllHistoryOrCurrent(history);
+    }
+
+    @Override
+    public MusicEntity getItem(String title, String artist,boolean isHistory) {
+        return localDataSource.getItem(title, artist,isHistory);
     }
 
     @Override

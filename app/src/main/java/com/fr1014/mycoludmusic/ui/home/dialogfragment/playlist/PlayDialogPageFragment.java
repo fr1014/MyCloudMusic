@@ -1,6 +1,8 @@
 package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
 
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,82 +79,106 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
         binding = FragmentPlaydialogpageBinding.inflate(getLayoutInflater());
         initHeader();
         initAdapter();
+        inPageTypeData();
         binding.rvPlaylist.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         binding.rvPlaylist.setAdapter(playListAdapter);
         binding.rvPlaylist.scrollToPosition(oldPosition);
+
+        AudioPlayer.get().addOnPlayEventListener(this);
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private static final String TAG = "PlayDialogPageFragment";
 
+    private void inPageTypeData() {
+        if (pageType == PAGE_TYPE_HISTORY) {
+            //删除之后刷新adapter中的数据
+            DBManager.get().getHistoryListMusicEntity().observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
+                @Override
+                public void onChanged(List<MusicEntity> musicEntities) {
+                    if (!CommonUtil.isEmptyList(musicEntities)) {
+                        Observable.just(musicEntities)
+                                .compose(RxSchedulers.applyIO())
+                                .map(new Function<List<MusicEntity>, List<Music>>() {
+                                    @Override
+                                    public List<Music> apply(@io.reactivex.annotations.NonNull List<MusicEntity> musicEntities) throws Exception {
+                                        List<Music> musicList = new ArrayList<>();
+                                        for (MusicEntity musicEntity : musicEntities) {
+                                            musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(), "", musicEntity.getImgUrl(), musicEntity.getMusicRid(), musicEntity.getDuration()));
+                                        }
+                                        Collections.reverse(musicList);
+                                        return musicList;
+                                    }
+                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new MyDisposableObserver<List<Music>>() {
+                                    @Override
+                                    public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
+                                        setHeaderCount(musicList.size());
+                                        playListAdapter.setData(musicList);
+                                        playListAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                    }
+                }
+            });
+        } else {
+            List<Music> playList = AudioPlayer.get().getMusicList();
+            if (playList != null) {
+                playListAdapter.setData(playList);
+                oldPosition = playList.indexOf(AudioPlayer.get().getPlayMusic());
+            }
+            playListAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
+        }
     }
 
     private void initAdapter() {
         playListAdapter = new PlayListAdapter();
-        List<Music> playList = AudioPlayer.get().getMusicList();
-        if (playList != null) {
-            playListAdapter.setData(playList);
-            oldPosition = playList.indexOf(AudioPlayer.get().getPlayMusic());
-        }
-        playListAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
-
         playListAdapter.setOnItemClickListener((adapter, view, position) -> {
             switch (view.getId()) {
                 case R.id.ll_playlist:
-                    if (oldPosition != position) {
-                        Music item = (Music) adapter.getData(position);
-                        AudioPlayer.get().addAndPlay(item);
-                    } else {
-                        //点击的为当前播放的歌曲
-                        if (getActivity() instanceof BasePlayActivity) {
-                            ((BasePlayActivity) getActivity()).showPlayingFragment();
-                            dialogListener.dialogDismiss();
+                    if (pageType == PAGE_TYPE_CURRENT){
+                        if (oldPosition != position) {
+                            Music item = (Music) adapter.getData(position);
+                            AudioPlayer.get().addAndPlay(item);
+                        } else {
+                            //点击的为当前播放的歌曲
+                            if (getActivity() instanceof BasePlayActivity) {
+                                ((BasePlayActivity) getActivity()).showPlayingFragment();
+                                dialogListener.dialogDismiss();
+                            }
                         }
+                    }else {
+                        dialogListener.dialogDismiss();
+                        Music item = (Music) adapter.getData(position);
+                        List<Music> musicList = AudioPlayer.get().getMusicList();
+                        for (Music music : musicList) {
+                            if (TextUtils.equals(music.getTitle(), item.getTitle()) && TextUtils.equals(music.getArtist(), item.getArtist())) {
+                                AudioPlayer.get().addAndPlay(music);
+                                return;
+                            }
+                        }
+                        AudioPlayer.get().addAndPlay(item);
                     }
                     break;
                 case R.id.iv_del:
                     Music music = (Music) adapter.getData(position);
-                    DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
-                        @Override
-                        public void onChanged(MusicEntity musicEntity) {
-                            if (musicEntity != null) {
-                                DBManager.get().delete(musicEntity);
+                    if (pageType == PAGE_TYPE_HISTORY) {
+                        DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
+                            @Override
+                            public void onChanged(MusicEntity musicEntity) {
+                                if (musicEntity != null) {
+                                    DBManager.get().delete(musicEntity);
+                                }
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        int mPosition = AudioPlayer.get().getMusicList().indexOf(music);
+                        AudioPlayer.get().delete(mPosition);
+                        playListAdapter.setData(AudioPlayer.get().getMusicList());
+                        playListAdapter.notifyDataSetChanged();
+                    }
                     break;
-            }
-        });
-
-        //删除之后刷新adapter中的数据
-        DBManager.get().getListMusicEntity().observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
-            @Override
-            public void onChanged(List<MusicEntity> musicEntities) {
-                if (!CommonUtil.isEmptyList(musicEntities)) {
-                    Observable.just(musicEntities)
-                            .compose(RxSchedulers.applyIO())
-                            .map(new Function<List<MusicEntity>, List<Music>>() {
-                                @Override
-                                public List<Music> apply(@io.reactivex.annotations.NonNull List<MusicEntity> musicEntities) throws Exception {
-                                    List<Music> musicList = new ArrayList<>();
-                                    for (MusicEntity musicEntity : musicEntities) {
-                                        musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(), "", musicEntity.getImgUrl(), musicEntity.getMusicRid(), musicEntity.getDuration()));
-                                    }
-                                    Collections.reverse(musicList);
-                                    return musicList;
-                                }
-                            })
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new MyDisposableObserver<List<Music>>() {
-                                @Override
-                                public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
-                                    playListAdapter.setData(musicList);
-                                    playListAdapter.notifyDataSetChanged();
-                                }
-                            });
-                }
             }
         });
     }
@@ -160,23 +186,29 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
     private void initHeader() {
         if (pageType == PAGE_TYPE_HISTORY) {
             binding.header.tvType.setText("历史播放");
-            int count = AudioPlayer.get().getMusicList().size();
-            binding.header.tvCount.setText(String.format("(%d)", count));
         } else {
             binding.header.tvType.setText("当前播放");
             int count = AudioPlayer.get().getMusicList().size();
-            binding.header.tvCount.setText(String.format("(%d)", count));
+            setHeaderCount(count);
         }
+    }
+
+    private void setHeaderCount(int count) {
+        binding.header.tvCount.setText(String.format("(%d)", count));
     }
 
     @Override
     public void onChange(Music music) {
-        int position = AudioPlayer.get().getMusicList().indexOf(music);
-        //oldPosition != position && music.getSongUrl() != null
-        if (oldPosition != position) {
-            playListAdapter.setCurrentMusic(music);
-            playListAdapter.notifyDataSetChanged();
-            oldPosition = position;
+        if (pageType == PAGE_TYPE_CURRENT) {
+            List<Music> musicList = AudioPlayer.get().getMusicList();
+            int position = musicList.indexOf(music);
+            setHeaderCount(musicList.size());
+            playListAdapter.setData(musicList);
+            if (oldPosition != position) {
+                playListAdapter.setCurrentMusic(music);
+                playListAdapter.notifyDataSetChanged();
+                oldPosition = position;
+            }
         }
     }
 

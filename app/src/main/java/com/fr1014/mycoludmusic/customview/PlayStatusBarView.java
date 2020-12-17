@@ -27,7 +27,7 @@ import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 
 /**
  * 底部播放状态栏
- *
+ * <p>
  * 仅可在继承了BasePlayActivity的Activity中使用
  */
 public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener {
@@ -90,9 +90,14 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     public void setMusic(Music music) {
-        if (music != oldMusic) {
-            setText(music);
-            setImageUrl(music.getImgUrl());
+        if (music != null) {
+            if (music != oldMusic) {
+                setVisibility(VISIBLE);
+                setText(music);
+                setImageUrl(music.getImgUrl());
+            }
+        } else {
+            setVisibility(GONE);
         }
         oldMusic = music;
     }
@@ -104,7 +109,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     private void setImageUrl(String imgUrl) {
         Bitmap cacheBitmap = DataCacheKey.getCacheBitmap(imgUrl);
-        if (cacheBitmap == null){
+        if (cacheBitmap == null) {
             RequestOptions options = new RequestOptions()
                     .centerCrop()
                     .placeholder(R.drawable.film)
@@ -116,7 +121,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                     .load(imgUrl)
                     .apply(options)
                     .into(mViewBinding.ivCoverImg);
-        }else{
+        } else {
             mViewBinding.ivCoverImg.setImageBitmap(cacheBitmap);
         }
     }
@@ -139,13 +144,9 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 }
                 break;
             case R.id.cl_bottom_bar:
-                if (AudioPlayer.get().getPlayMusic() != null) {
-                    if (!musicDialogFragment.isAdded()) {
-                        //当前播放的音乐的详情页
-                        ((BasePlayActivity)mContext).showPlayingFragment();
-                    }
-                } else {
-                    CommonUtil.toastShort("当前尚未有歌曲在播放！！！");
+                if (!musicDialogFragment.isAdded()) {
+                    //当前播放的音乐的详情页
+                    ((BasePlayActivity) mContext).showPlayingFragment();
                 }
                 break;
         }

@@ -11,7 +11,8 @@ data class MusicEntity(
         @ColumnInfo(name = "imageUrl") val imgUrl: String?, //专辑图片地址
         @ColumnInfo(name = "wyy_id") var id: Long?, //网易歌曲id
         @ColumnInfo(name = "kw_id") var musicRid: String?, //网易歌曲id
-        @ColumnInfo(name = "duration") var duration : Long? //歌曲时长
+        @ColumnInfo(name = "duration") var duration : Long?, //歌曲时长
+        @ColumnInfo(name = "history") var history : Boolean
 ) {
     @PrimaryKey(autoGenerate = true)
     var musicId: Long = 0

@@ -17,7 +17,9 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.FileUtils;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -515,5 +518,48 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     })
             );
         }
+    }
+
+//    public void insertMusicList(List<Music> musicList){
+//        List<MusicEntity> musicEntities = new ArrayList<>();
+//        for (Music music : musicList){
+//            MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID(),music.getDuration(),false);
+//            musicEntities.add(musicEntity);
+//        }
+//        model.insertAll(musicEntities);
+//    }
+//
+//    public void deleteOldMusicList(){
+//        Observable.just("")
+//                .compose(RxSchedulers.applyIO())
+//                .subscribe(new MyDisposableObserver<String>(){
+//                    @Override
+//                    public void onNext(@io.reactivex.annotations.NonNull String s) {
+//                        List<MusicEntity> allOldCurrentMusic = model.getAllHistoryOrCurrent(false);
+//                        for (MusicEntity musicEntity : allOldCurrentMusic){
+//                            model.delete(musicEntity);
+//                        }
+//                    }
+//                });
+//    }
+
+    public void delOldInsertNewMusicList(List<Music> musicList){
+        Observable.just("")
+                .compose(RxSchedulers.applyIO())
+                .subscribe(new MyDisposableObserver<String>(){
+                    @Override
+                    public void onNext(@io.reactivex.annotations.NonNull String s) {
+                        List<MusicEntity> allOldCurrentMusic = model.getAllHistoryOrCurrent(false);
+                        for (MusicEntity musicEntity : allOldCurrentMusic){
+                            model.delete(musicEntity);
+                        }
+                        List<MusicEntity> musicEntities = new ArrayList<>();
+                        for (Music music : musicList){
+                            MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID(),music.getDuration(),false);
+                            musicEntities.add(musicEntity);
+                        }
+                        model.insertAll(musicEntities);
+                    }
+                });
     }
 }

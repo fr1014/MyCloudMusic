@@ -7,7 +7,6 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
@@ -17,7 +16,6 @@ import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
-import com.fr1014.mycoludmusic.utils.LogUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,8 +23,6 @@ import java.util.List;
 import java.util.Random;
 
 import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
-import io.reactivex.observers.DisposableObserver;
 import okhttp3.ResponseBody;
 
 /**
@@ -65,7 +61,7 @@ public class AudioPlayer {
 
     public void init(Context context) {
         this.context = context.getApplicationContext();
-        musicList = DBManager.get().getMusicLocal();
+        musicList = DBManager.get().getMusicCurrent();
         audioFocusManager = new AudioFocusManager(context);
         mediaPlayer = new MediaPlayer();
         handler = new Handler(Looper.getMainLooper());
@@ -80,7 +76,7 @@ public class AudioPlayer {
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
-                DBManager.get().insert(getPlayMusic());
+                DBManager.get().insert(getPlayMusic(),true);
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
@@ -111,7 +107,7 @@ public class AudioPlayer {
         int position = musicList.indexOf(music);
         if (position < 0) {
             musicList.add(music);
-//            DBManager.get().insert(music);
+//            DBManager.get().insert(music,false);
             position = musicList.size() - 1;
         }
         play(position);
@@ -124,6 +120,9 @@ public class AudioPlayer {
         }
         musicList = musics;
         play(0);
+//        for (Music music : musics){
+//            DBManager.get().insert(music,false);
+//        }
     }
 
     public void play(int position) {
@@ -192,7 +191,8 @@ public class AudioPlayer {
 
     public void delete(int position) {
         int playPosition = getPlayPosition();
-        Music music = musicList.remove(position);
+        musicList.remove(position);
+//        Music music = musicList.remove(position);
 //        DBManager.get().delete(music);
         if (playPosition > position) {
             setPlayPosition(playPosition - 1);

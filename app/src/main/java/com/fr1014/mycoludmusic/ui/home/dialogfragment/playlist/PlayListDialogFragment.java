@@ -23,6 +23,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -97,6 +98,12 @@ public class PlayListDialogFragment extends DialogFragment implements PlayDialog
         }
         binding.pager.setAdapter(pagerAdapter);
         return binding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        binding.pager.setCurrentItem(2,false);
     }
 
     /**

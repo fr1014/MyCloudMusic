@@ -129,6 +129,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        //维护当前播放列表
+        mViewModel.delOldInsertNewMusicList(AudioPlayer.get().getMusicList());
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (statusBar != null) {
