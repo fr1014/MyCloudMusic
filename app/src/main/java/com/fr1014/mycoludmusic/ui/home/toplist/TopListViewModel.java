@@ -54,9 +54,17 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
     private BusLiveData<String> getSongLrcPath;
+    private BusLiveData<Boolean> getStartPlayListDetail;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
+    }
+
+    public BusLiveData<Boolean> getStartPlayListDetail() {
+        if (getStartPlayListDetail == null){
+            getStartPlayListDetail = new BusLiveData<>();
+        }
+        return getStartPlayListDetail;
     }
 
     public BusLiveData<String> getSongLrcPath() {
@@ -215,13 +223,14 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable disposable) throws Exception {
-                        showDialog();
+                        getStartPlayListDetail.setValue(true);
+//                        showDialog();
                     }
                 })
                 .subscribe(new Consumer<List<Music>>() {
                     @Override
                     public void accept(List<Music> musicList) throws Exception {
-                        dismissDialog();
+//                        dismissDialog();
                         getPlayListDetail.postValue(musicList);
                     }
                 }));

@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -85,33 +86,33 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         return new ViewModelProvider(getActivity(), factory).get(TopListViewModel.class);
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        postponeEnterTransition();
-
-        final ViewGroup parentView = (ViewGroup) view.getParent();
-        // Wait for the data to load
-        mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
-            @Override
-            public void onChanged(List<Music> musics) {
-                // Set the data on the RecyclerView adapter
-                adapter.setData(musics);
-                // Start the transition once all views have been
-                // measured and laid out
-                parentView.getViewTreeObserver()
-                        .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                            @Override
-                            public boolean onPreDraw() {
-                                parentView.getViewTreeObserver()
-                                        .removeOnPreDrawListener(this);
-                                startPostponedEnterTransition();
-                                return true;
-                            }
-                        });
-            }
-        });
-    }
+//    @Override
+//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        postponeEnterTransition();
+//
+//        final ViewGroup parentView = (ViewGroup) view.getParent();
+//        // Wait for the data to load
+//        mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
+//            @Override
+//            public void onChanged(List<Music> musics) {
+//                // Set the data on the RecyclerView adapter
+//                adapter.setData(musics);
+//                // Start the transition once all views have been
+//                // measured and laid out
+//                parentView.getViewTreeObserver()
+//                        .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//                            @Override
+//                            public boolean onPreDraw() {
+//                                parentView.getViewTreeObserver()
+//                                        .removeOnPreDrawListener(this);
+//                                startPostponedEnterTransition();
+//                                return true;
+//                            }
+//                        });
+//            }
+//        });
+//    }
 
     @Override
     protected void initView() {
@@ -197,6 +198,29 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                 } else {
                     AudioPlayer.get().playNext();
                 }
+            }
+        });
+
+        mViewModel.getStartPlayListDetail().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isStart) {
+                if (isStart){
+                    adapter.getHeaderView().setVisibility(View.INVISIBLE);
+                    mViewBinding.llLoading.setVisibility(View.VISIBLE);
+                    mViewBinding.lavLoading.setAnimation(R.raw.loading);
+                    mViewBinding.lavLoading.playAnimation();
+                    mViewBinding.lavLoading.loop(true);
+                }
+            }
+        });
+
+        mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
+            @Override
+            public void onChanged(List<Music> musics) {
+                adapter.getHeaderView().setVisibility(View.VISIBLE);
+                mViewBinding.lavLoading.cancelAnimation();
+                mViewBinding.llLoading.setVisibility(View.GONE);
+                adapter.setData(musics);
             }
         });
     }
