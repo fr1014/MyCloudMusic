@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.musicmanager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -58,4 +59,12 @@ public class PlayService extends Service {
         Notifier.get().cancelAll();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        MediaPlayer mediaPlayer = AudioPlayer.get().getMediaPlayer();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+    }
 }

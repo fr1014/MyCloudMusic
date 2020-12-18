@@ -4,6 +4,8 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.fr1014.mycoludmusic.utils.FileUtils;
+
 public class MediaSessionManager {
     private static final String TAG = "MediaSessionManager";
     private static final long MEDIA_SESSION_ACTIONS = PlaybackStateCompat.ACTION_PLAY
@@ -58,10 +60,10 @@ public class MediaSessionManager {
         MediaMetadataCompat.Builder metaData = new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, music.getTitle())
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, music.getArtist())
-//                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbum())
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, music.getArtist());
-//                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, music.getDuration())
-//                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, CoverLoader.get().loadThumb(music));
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbum())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, music.getArtist())
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, music.getDuration())
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, FileUtils.getCoverLocal(music));
 
 //        metaData.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, AppCache.get().getLocalMusicList().size());
 
