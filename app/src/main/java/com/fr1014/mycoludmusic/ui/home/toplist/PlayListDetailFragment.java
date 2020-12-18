@@ -1,16 +1,26 @@
 package com.fr1014.mycoludmusic.ui.home.toplist;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.transition.TransitionInflater;
 
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
@@ -26,7 +36,7 @@ import java.util.List;
 
 
 //排行榜详情页面
-public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding,TopListViewModel> implements OnPlayerEventListener {
+public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, TopListViewModel> implements OnPlayerEventListener {
     public static final String KEY_ID = "ID";
     public static final String KEY_NAME = "NAME";
     public static final String KEY_COVER = "COVER";
@@ -57,6 +67,14 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setSharedElementEnterTransition(
+                TransitionInflater.from(getContext())
+                        .inflateTransition(android.R.transition.move));
+    }
+
+    @Override
     protected FragmentPlaylistDetailBinding getViewBinding(ViewGroup container) {
         return FragmentPlaylistDetailBinding.inflate(getLayoutInflater(), container, false);
     }
@@ -68,12 +86,56 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        postponeEnterTransition();
+
+        final ViewGroup parentView = (ViewGroup) view.getParent();
+        // Wait for the data to load
+        mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
+            @Override
+            public void onChanged(List<Music> musics) {
+                // Set the data on the RecyclerView adapter
+                adapter.setData(musics);
+                // Start the transition once all views have been
+                // measured and laid out
+                parentView.getViewTreeObserver()
+                        .addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                            @Override
+                            public boolean onPreDraw() {
+                                parentView.getViewTreeObserver()
+                                        .removeOnPreDrawListener(this);
+                                startPostponedEnterTransition();
+                                return true;
+                            }
+                        });
+            }
+        });
+    }
+
+    @Override
     protected void initView() {
-        mViewBinding.toolbar.setPadding(0, ScreenUtil.getStatusHeight(MyApplication.getInstance()),0,0);
+        ViewCompat.setTransitionName(mViewBinding.ivCover, name);
+        mViewBinding.toolbar.setPadding(0, ScreenUtil.getStatusHeight(MyApplication.getInstance()), 0, 0);
         mViewBinding.name.setText(name);
+
+        postponeEnterTransition();
         Glide.with(this)
                 .load(cover)
                 .error(R.drawable.bg_play)
+                .addListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+                })
                 .into(mViewBinding.ivCover);
         mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         initAdapter();
@@ -135,13 +197,6 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                 } else {
                     AudioPlayer.get().playNext();
                 }
-            }
-        });
-
-        mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
-            @Override
-            public void onChanged(List<Music> musics) {
-                adapter.setData(musics);
             }
         });
     }

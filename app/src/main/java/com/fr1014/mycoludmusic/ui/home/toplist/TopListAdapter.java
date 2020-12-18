@@ -1,13 +1,16 @@
 package com.fr1014.mycoludmusic.ui.home.toplist;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.FragmentNavigator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +19,7 @@ import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.musicmanager.Music;
 
 import java.util.List;
 
@@ -24,7 +28,7 @@ import java.util.List;
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, BaseViewHolder> implements BaseAdapter.OnItemClickListener {
+public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, BaseViewHolder> {
 
     public TopListAdapter() {
         super(R.layout.itemiv_top_list, null);
@@ -72,20 +76,30 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
             holder.getView(R.id.tv_title).setVisibility(View.VISIBLE);
             holder.setText(R.id.tv_title, data.getName());
         }
+        ImageView sharedElementView = (ImageView) holder.getView(R.id.iv_coverImg);
         Glide.with(holder.itemView)
                 .load(data.getCoverImgUrl())
-                .into((ImageView) holder.getView(R.id.iv_coverImg));
+                .into(sharedElementView);
+        // 把每个图片视图设置不同的Transition名称, 防止在一个视图内有多个相同的名称, 在变换的时候造成混乱
+        ViewCompat.setTransitionName(sharedElementView, data.getName());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
+                        .addSharedElement(sharedElementView, sharedElementView.getTransitionName())
+                        .build();
+                Log.d(TAG, "----onItemClick: " + sharedElementView.getTransitionName());
+                Bundle bundle = new Bundle();
+                bundle.putLong(PlayListDetailFragment.KEY_ID, data.getId());
+                bundle.putString(PlayListDetailFragment.KEY_NAME, data.getName());
+                bundle.putString(PlayListDetailFragment.KEY_COVER, data.getCoverImgUrl());
+                Navigation.findNavController(view)
+                        .navigate(R.id.playListDetailFragment, bundle, null, extras);
+            }
+        });
     }
 
-    @Override
-    public void onItemClick(BaseAdapter adapter, View view, int position) {
-        Toast.makeText(mContext, "" + position, Toast.LENGTH_SHORT).show();
-        Bundle bundle = new Bundle();
-        bundle.putLong(PlayListDetailFragment.KEY_ID, mData.get(position).getId());
-        bundle.putString(PlayListDetailFragment.KEY_NAME,mData.get(position).getName());
-        bundle.putString(PlayListDetailFragment.KEY_COVER,mData.get(position).getCoverImgUrl());
-        Navigation.findNavController(view).navigate(R.id.playListDetailFragment, bundle);
-    }
+    private static final String TAG = "TopListAdapter";
 
     private boolean isShowDivider(BaseViewHolder holder) {
         return getRealPosition(holder) == getDatas().size() - 1;
