@@ -134,12 +134,6 @@ public class AudioPlayer {
             return;
         }
 
-        if (position < 0) {
-            position = musicList.size() - 1;
-        } else if (position >= musicList.size()) {
-            position = 0;
-        }
-
         setPlayPosition(position);
         Music music = getPlayMusic();
 
@@ -299,6 +293,7 @@ public class AudioPlayer {
                 nextPosition = getPlayPosition() + 1;
                 break;
         }
+        nextPosition = checkPosition(nextPosition);
         play(nextPosition);
         return nextPosition;
     }
@@ -324,8 +319,18 @@ public class AudioPlayer {
                 prePosition = getPlayPosition() - 1;
                 break;
         }
+        prePosition = checkPosition(prePosition);
         play(prePosition);
         return prePosition;
+    }
+
+    private int checkPosition(int position){
+        if (position < 0) {
+            position = musicList.size() - 1;
+        } else if (position >= musicList.size()) {
+            position = 0;
+        }
+        return position;
     }
 
     /**
