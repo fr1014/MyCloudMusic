@@ -19,7 +19,6 @@ import com.fr1014.mycoludmusic.databinding.AlubmCoverviewBinding;
  * Describe:
  */
 public class AlbumCoverView extends RelativeLayout {
-    private int FIRST_START_ANIMATION = 0; //旋转的动画是否已经start,0-noStart,1-start
     private ObjectAnimator rotationAnimator;
 
     private AlubmCoverviewBinding mViewBinding;
@@ -49,7 +48,7 @@ public class AlbumCoverView extends RelativeLayout {
 
     public void initAnimator() {
         rotationAnimator = ObjectAnimator.ofFloat(mViewBinding.civSongImg, "rotation", 0f, 360f);//旋转的角度可有多个
-        rotationAnimator.setDuration(20000);
+        rotationAnimator.setDuration(25000);
         rotationAnimator.setRepeatCount(ValueAnimator.INFINITE);
         rotationAnimator.setRepeatMode(ObjectAnimator.RESTART);//匀速
         //让旋转动画一直转，不停顿的重点
@@ -58,7 +57,6 @@ public class AlbumCoverView extends RelativeLayout {
 
     public void startAnimator() {
         rotationAnimator.start();
-        FIRST_START_ANIMATION = 1;
     }
 
     public void pauseAnimator() {
@@ -74,7 +72,7 @@ public class AlbumCoverView extends RelativeLayout {
     }
 
     public void resumeOrStartAnimator() {
-        if (FIRST_START_ANIMATION == 1) { //动画已经start过
+        if (rotationAnimator.isPaused()) {
             rotationAnimator.resume();//继续（在暂停的位置继续动画）
         } else {
             startAnimator();
@@ -84,7 +82,6 @@ public class AlbumCoverView extends RelativeLayout {
     public void endAnimator() {
         if (rotationAnimator.isRunning() || rotationAnimator.isPaused()) {
             rotationAnimator.end();//结束（回到原始位置）
-            FIRST_START_ANIMATION = 0;
         }
     }
 

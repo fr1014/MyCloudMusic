@@ -279,7 +279,7 @@ public class AudioPlayer {
     }
 
     public int playNext() {
-        pausePlayer();
+//        stopPlayer();
         int nextPosition = -1;
         if (musicList.isEmpty()) {
             play(nextPosition);
@@ -304,7 +304,7 @@ public class AudioPlayer {
     }
 
     public int playPre() {
-        pausePlayer();
+//        stopPlayer();
         int prePosition = -1;
         if (musicList.isEmpty()) {
             play(prePosition);

@@ -17,7 +17,6 @@ import android.widget.SeekBar;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -37,7 +36,6 @@ import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
-import com.fr1014.mycoludmusic.utils.glide.DataCacheKey;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.io.File;
@@ -228,7 +226,6 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                     }
                 });
 
-
         mViewBinding.tvTitle.setText(music.getTitle());
         mViewBinding.tvArtist.setText(music.getArtist());
         initSeekBarData(music);
@@ -289,8 +286,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         Music music = AudioPlayer.get().getPlayMusic();
         if (music == oldMusic) { //选择播放的音乐与当前音乐相同
             mViewBinding.albumCoverView.resumeOrStartAnimator();
+        }else {
+            initSeekBarData(music);
         }
-        initSeekBarData(music);
     }
 
     @Override
@@ -326,6 +324,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
             mViewBinding.albumCoverView.endAnimator();
         } else {
+            initViewData(AudioPlayer.get().getPlayMusic());
             if (AudioPlayer.get().isPlaying()) {
                 StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
                 mViewBinding.albumCoverView.startAnimator();
