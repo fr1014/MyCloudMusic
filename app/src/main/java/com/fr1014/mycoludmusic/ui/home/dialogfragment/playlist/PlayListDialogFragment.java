@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -44,7 +45,9 @@ import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -92,7 +95,7 @@ public class PlayListDialogFragment extends DialogFragment implements PlayDialog
         binding.pager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         //一屏多页
         View recyclerView = binding.pager.getChildAt(0);
-        if(recyclerView instanceof RecyclerView){
+        if (recyclerView instanceof RecyclerView) {
             recyclerView.setPadding(50, 0, 50, 0);
             ((RecyclerView) recyclerView).setClipToPadding(false);
         }
@@ -103,7 +106,7 @@ public class PlayListDialogFragment extends DialogFragment implements PlayDialog
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        binding.pager.setCurrentItem(2,false);
+        binding.pager.setCurrentItem(1, false);
     }
 
     /**
@@ -139,6 +142,12 @@ public class PlayListDialogFragment extends DialogFragment implements PlayDialog
         }
     }
 
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        ((PlayDialogPageFragment) pageFragments.get(1)).scrollToPosition();
+        super.onDismiss(dialog);
+    }
+
     private class PlayDialogPagerAdapter extends FragmentStateAdapter {
         public PlayDialogPagerAdapter(FragmentActivity fa) {
             super(fa);
@@ -148,6 +157,7 @@ public class PlayListDialogFragment extends DialogFragment implements PlayDialog
         public Fragment createFragment(int position) {
             PlayDialogPageFragment playDialogPageFragment = PlayDialogPageFragment.getInstance(position);
             playDialogPageFragment.setDialogListener(PlayListDialogFragment.this);
+            manageFragments(playDialogPageFragment, position);
             return playDialogPageFragment;
         }
 
@@ -155,5 +165,11 @@ public class PlayListDialogFragment extends DialogFragment implements PlayDialog
         public int getItemCount() {
             return NUM_PAGES;
         }
+    }
+
+    private Map<Integer, Fragment> pageFragments = new HashMap<>();
+
+    private void manageFragments(Fragment fragment, int position) {
+        pageFragments.put(position, fragment);
     }
 }

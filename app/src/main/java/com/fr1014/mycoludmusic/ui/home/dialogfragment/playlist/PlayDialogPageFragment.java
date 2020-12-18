@@ -79,10 +79,10 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
         binding = FragmentPlaydialogpageBinding.inflate(getLayoutInflater());
         initHeader();
         initAdapter();
-        inPageTypeData();
         binding.rvPlaylist.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         binding.rvPlaylist.setAdapter(playListAdapter);
-        binding.rvPlaylist.scrollToPosition(oldPosition);
+
+        inPageTypeData();
 
         AudioPlayer.get().addOnPlayEventListener(this);
         return binding.getRoot();
@@ -126,10 +126,16 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
             List<Music> playList = AudioPlayer.get().getMusicList();
             if (playList != null) {
                 playListAdapter.setData(playList);
-                oldPosition = playList.indexOf(AudioPlayer.get().getPlayMusic());
+                scrollToPosition();
+                playListAdapter.notifyDataSetChanged();
             }
             playListAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
         }
+    }
+
+    public void scrollToPosition() {
+        oldPosition = AudioPlayer.get().getPlayPosition();
+        binding.rvPlaylist.scrollToPosition(oldPosition);
     }
 
     private void initAdapter() {
@@ -137,7 +143,7 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
         playListAdapter.setOnItemClickListener((adapter, view, position) -> {
             switch (view.getId()) {
                 case R.id.ll_playlist:
-                    if (pageType == PAGE_TYPE_CURRENT){
+                    if (pageType == PAGE_TYPE_CURRENT) {
                         if (oldPosition != position) {
                             Music item = (Music) adapter.getData(position);
                             AudioPlayer.get().addAndPlay(item);
@@ -148,7 +154,7 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
                                 dialogListener.dialogDismiss();
                             }
                         }
-                    }else {
+                    } else {
                         dialogListener.dialogDismiss();
                         Music item = (Music) adapter.getData(position);
                         List<Music> musicList = AudioPlayer.get().getMusicList();
@@ -175,6 +181,7 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
                     } else {
                         int mPosition = AudioPlayer.get().getMusicList().indexOf(music);
                         AudioPlayer.get().delete(mPosition);
+                        initHeader();
                         playListAdapter.setData(AudioPlayer.get().getMusicList());
                         playListAdapter.notifyDataSetChanged();
                     }
