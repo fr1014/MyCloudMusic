@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.transition.TransitionInflater;
 
@@ -37,7 +38,7 @@ import java.util.List;
 
 
 //排行榜详情页面
-public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, TopListViewModel> implements OnPlayerEventListener {
+public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, TopListViewModel>{
     public static final String KEY_ID = "ID";
     public static final String KEY_NAME = "NAME";
     public static final String KEY_COVER = "COVER";
@@ -113,6 +114,13 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         initAdapter();
         mViewBinding.rvPlaylistDetail.setAdapter(adapter);
+
+        mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).popBackStack();
+            }
+        });
     }
 
     private void initAdapter() {
@@ -143,12 +151,6 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                 AudioPlayer.get().addAndPlay(music);
             }
         });
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        AudioPlayer.get().addOnPlayEventListener(this);
     }
 
     @Override
@@ -198,33 +200,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     @Override
-    public void onChange(Music music) {
-
-    }
-
-    @Override
-    public void onPlayerStart() {
-
-    }
-
-    @Override
-    public void onPlayerPause() {
-
-    }
-
-    @Override
-    public void onPublish(int progress) {
-
-    }
-
-    @Override
-    public void onBufferingUpdate(int percent) {
-
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
-        AudioPlayer.get().removeOnPlayEventListener(this);
     }
 }
