@@ -41,7 +41,6 @@ import com.fr1014.mymvvm.base.BaseFragment;
 import java.io.File;
 
 public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, TopListViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener {
-    private Music oldMusic;
     private Bitmap oldResource = null;
     private MediaPlayer player;
 
@@ -67,9 +66,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         initCoverLrc();
         AudioPlayer.get().addOnPlayEventListener(this);
         player = AudioPlayer.get().getMediaPlayer();
-        oldMusic = AudioPlayer.get().getPlayMusic();
-        if (oldMusic == null) return;
-        initViewData(oldMusic);
+        Music playMusic = AudioPlayer.get().getPlayMusic();
+        if (playMusic == null) return;
+        initViewData(playMusic);
         if (AudioPlayer.get().isPlaying()) {
             mViewBinding.albumCoverView.startAnimator();
             mViewBinding.ivState.setImageResource(R.drawable.ic_stop_white);
@@ -192,7 +191,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                 if (mViewBinding.albumCoverView.getVisibility() == View.VISIBLE) {
                     mViewBinding.albumCoverView.setVisibility(View.GONE);
                     mViewBinding.llLrc.setVisibility(View.VISIBLE);
-                    getSongLrc(oldMusic);
+                    getSongLrc(AudioPlayer.get().getPlayMusic());
                 }
                 break;
         }
@@ -272,26 +271,20 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     public void playOtherMusic(Music music) {
         initViewData(music);
-        oldMusic = music;
     }
 
     @Override
     public void onChange(Music music) {
-        if (music != oldMusic) {
-            initViewData(music);
-            getSongLrc(music); //切换歌时，请求歌词
-        }
+        initViewData(music);
+        getSongLrc(music); //切换歌时，请求歌词
     }
 
     @Override
     public void onPlayerStart() {
         mViewBinding.ivState.setImageResource(R.drawable.ic_stop_white);
         Music music = AudioPlayer.get().getPlayMusic();
-        if (music == oldMusic) { //选择播放的音乐与当前音乐相同
-            mViewBinding.albumCoverView.resumeOrStartAnimator();
-        } else {
-            initSeekBarData(music);
-        }
+        mViewBinding.albumCoverView.resumeOrStartAnimator();
+        initSeekBarData(music);
     }
 
     @Override

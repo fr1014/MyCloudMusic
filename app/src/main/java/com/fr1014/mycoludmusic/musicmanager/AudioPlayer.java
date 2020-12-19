@@ -138,15 +138,15 @@ public class AudioPlayer {
         Music music = getPlayMusic();
 
         try {
+            notifyShowPlay(music);
             if (isEmptySongUrl(music)) return;
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
-            state = STATE_PREPARING;
             for (OnPlayerEventListener listener : listeners) {
                 listener.onChange(music);
             }
-//            notifyShowPlay(music);
+            state = STATE_PREPARING;
             MediaSessionManager.get().updateMetaData(music);
             MediaSessionManager.get().updatePlaybackState();
         } catch (IOException e) {
@@ -228,7 +228,7 @@ public class AudioPlayer {
             mediaPlayer.start();
             state = STATE_PLAYING;
             handler.post(mPublishRunnable);
-            notifyShowPlay(getPlayMusic());
+//            notifyShowPlay(getPlayMusic());
             MediaSessionManager.get().updatePlaybackState();
             context.registerReceiver(noisyReceiver, noisyFilter);
 
@@ -324,7 +324,7 @@ public class AudioPlayer {
         return prePosition;
     }
 
-    private int checkPosition(int position){
+    private int checkPosition(int position) {
         if (position < 0) {
             position = musicList.size() - 1;
         } else if (position >= musicList.size()) {
