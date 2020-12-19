@@ -270,14 +270,17 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         playOtherMusic(next);
     }
 
-    public void playOtherMusic(Music music){
+    public void playOtherMusic(Music music) {
         initViewData(music);
         oldMusic = music;
     }
 
     @Override
     public void onChange(Music music) {
-        getSongLrc(music); //切换歌时，请求歌词
+        if (music != oldMusic) {
+            initViewData(music);
+            getSongLrc(music); //切换歌时，请求歌词
+        }
     }
 
     @Override
@@ -286,7 +289,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         Music music = AudioPlayer.get().getPlayMusic();
         if (music == oldMusic) { //选择播放的音乐与当前音乐相同
             mViewBinding.albumCoverView.resumeOrStartAnimator();
-        }else {
+        } else {
             initSeekBarData(music);
         }
     }
