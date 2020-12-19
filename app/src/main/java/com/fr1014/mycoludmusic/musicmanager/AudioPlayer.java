@@ -235,7 +235,7 @@ public class AudioPlayer {
             mediaPlayer.start();
             state = STATE_PLAYING;
             handler.post(mPublishRunnable);
-//            notifyShowPlay(getPlayMusic());
+            notifyShowPlay(getPlayMusic());
             MediaSessionManager.get().updatePlaybackState();
             context.registerReceiver(noisyReceiver, noisyFilter);
 
