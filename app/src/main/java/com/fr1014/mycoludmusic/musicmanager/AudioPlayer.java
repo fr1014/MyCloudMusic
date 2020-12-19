@@ -8,14 +8,25 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
+import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
+import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import okhttp3.ResponseBody;
 
 /**
  * 创建时间:2020/9/28
@@ -36,9 +47,17 @@ public class AudioPlayer {
     private Handler handler;
     private NoisyAudioStreamReceiver noisyReceiver;
     private IntentFilter noisyFilter;
-    private List<Music> musicList;
+    private List<Music> musicList = new ArrayList<>();
     private final List<OnPlayerEventListener> listeners = new ArrayList<>();
     private int state = STATE_IDLE;
+    public CompositeDisposable mCompositeDisposable;
+
+    private void addDisposable(Disposable disposable) {
+        if (mCompositeDisposable == null) {
+            mCompositeDisposable = new CompositeDisposable();
+        }
+        mCompositeDisposable.add(disposable);
+    }
 
     public static AudioPlayer get() {
         return SingletonHolder.instance;
@@ -53,7 +72,7 @@ public class AudioPlayer {
 
     public void init(Context context) {
         this.context = context.getApplicationContext();
-        musicList = DBManager.get().getMusicLocal();
+        musicList = DBManager.get().getMusicCurrent();
         audioFocusManager = new AudioFocusManager(context);
         mediaPlayer = new MediaPlayer();
         handler = new Handler(Looper.getMainLooper());
@@ -64,7 +83,10 @@ public class AudioPlayer {
          * 控制音频流的应用程序可能会在收到此意图后考虑暂停，减小音量或采取其他措施，以免使用户听到来自扬声器的音频而感到惊讶。
          */
         noisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        mediaPlayer.setOnCompletionListener(mp -> playNext());
+        mediaPlayer.setOnCompletionListener(mp -> {
+            DBManager.get().insert(getPlayMusic(), true);
+            playNext();
+        });
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
@@ -76,7 +98,16 @@ public class AudioPlayer {
             }
         });
         //必写，不然不会拦截error，会到onCompletion中处理，导致逻辑问题
-        mediaPlayer.setOnErrorListener((mp, what, extra) -> true);
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                return true;
+            }
+        });
+    }
+
+    public void notifyShowPlay(Music music) {
+        Notifier.get().showPlay(music);
     }
 
     public void addOnPlayEventListener(OnPlayerEventListener listener) {
@@ -93,17 +124,22 @@ public class AudioPlayer {
         int position = musicList.indexOf(music);
         if (position < 0) {
             musicList.add(music);
-            DBManager.get().insert(music);
+//            DBManager.get().insert(music,false);
             position = musicList.size() - 1;
         }
         play(position);
     }
 
     public void addAndPlay(List<Music> musics) {
-        if (CommonUtil.isEmptyList(musicList)) return;
-        musics.addAll(musicList);
+        if (CommonUtil.isEmptyList(musics)) return;
+        if (CommonUtil.isEmptyList(musicList)) {
+            musicList.clear();
+        }
         musicList = musics;
         play(0);
+//        for (Music music : musics){
+//            DBManager.get().insert(music,false);
+//        }
     }
 
     public void play(int position) {
@@ -111,25 +147,19 @@ public class AudioPlayer {
             return;
         }
 
-        if (position < 0) {
-            position = musicList.size() - 1;
-        } else if (position >= musicList.size()) {
-            position = 0;
-        }
-
         setPlayPosition(position);
         Music music = getPlayMusic();
 
         try {
-            for (OnPlayerEventListener listener : listeners) {
-                listener.onChange(music);
-            }
-            if (TextUtils.isEmpty(music.getSongUrl())) return;
+            notifyShowPlay(music);
+            if (isEmptySongUrl(music)) return;
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
+            for (OnPlayerEventListener listener : listeners) {
+                listener.onChange(music);
+            }
             state = STATE_PREPARING;
-            Notifier.get().showPlay(music);
             MediaSessionManager.get().updateMetaData(music);
             MediaSessionManager.get().updatePlaybackState();
         } catch (IOException e) {
@@ -137,10 +167,38 @@ public class AudioPlayer {
         }
     }
 
+    private boolean isEmptySongUrl(Music music) {
+        if (TextUtils.isEmpty(music.getSongUrl())) {
+            DataRepository dataRepository = MyApplication.provideRepository();
+            if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
+                addDisposable(dataRepository.getKWSongUrl(music.getMUSICRID())
+                        .compose(RxSchedulers.apply())
+                        .subscribe(responseBody -> {
+                            try {
+                                music.setSongUrl(responseBody.string());
+                                AudioPlayer.get().addAndPlay(music);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }));
+            } else if (music.getId() != 0) {//网易的歌
+                addDisposable(dataRepository.getWYSongUrl(music.getId())
+                        .compose(RxSchedulers.apply())
+                        .subscribe(songUrlEntity -> {
+                            music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
+                            AudioPlayer.get().addAndPlay(music);
+                        }));
+            }
+            return true;
+        }
+        return false;
+    }
+
     public void delete(int position) {
         int playPosition = getPlayPosition();
-        Music music = musicList.remove(position);
-        DBManager.get().delete(music);
+        musicList.remove(position);
+//        Music music = musicList.remove(position);
+//        DBManager.get().delete(music);
         if (playPosition > position) {
             setPlayPosition(playPosition - 1);
         } else if (playPosition == position) {
@@ -177,7 +235,7 @@ public class AudioPlayer {
             mediaPlayer.start();
             state = STATE_PLAYING;
             handler.post(mPublishRunnable);
-            Notifier.get().showPlay(getPlayMusic());
+            notifyShowPlay(getPlayMusic());
             MediaSessionManager.get().updatePlaybackState();
             context.registerReceiver(noisyReceiver, noisyFilter);
 
@@ -221,44 +279,65 @@ public class AudioPlayer {
         state = STATE_IDLE;
     }
 
-    public void playNext() {
+    public int playNext() {
+//        stopPlayer();
+        int nextPosition = -1;
         if (musicList.isEmpty()) {
-            return;
+            play(nextPosition);
+            return nextPosition;
         }
 
         PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
         switch (mode) {
             case SHUFFLE:
-                play(new Random().nextInt(musicList.size()));
+                nextPosition = new Random().nextInt(musicList.size());
                 break;
             case SINGLE:
-                play(getPlayPosition());
+                nextPosition = getPlayPosition();
                 break;
             case LOOP:
             default:
-                play(getPlayPosition() + 1);
+                nextPosition = getPlayPosition() + 1;
                 break;
         }
+        nextPosition = checkPosition(nextPosition);
+        play(nextPosition);
+        return nextPosition;
     }
 
-    public void playPre() {
+    public int playPre() {
+//        stopPlayer();
+        int prePosition = -1;
         if (musicList.isEmpty()) {
-            return;
+            play(prePosition);
+            return prePosition;
         }
 
         PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
         switch (mode) {
             case SHUFFLE:
-                play(new Random().nextInt(musicList.size()));
+                prePosition = new Random().nextInt(musicList.size());
                 break;
             case SINGLE:
-                play(getPlayPosition());
+                prePosition = getPlayPosition();
                 break;
             case LOOP:
             default:
-                play(getPlayPosition() - 1);
+                prePosition = getPlayPosition() - 1;
                 break;
         }
+        prePosition = checkPosition(prePosition);
+        play(prePosition);
+        return prePosition;
+    }
+
+    private int checkPosition(int position) {
+        if (position < 0) {
+            position = musicList.size() - 1;
+        } else if (position >= musicList.size()) {
+            position = 0;
+        }
+        return position;
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.fr1014.mycoludmusic.customview;
 
 import android.content.Context;
-import android.text.TextUtils;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,27 +11,41 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.fr1014.mycoludmusic.R;
-import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
-import com.fr1014.mycoludmusic.home.dialogfragment.currentmusic.CurrentMusicDialogFragment;
-import com.fr1014.mycoludmusic.home.dialogfragment.playlist.PlayListDialogFragment;
-import com.fr1014.mycoludmusic.listener.MusicInfoListener;
+import com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
+import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
  * 底部播放状态栏
+ * <p>
+ * 仅可在继承了BasePlayActivity的Activity中使用
  */
 public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
-    private MusicInfoListener musicInfoListener;
+    private PlayListDialogFragment listDialogFragment;
+    private CurrentPlayMusicFragment musicDialogFragment;
+    private Music oldMusic;
+    private Context mContext;
 
     public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
         super(context);
+        mContext = context;
         this.fragmentManager = fragmentManager;
         initView();
     }
@@ -49,6 +63,9 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private void initView() {
         mViewBinding = CustomviewPlaystatusbarBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
+        listDialogFragment = new PlayListDialogFragment();
+        musicDialogFragment = new CurrentPlayMusicFragment();
+        onChange(AudioPlayer.get().getPlayMusic());
         initClickListener();
     }
 
@@ -78,24 +95,49 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     public void setMusic(Music music) {
-        setTitle(music.getTitle());
-        setImageUrl(music.getImgUrl());
+        if (music != null) {
+            if (music != oldMusic) {
+                setVisibility(VISIBLE);
+                setText(music);
+                setImageUrl(music);
+            }
+        } else {
+            setVisibility(GONE);
+        }
+        oldMusic = music;
     }
 
-    private void setTitle(String title) {
-        mViewBinding.tvName.setText(title);
+    private void setText(Music music) {
+        mViewBinding.tvName.setText(music.getTitle());
+        mViewBinding.tvAuthor.setText(music.getArtist());
     }
 
-    private void setImageUrl(String imgUrl) {
-        Glide.with(MyApplication.getInstance())
-                .load(imgUrl)
-                .placeholder(R.drawable.bg_play)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+    private void setImageUrl(Music music) {
+
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.film)
+                .error(R.drawable.bg_play)
+                .priority(Priority.HIGH)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
+
+        Glide.with(mContext)
+                .asBitmap()
+                .load(music.getImgUrl())
+                .apply(options)
+                .addListener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        FileUtils.saveCoverToLocal(resource, music);
+                        return false;
+                    }
+                })
                 .into(mViewBinding.ivCoverImg);
-    }
-
-    public void setMusicInfoListener(MusicInfoListener musicInfoListener) {
-        this.musicInfoListener = musicInfoListener;
     }
 
     @Override
@@ -106,12 +148,20 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 AudioPlayer.get().playPause();
                 break;
             case R.id.iv_music_menu:
-                //弹出当前播放列表
-                new PlayListDialogFragment().show(fragmentManager, "playlist_dialog");
+                if (AudioPlayer.get().getPlayMusic() != null) {
+                    if (!listDialogFragment.isAdded()) {
+                        //弹出当前播放列表
+                        listDialogFragment.show(fragmentManager, "playlist_dialog");
+                    }
+                } else {
+                    CommonUtil.toastShort("当前播放列表为空！！！");
+                }
                 break;
             case R.id.cl_bottom_bar:
-                //当前播放的音乐的详情页
-                new CurrentMusicDialogFragment().show(fragmentManager, "current_music_dialog");
+                if (!musicDialogFragment.isAdded()) {
+                    //当前播放的音乐的详情页
+                    ((BasePlayActivity) mContext).showPlayingFragment();
+                }
                 break;
         }
     }
@@ -120,9 +170,9 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     public void onChange(Music music) {
         setMusic(music);
         setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-         if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
-            musicInfoListener.songUrlIsEmpty(music);
-        }
+//        if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
+//            musicInfoListener.songUrlIsEmpty(music);
+//        }
     }
 
     @Override

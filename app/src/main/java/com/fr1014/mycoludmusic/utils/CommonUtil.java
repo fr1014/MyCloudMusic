@@ -4,6 +4,7 @@ import android.widget.Toast;
 
 import com.fr1014.mycoludmusic.app.MyApplication;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,19 @@ public class CommonUtil {
         SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
         Date data = new Date(time);
         return dateFormat.format(data);
+    }
+
+//    public static long stringToDuration(String str) throws ParseException {
+//        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
+//        Date date = (Date) formatter.parse(str);
+//        return date.getTime();
+//    }
+
+    public static String strFormatTime(String str) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("ss.SSS");
+        SimpleDateFormat f = new SimpleDateFormat("mm:ss.SSS");
+        Date date = (Date) formatter.parse(str);
+        return f.format(date);
     }
 
     public static boolean isEmptyList(List list) {

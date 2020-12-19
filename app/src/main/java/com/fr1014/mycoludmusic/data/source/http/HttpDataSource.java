@@ -1,15 +1,21 @@
 package com.fr1014.mycoludmusic.data.source.http;
 
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -32,13 +38,20 @@ public interface HttpDataSource {
 
     Observable<CheckEntity> checkMusic(long id);
 
-    Observable<SongUrlEntity> getSongUrl(long id);
+    Observable<SongUrlEntity> getWYSongUrl(String id);
+    Observable<SongUrlEntity> getWYSongUrl(long id);
 
-    Observable<SearchEntity> getSearch(String keywords, int offset);
+    Observable<WYSearchEntity> getSearch(String keywords, int offset);
+
+    Observable<WYSongLrcEntity> getWYSongLrcEntity(long id);
 
 /*
 ===============================酷我========================================
- */
-    Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearch(String name, int page, int count);
-    Observable<ResponseBody> getSongUrl(String rid);
+*/
+//    Observable<KWSearchEntity> getSearch(String name, int page, int count);
+    Observable<ResponseBody> getKWSongUrl(String rid);
+    Observable<ResponseBody> getSearchResult(String name,int count);
+    Observable<KWNewSearchEntity> getKWSearchResult(String name, int page, int count);
+    Observable<KWSongDetailEntity> getKWSongDetail(long mid);
+    Observable<KWSongInfoAndLrcEntity> getKWSongInfoAndLrc(String mid);
 }

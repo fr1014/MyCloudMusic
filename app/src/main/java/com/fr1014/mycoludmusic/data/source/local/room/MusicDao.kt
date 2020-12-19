@@ -18,8 +18,14 @@ interface MusicDao {
     @Query("SELECT * FROM musicentity")
     fun getAll(): List<MusicEntity>
 
-    @Query("SELECT * FROM musicentity where name = :title and artist = :artist")
-    fun getItem(title:String, artist:String): MusicEntity
+    @Query("SELECT * FROM musicentity where history = :history")
+    fun getAllHistoryOrCurrent(history: Boolean): List<MusicEntity>
+
+    @Query("SELECT * FROM musicentity where history = :history")
+    fun getAllHistoryOrCurrentLive(history: Boolean): LiveData<List<MusicEntity>>
+
+    @Query("SELECT * FROM musicentity where name = :title and artist = :artist and history = :history")
+    fun getItem(title:String, artist:String,history: Boolean): MusicEntity
 
 
     @Insert

@@ -2,11 +2,16 @@ package com.fr1014.mycoludmusic.data;
 
 import androidx.lifecycle.LiveData;
 
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -17,7 +22,6 @@ import com.fr1014.mymvvm.base.BaseModel;
 import java.util.List;
 
 import io.reactivex.Observable;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
@@ -72,9 +76,12 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
         return httpDataSource.getSongDetail(ids);
     }
 
-    @Override
-    public Observable<SongUrlEntity> getSongUrl(long id) {
-        return httpDataSource.getSongUrl(id);
+    public Observable<SongUrlEntity> getWYSongUrl(String ids) {
+        return httpDataSource.getWYSongUrl(ids);
+    }
+
+    public Observable<SongUrlEntity> getWYSongUrl(long id) {
+        return httpDataSource.getWYSongUrl(id);
     }
 
     @Override
@@ -83,23 +90,52 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<SearchEntity> getSearch(String keywords, int offset) {
+    public Observable<WYSearchEntity> getSearch(String keywords, int offset) {
         return httpDataSource.getSearch(keywords, offset);
     }
 
     @Override
-    public Observable<com.fr1014.mycoludmusic.data.entity.http.kuwo.SearchEntity> getSearch(String name, int page, int count) {
-        return httpDataSource.getSearch(name, page, count);
+    public Observable<WYSongLrcEntity> getWYSongLrcEntity(long id) {
+        return httpDataSource.getWYSongLrcEntity(id);
+    }
+
+//    @Override
+//    public Observable<KWSearchEntity> getSearch(String name, int page, int count) {
+//        return httpDataSource.getSearch(name, page, count);
+//    }
+
+    public Observable<ResponseBody> getKWSongUrl(String rid) {
+        return httpDataSource.getKWSongUrl(rid);
     }
 
     @Override
-    public Observable<ResponseBody> getSongUrl(String rid) {
-        return httpDataSource.getSongUrl(rid);
+    public Observable<ResponseBody> getSearchResult(String name, int count) {
+        return httpDataSource.getSearchResult(name, count);
+    }
+
+    @Override
+    public Observable<KWNewSearchEntity> getKWSearchResult(String name, int page, int count) {
+        return httpDataSource.getKWSearchResult(name, page, count);
+    }
+
+    @Override
+    public Observable<KWSongDetailEntity> getKWSongDetail(long mid) {
+        return httpDataSource.getKWSongDetail(mid);
+    }
+
+    @Override
+    public Observable<KWSongInfoAndLrcEntity> getKWSongInfoAndLrc(String mid) {
+        return httpDataSource.getKWSongInfoAndLrc(mid);
     }
 
     @Override
     public LiveData<List<MusicEntity>> getAllLive() {
         return localDataSource.getAllLive();
+    }
+
+    @Override
+    public LiveData<List<MusicEntity>> getAllHistoryOrCurrentLive(boolean history) {
+        return localDataSource.getAllHistoryOrCurrentLive(history);
     }
 
     @Override
@@ -113,8 +149,13 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public MusicEntity getItem(String title, String artist) {
-        return localDataSource.getItem(title, artist);
+    public List<MusicEntity> getAllHistoryOrCurrent(boolean history) {
+        return localDataSource.getAllHistoryOrCurrent(history);
+    }
+
+    @Override
+    public MusicEntity getItem(String title, String artist,boolean isHistory) {
+        return localDataSource.getItem(title, artist,isHistory);
     }
 
     @Override

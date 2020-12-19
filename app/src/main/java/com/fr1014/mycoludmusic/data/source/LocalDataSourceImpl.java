@@ -14,8 +14,7 @@ public class LocalDataSourceImpl implements LocalDataSource {
     private AppDatabase db;
 
     private LocalDataSourceImpl(){
-        db = Room.databaseBuilder(MyApplication.getInstance(),
-                AppDatabase.class, "db_music").build();
+        db = AppDatabase.Companion.getInstance();
     }
 
     public static LocalDataSourceImpl getInstance() {
@@ -35,6 +34,11 @@ public class LocalDataSourceImpl implements LocalDataSource {
     }
 
     @Override
+    public LiveData<List<MusicEntity>> getAllHistoryOrCurrentLive(boolean history) {
+        return db.musicDao().getAllHistoryOrCurrentLive(history);
+    }
+
+    @Override
     public LiveData<MusicEntity> getItemLive(String title, String artist) {
         return db.musicDao().getItemLive(title,artist);
     }
@@ -45,8 +49,13 @@ public class LocalDataSourceImpl implements LocalDataSource {
     }
 
     @Override
-    public MusicEntity getItem(String title,String artist) {
-        return db.musicDao().getItem(title,artist);
+    public List<MusicEntity> getAllHistoryOrCurrent(boolean history) {
+        return db.musicDao().getAllHistoryOrCurrent(history);
+    }
+
+    @Override
+    public MusicEntity getItem(String title, String artist, boolean isHistory) {
+        return db.musicDao().getItem(title,artist,isHistory);
     }
 
     @Override

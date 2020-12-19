@@ -40,13 +40,18 @@ public class BlurImageView extends AppCompatImageView {
 
     }
 
+    public void setBitmap(Bitmap bitmap){
+        setScaleType(ScaleType.CENTER_CROP);
+        setImageDrawable(getForegroundDrawable(bitmap));
+    }
+
     public void setBlurImageUrl(String url){
         setScaleType(ScaleType.CENTER_CROP);
         if (TextUtils.isEmpty(url)){
             setImageDrawable(getForegroundDrawable(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play)));
             return;
         }
-        Glide.with(this)
+        Glide.with(getContext())
                 .asBitmap()
                 .load(url)
                 .placeholder(R.drawable.bg_play)
@@ -84,7 +89,7 @@ public class BlurImageView extends AppCompatImageView {
 
         final Drawable foregroundDrawable = new BitmapDrawable(blurBitmap);
         /*加入灰色遮罩层，避免图片过亮影响其他控件*/
-        foregroundDrawable.setColorFilter(getContext().getColor(R.color.gray), PorterDuff.Mode.MULTIPLY);
+        foregroundDrawable.setColorFilter(getResources().getColor(R.color.gray), PorterDuff.Mode.MULTIPLY);
         return foregroundDrawable;
     }
 

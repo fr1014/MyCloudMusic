@@ -4,8 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".app.MyApplication"
@@ -15,16 +16,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
         <service
             android:name=".musicmanager.PlayService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
 
-        <receiver
-            android:name=".musicmanager.receiver.StatusBarReceiver"
-            android:enabled="true"
-            android:exported="true" />
+        <receiver android:name=".musicmanager.receiver.StatusBarReceiver">
+            <intent-filter>
+                <action android:name="com.fr1014.music.STATUS_BAR_ACTIONS" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".SearchActivity"
@@ -39,6 +42,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
     </application>
 

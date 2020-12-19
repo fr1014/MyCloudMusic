@@ -18,52 +18,76 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding;
-import com.fr1014.mycoludmusic.home.toplist.PlayListDetailAdapter;
-import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
+import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailAdapter;
+import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import java.util.List;
 
-public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
-    private TopListViewModel viewModel;
+public class SearchActivity extends BasePlayActivity<ActivitySearchBinding,TopListViewModel> {
     private PlayListDetailAdapter adapter;
     private PlayStatusBarView statusBarView;
 
-    @Override
-    protected void initView() {
-        statusBarView = new PlayStatusBarView(this,getSupportFragmentManager());
-        mViewBinding.llPlaystatus.addView(statusBarView);
-        initAdapter();
-        initEditText();
-    }
-
-    @Override
-    protected void initViewModel() {
-        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    /**
+     * 沉浸式状态栏
+     */
+    private void initSystemBar() {
+        int top = ScreenUtil.getStatusHeight(MyApplication.getInstance());
+        mViewBinding.llSearch.setPadding(0, top, 0, 0);
     }
 
     @Override
     protected ActivitySearchBinding getViewBinding() {
-       return mViewBinding = ActivitySearchBinding.inflate(getLayoutInflater());
+        return mViewBinding = ActivitySearchBinding.inflate(getLayoutInflater());
     }
 
     @Override
-    protected void initData() {
-        viewModel.getSearch().observe(this, new Observer<List<Music>>() {
+    public TopListViewModel initViewModel() {
+        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
+        return new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    }
+
+    @Override
+    protected void initView() {
+        initAdapter();
+        initEditText();
+        initSystemBar();
+        initListener();
+    }
+
+    private void initListener() {
+        mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
+    protected void onServiceBound() {
+        statusBarView = new PlayStatusBarView(this, getSupportFragmentManager());
+        AudioPlayer.get().addOnPlayEventListener(statusBarView);
+        mViewBinding.flPlaystatus.addView(statusBarView);
+    }
+
+    @Override
+    public void initData() {
+        mViewModel.getSearch().observe(this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> music) {
                 adapter.setData(music);
             }
         });
 
-        viewModel.getSongUrl().observe(this, new Observer<Music>() {
+        mViewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
-                if (!TextUtils.isEmpty(music.getSongUrl())){
+                if (!TextUtils.isEmpty(music.getSongUrl())) {
                     AudioPlayer.get().addAndPlay(music);
-                }else{
+                } else {
                     AudioPlayer.get().playNext();
                 }
             }
@@ -81,7 +105,8 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
                             SearchActivity.this.getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 //                    viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
-                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0,10);
+//                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 30);
+                    mViewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0, 30);
                     return true;
                 }
                 return false;
@@ -91,6 +116,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
 
     private void initAdapter() {
         adapter = new PlayListDetailAdapter(false);
+        adapter.setDisplayMarginView(true);
         mViewBinding.rvSearch.setLayoutManager(new LinearLayoutManager(this));
         mViewBinding.rvSearch.setAdapter(adapter);
 
@@ -99,8 +125,16 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding>{
             public void onItemClick(BaseAdapter adapter, View view, int position) {
 //                viewModel.getSongUrlEntity((Music) adapter.getData(position));
 //                viewModel.checkSong((Music) adapter.getData(position));
-                viewModel.getSongUrl((Music) adapter.getData(position));
+                mViewModel.getKWSongUrl((Music) adapter.getData(position));
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (statusBarView != null) {
+            AudioPlayer.get().removeOnPlayEventListener(statusBarView);
+        }
     }
 }

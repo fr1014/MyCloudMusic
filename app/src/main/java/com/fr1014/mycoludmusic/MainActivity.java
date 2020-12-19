@@ -1,47 +1,68 @@
 package com.fr1014.mycoludmusic;
 
-import android.content.SharedPreferences;
-import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
-import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
-import com.fr1014.mycoludmusic.home.toplist.TopListViewModel;
-import com.fr1014.mycoludmusic.listener.MusicInfoListener;
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.eventbus.CoverSaveEvent;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
+import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends BasePlayActivity<ActivityMainBinding> implements View.OnClickListener, MusicInfoListener {
-    private static final String TAG = "MainActivity";
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-    private TopListViewModel viewModel;
+public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListViewModel> implements View.OnClickListener {
+    private static final String TAG = "MainActivity";
+    private static final int REQUEST_PERMISSION_CODE = 100;
+
     private AppBarConfiguration mAppBarConfiguration;
-    private SharedPreferences spMode;
     private PlayStatusBarView statusBar;
-    private Observer<Music> musicObserver;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected ActivityMainBinding getViewBinding() {
+        return ActivityMainBinding.inflate(getLayoutInflater());
+    }
+
+    @Override
+    public TopListViewModel initViewModel() {
+        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
+        return new ViewModelProvider(this, factory).get(TopListViewModel.class);
+    }
 
     @Override
     protected void initView() {
         setSupportActionBar(mViewBinding.appBarMain.toolbar);
-        statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
-        statusBar.setMusicInfoListener(this);
-        mViewBinding.appBarMain.contentMain.llPlaystatus.addView(statusBar);
-
+        mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtil.getStatusHeight(this),0,0);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -51,69 +72,63 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(mViewBinding.navView, navController);
-
-//        initClickListener();
-    }
-
-    @Override
-    protected void initViewModel() {
-        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        viewModel = new ViewModelProvider(this, factory).get(TopListViewModel.class);
-    }
-
-    @Override
-    protected ActivityMainBinding getViewBinding() {
-        return ActivityMainBinding.inflate(getLayoutInflater());
-    }
-
-    @Override
-    protected void initData() {
-        viewModel.getCheckSongResult().observe(this, new Observer<Boolean>() {
+        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
-            public void onChanged(Boolean isCanPlay) {
-                if (!isCanPlay) {
-                    AudioPlayer.get().playNext();
+            public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
+                if (destination.getId() == R.id.playListDetailFragment) {
+                    mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
+                } else if (destination.getId() == R.id.topListFragment) {
+                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
+                    mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                    mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
+                } else {
+                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                    mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
                 }
             }
         });
-
-//        viewModel.getSongUrl().observe(this, new Observer<Music>() {
-//            @Override
-//            public void onChanged(Music music) {
-//                AudioPlayer.get().addAndPlay(music);
-//            }
-//        });
-        musicObserver = new Observer<Music>() {
+        mViewBinding.appBarMain.etKeywords.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onChanged(Music music) {
-                if (!TextUtils.isEmpty(music.getSongUrl())){
-                    AudioPlayer.get().addAndPlay(music);
-                }else{
-                    AudioPlayer.get().playNext();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    startActivity(SearchActivity.class);
                 }
-            }
-        };
-        viewModel.getSongUrl().observeForever(musicObserver);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                startActivity(SearchActivity.class);
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+            }
+        });
     }
+
+    //首次绑定Service时该方法被调用
+    @Override
+    protected void onServiceBound() {
+        statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
+        AudioPlayer.get().addOnPlayEventListener(statusBar);
+        mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
+        AudioPlayer.get().addOnPlayEventListener(statusBar);
+    }
+
+    @Override
+    public void initData() {
+        requestMyPermissions();
+    }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.action_search:
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -122,40 +137,53 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding> implemen
                 || super.onSupportNavigateUp();
     }
 
-    //首次绑定Service时该方法被调用
-    @Override
-    protected void onServiceBound() {
-        AudioPlayer.get().addOnPlayEventListener(statusBar);
-    }
-
-    @Override
-    public void songUrlIsEmpty(Music music) {
-        if (!TextUtils.isEmpty(music.getMUSICRID())) {  //酷我的歌
-            viewModel.getSongUrl(music);
-        } else if (music.getId() != 0) {           //网易的歌
-            viewModel.checkSong(music);
-        }
-    }
-
     @Override
     public void onClick(View v) {
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCoverSaveEvent(CoverSaveEvent coverSaveEvent){
+        if (coverSaveEvent.success){
+            Music music = AudioPlayer.get().getPlayMusic();
+            AudioPlayer.get().notifyShowPlay(music);
+        }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (AudioPlayer.get().isPlaying()){
-            statusBar.setMusic(AudioPlayer.get().getPlayMusic());
-        }
+    protected void onStop() {
+        super.onStop();
+        //维护当前播放列表
+        mViewModel.delOldInsertNewMusicList(AudioPlayer.get().getMusicList());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        viewModel.getSongUrl().removeObserver(musicObserver);
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
         }
+        EventBus.getDefault().unregister(this);
     }
 
+    private void requestMyPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //没有授权，编写申请权限代码
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            //没有授权，编写申请权限代码
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+//            for (int i = 0; i < permissions.length; i++) {
+//                Log.i("MainActivity", "申请的权限为：" + permissions[i] + ",申请结果：" + grantResults[i]);
+//            }
+        }
+    }
 }

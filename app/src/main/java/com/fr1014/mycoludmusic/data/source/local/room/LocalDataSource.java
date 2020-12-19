@@ -9,11 +9,15 @@ import java.util.List;
 public interface LocalDataSource {
     LiveData<List<MusicEntity>> getAllLive();
 
+    LiveData<List<MusicEntity>> getAllHistoryOrCurrentLive(boolean history);
+
     LiveData<MusicEntity> getItemLive(String title,String artist);
 
    List<MusicEntity> getAll();
 
-    MusicEntity getItem(String title,String artist);
+   List<MusicEntity> getAllHistoryOrCurrent(boolean history);
+
+    MusicEntity getItem(String title,String artist,boolean isHistory);
 
     void insertAll(List<MusicEntity> musicEntities);
 
