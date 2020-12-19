@@ -24,6 +24,7 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
+import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
@@ -33,6 +34,7 @@ import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
@@ -40,7 +42,7 @@ import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.io.File;
 
-public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, TopListViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener {
+public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, TopListViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener, LoadResultListener {
     private Bitmap oldResource = null;
     private MediaPlayer player;
 
@@ -207,23 +209,29 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
         }
 
-        Glide.with(CurrentPlayMusicFragment.this)
-                .asBitmap()
-                .load(music.getImgUrl())
-                .priority(Priority.HIGH)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        FileUtils.saveCoverToLocal(resource, music);
-                        setBitmap(resource);
-                    }
+        CoverLoadUtils.loadRemoteCover(getContext(),music,this);
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
-                });
+//        Bitmap coverLocal = FileUtils.getCoverLocal(music);
+//        if (coverLocal != null) {
+//            setBitmap(coverLocal);
+//        } else {
+//            Glide.with(CurrentPlayMusicFragment.this)
+//                    .asBitmap()
+//                    .load(music.getImgUrl())
+//                    .override(300, 300)
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                    .into(new CustomTarget<Bitmap>() {
+//                        @Override
+//                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                            setBitmap(resource);
+//                        }
+//
+//                        @Override
+//                        public void onLoadCleared(@Nullable Drawable placeholder) {
+//
+//                        }
+//                    });
+//        }
 
         mViewBinding.tvTitle.setText(music.getTitle());
         mViewBinding.tvArtist.setText(music.getArtist());
@@ -352,5 +360,13 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public boolean onPlayClick(LrcView view, long time) {
         return false;
+    }
+
+    @Override
+    public void success() {
+        Bitmap coverLocal = FileUtils.getCoverLocal(AudioPlayer.get().getPlayMusic());
+        if (coverLocal != null) {
+            setBitmap(coverLocal);
+        }
     }
 }

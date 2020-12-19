@@ -45,7 +45,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -142,13 +142,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
 
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCoverSaveEvent(CoverSaveEvent coverSaveEvent){
-        if (coverSaveEvent.success){
-            Music music = AudioPlayer.get().getPlayMusic();
-            AudioPlayer.get().notifyShowPlay(music);
-        }
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onCoverSaveEvent(CoverSaveEvent coverSaveEvent){
+//        if (coverSaveEvent.success){
+//            Music music = AudioPlayer.get().getPlayMusic();
+//            AudioPlayer.get().notifyShowPlay(music);
+//        }
+//    }
 
     @Override
     protected void onStop() {
@@ -163,7 +163,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
         }
-        EventBus.getDefault().unregister(this);
+//        EventBus.getDefault().unregister(this);
     }
 
     private void requestMyPermissions() {

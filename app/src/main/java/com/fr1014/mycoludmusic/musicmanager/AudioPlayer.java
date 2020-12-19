@@ -12,28 +12,27 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
+import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import okhttp3.ResponseBody;
 
 /**
  * 创建时间:2020/9/28
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class AudioPlayer {
+public class AudioPlayer implements LoadResultListener {
     private static final int STATE_IDLE = 0;
     private static final int STATE_PREPARING = 1;
     private static final int STATE_PLAYING = 2;
@@ -61,6 +60,11 @@ public class AudioPlayer {
 
     public static AudioPlayer get() {
         return SingletonHolder.instance;
+    }
+
+    @Override
+    public void success() {
+        notifyShowPlay(getPlayMusic());
     }
 
     private static class SingletonHolder {
@@ -152,6 +156,7 @@ public class AudioPlayer {
 
         try {
             notifyShowPlay(music);
+            CoverLoadUtils.loadRemoteCover(context,music,this);
             if (isEmptySongUrl(music)) return;
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());

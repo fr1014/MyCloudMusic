@@ -22,12 +22,14 @@ import com.bumptech.glide.request.target.Target;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
+import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
@@ -35,7 +37,7 @@ import com.fr1014.mycoludmusic.utils.FileUtils;
  * <p>
  * 仅可在继承了BasePlayActivity的Activity中使用
  */
-public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener {
+public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener, LoadResultListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
     private PlayListDialogFragment listDialogFragment;
@@ -114,30 +116,24 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     private void setImageUrl(Music music) {
 
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-                .placeholder(R.drawable.film)
-                .error(R.drawable.bg_play)
-                .priority(Priority.HIGH)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
-
-        Glide.with(mContext)
-                .asBitmap()
-                .load(music.getImgUrl())
-                .apply(options)
-                .addListener(new RequestListener<Bitmap>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                        FileUtils.saveCoverToLocal(resource, music);
-                        return false;
-                    }
-                })
-                .into(mViewBinding.ivCoverImg);
+        mViewBinding.ivCoverImg.setImageDrawable(mContext.getDrawable(R.drawable.film));
+        CoverLoadUtils.loadRemoteCover(mContext,music,this);
+//        Bitmap coverLocal = FileUtils.getCoverLocal(music);
+//        if (coverLocal != null){
+//            mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
+//        }else {
+//            RequestOptions options = new RequestOptions()
+//                    .centerCrop()
+//                    .placeholder(R.drawable.film)
+//                    .error(R.drawable.bg_play)
+//                    .diskCacheStrategy(DiskCacheStrategy.NONE);
+//
+//            Glide.with(mContext)
+//                    .asBitmap()
+//                    .load(music.getImgUrl())
+//                    .apply(options)
+//                    .into(mViewBinding.ivCoverImg);
+//        }
     }
 
     @Override
@@ -193,5 +189,13 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     @Override
     public void onBufferingUpdate(int percent) {
 
+    }
+
+    @Override
+    public void success() {
+        Bitmap coverLocal = FileUtils.getCoverLocal(AudioPlayer.get().getPlayMusic());
+        if (coverLocal != null){
+            mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
+        }
     }
 }

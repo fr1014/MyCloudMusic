@@ -103,7 +103,7 @@ public class FileUtils {
             out = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
-            EventBus.getDefault().post(new CoverSaveEvent(true));
+//            EventBus.getDefault().post(new CoverSaveEvent(true));
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
