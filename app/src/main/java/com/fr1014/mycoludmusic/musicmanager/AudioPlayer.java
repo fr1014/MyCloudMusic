@@ -83,11 +83,13 @@ public class AudioPlayer {
          * 控制音频流的应用程序可能会在收到此意图后考虑暂停，减小音量或采取其他措施，以免使用户听到来自扬声器的音频而感到惊讶。
          */
         noisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        mediaPlayer.setOnCompletionListener(mp -> playNext());
+        mediaPlayer.setOnCompletionListener(mp -> {
+            DBManager.get().insert(getPlayMusic(), true);
+            playNext();
+        });
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
-                DBManager.get().insert(getPlayMusic(), true);
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
