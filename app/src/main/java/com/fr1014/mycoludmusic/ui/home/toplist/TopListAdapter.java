@@ -88,7 +88,6 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
                 FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
                         .addSharedElement(sharedElementView, sharedElementView.getTransitionName())
                         .build();
-                Log.d(TAG, "----onItemClick: " + sharedElementView.getTransitionName());
                 Bundle bundle = new Bundle();
                 bundle.putLong(PlayListDetailFragment.KEY_ID, data.getId());
                 bundle.putString(PlayListDetailFragment.KEY_NAME, data.getName());
@@ -98,8 +97,6 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
             }
         });
     }
-
-    private static final String TAG = "TopListAdapter";
 
     private boolean isShowDivider(BaseViewHolder holder) {
         return getRealPosition(holder) == getDatas().size() - 1;
