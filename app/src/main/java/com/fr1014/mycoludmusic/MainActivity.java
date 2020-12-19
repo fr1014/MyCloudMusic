@@ -2,6 +2,7 @@ package com.fr1014.mycoludmusic;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -76,11 +78,11 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
                 if (destination.getId() == R.id.playListDetailFragment) {
                     mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
                 } else if (destination.getId() == R.id.topListFragment) {
-                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getColor(R.color.white));
+                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
                     mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
                 } else {
-                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getColor(R.color.colorPrimary));
+                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
                     mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
                 }

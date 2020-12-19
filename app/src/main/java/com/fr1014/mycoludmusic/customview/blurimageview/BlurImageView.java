@@ -89,7 +89,7 @@ public class BlurImageView extends AppCompatImageView {
 
         final Drawable foregroundDrawable = new BitmapDrawable(blurBitmap);
         /*加入灰色遮罩层，避免图片过亮影响其他控件*/
-        foregroundDrawable.setColorFilter(getContext().getColor(R.color.gray), PorterDuff.Mode.MULTIPLY);
+        foregroundDrawable.setColorFilter(getResources().getColor(R.color.gray), PorterDuff.Mode.MULTIPLY);
         return foregroundDrawable;
     }
 
