@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Random;
 
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import okhttp3.ResponseBody;
 
 /**
@@ -47,6 +50,14 @@ public class AudioPlayer {
     private List<Music> musicList = new ArrayList<>();
     private final List<OnPlayerEventListener> listeners = new ArrayList<>();
     private int state = STATE_IDLE;
+    public CompositeDisposable mCompositeDisposable;
+
+    private void addDisposable(Disposable disposable) {
+        if (mCompositeDisposable == null) {
+            mCompositeDisposable = new CompositeDisposable();
+        }
+        mCompositeDisposable.add(disposable);
+    }
 
     public static AudioPlayer get() {
         return SingletonHolder.instance;
@@ -158,29 +169,23 @@ public class AudioPlayer {
         if (TextUtils.isEmpty(music.getSongUrl())) {
             DataRepository dataRepository = MyApplication.provideRepository();
             if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
-                dataRepository.getKWSongUrl(music.getMUSICRID())
+                addDisposable(dataRepository.getKWSongUrl(music.getMUSICRID())
                         .compose(RxSchedulers.apply())
-                        .subscribe(new MyDisposableObserver<ResponseBody>() {
-                            @Override
-                            public void onNext(@NonNull ResponseBody responseBody) {
-                                try {
-                                    music.setSongUrl(responseBody.string());
-                                    AudioPlayer.get().addAndPlay(music);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-            } else if (music.getId() != 0) {//网易的歌
-                dataRepository.getWYSongUrl(music.getId())
-                        .compose(RxSchedulers.apply())
-                        .subscribe(new MyDisposableObserver<SongUrlEntity>() {
-                            @Override
-                            public void onNext(@NonNull SongUrlEntity songUrlEntity) {
-                                music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
+                        .subscribe(responseBody -> {
+                            try {
+                                music.setSongUrl(responseBody.string());
                                 AudioPlayer.get().addAndPlay(music);
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        });
+                        }));
+            } else if (music.getId() != 0) {//网易的歌
+                addDisposable(dataRepository.getWYSongUrl(music.getId())
+                        .compose(RxSchedulers.apply())
+                        .subscribe(songUrlEntity -> {
+                            music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
+                            AudioPlayer.get().addAndPlay(music);
+                        }));
             }
             return true;
         }

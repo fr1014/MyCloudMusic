@@ -12,8 +12,11 @@ import androidx.annotation.Nullable;
 
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 public class PlayService extends Service {
     private static final String TAG = "Service";
+    private CompositeDisposable mCompositeDisposable;
 
     public class PlayBinder extends Binder {
         public PlayService getService() {
@@ -65,6 +68,9 @@ public class PlayService extends Service {
         MediaPlayer mediaPlayer = AudioPlayer.get().getMediaPlayer();
         if (mediaPlayer != null) {
             mediaPlayer.release();
+        }
+        if (AudioPlayer.get().mCompositeDisposable != null){
+            AudioPlayer.get().mCompositeDisposable.clear();
         }
     }
 }
