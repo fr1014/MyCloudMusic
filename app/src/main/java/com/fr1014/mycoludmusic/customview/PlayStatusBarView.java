@@ -22,6 +22,7 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
+import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
  * 底部播放状态栏
@@ -57,7 +58,16 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         addView(mViewBinding.getRoot());
         listDialogFragment = new PlayListDialogFragment();
         musicDialogFragment = new CurrentPlayMusicFragment();
-        initViewData(AudioPlayer.get().getPlayMusic());
+        Music music = AudioPlayer.get().getPlayMusic();
+        if (music != null) {
+            Bitmap coverLocal = FileUtils.getCoverLocal(music);
+            if (coverLocal != null) {
+                mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
+            } else {
+                mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+            }
+            setText(music);
+        }
         initClickListener();
     }
 
