@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
  */
 public interface LoadResultListener {
 
+    void coverLoading();
+
     void coverLoadSuccess(Bitmap coverLocal);
 
     void coverLoadFail();

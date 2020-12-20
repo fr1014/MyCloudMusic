@@ -23,6 +23,11 @@ import retrofit2.http.Query;
  * 邮箱:1546352238@qq.com
  */
 public interface HttpDataSource {
+/*
+  ========================项目===================================
+*/
+    Observable<ResponseBody> getSongCover(String coverPath);
+
  /*
   ========================网易云===================================
 */
@@ -55,3 +60,4 @@ public interface HttpDataSource {
     Observable<KWSongDetailEntity> getKWSongDetail(long mid);
     Observable<KWSongInfoAndLrcEntity> getKWSongInfoAndLrc(String mid);
 }
+

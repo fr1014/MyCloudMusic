@@ -52,6 +52,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
+    public Observable<ResponseBody> getSongCover(String coverPath) {
+        return httpDataSource.getSongCover(coverPath);
+    }
+
+    @Override
     public Observable<TopListEntity> getTopList() {
         return httpDataSource.getTopList();
     }

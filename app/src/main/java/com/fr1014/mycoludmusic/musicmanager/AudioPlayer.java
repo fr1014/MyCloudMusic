@@ -51,8 +51,9 @@ public class AudioPlayer implements LoadResultListener {
     private final List<OnPlayerEventListener> listeners = new ArrayList<>();
     private int state = STATE_IDLE;
     public CompositeDisposable mCompositeDisposable;
+    DataRepository dataRepository;
 
-    private void addDisposable(Disposable disposable) {
+    public void addDisposable(Disposable disposable) {
         if (mCompositeDisposable == null) {
             mCompositeDisposable = new CompositeDisposable();
         }
@@ -61,6 +62,11 @@ public class AudioPlayer implements LoadResultListener {
 
     public static AudioPlayer get() {
         return SingletonHolder.instance;
+    }
+
+    @Override
+    public void coverLoading() {
+
     }
 
     @Override
@@ -88,6 +94,7 @@ public class AudioPlayer implements LoadResultListener {
         mediaPlayer = new MediaPlayer();
         handler = new Handler(Looper.getMainLooper());
         noisyReceiver = new NoisyAudioStreamReceiver();
+        dataRepository = MyApplication.provideRepository();
         /*
          * 广播意图，是由于音频输出变化而导致音频即将变得“嘈杂”的应用程序的提示。
          * 例如，当拔掉有线耳机时，或当A2DP音频接收器断开，并且音频系统将要自动将音频路由切换到扬声器时，可以发送此意图。
@@ -164,7 +171,7 @@ public class AudioPlayer implements LoadResultListener {
         try {
             notifyShowPlay(music);
             if (isEmptySongUrl(music)) return;
-            CoverLoadUtils.get().loadRemoteCover(MyApplication.getInstance(),music);
+            CoverLoadUtils.get().loadRemoteCover(music);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
@@ -181,7 +188,6 @@ public class AudioPlayer implements LoadResultListener {
 
     private boolean isEmptySongUrl(Music music) {
         if (TextUtils.isEmpty(music.getSongUrl())) {
-            DataRepository dataRepository = MyApplication.provideRepository();
             if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
                 addDisposable(dataRepository.getKWSongUrl(music.getMUSICRID())
                         .compose(RxSchedulers.apply())

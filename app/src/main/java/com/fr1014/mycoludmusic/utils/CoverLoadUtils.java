@@ -1,22 +1,22 @@
 package com.fr1014.mycoludmusic.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.rx.RxSchedulers;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import okhttp3.ResponseBody;
 
 /**
  * Create by fanrui on 2020/12/19
@@ -24,12 +24,14 @@ import java.util.List;
  */
 public class CoverLoadUtils {
     private List<LoadResultListener> loadResultListenerList;
+    DataRepository dataRepository;
 
     private CoverLoadUtils() {
 
     }
 
     public void init() {
+        dataRepository = MyApplication.provideRepository();
         loadResultListenerList = new ArrayList<>();
     }
 
@@ -49,7 +51,7 @@ public class CoverLoadUtils {
         private static CoverLoadUtils instance = new CoverLoadUtils();
     }
 
-    public void loadRemoteCover(Context context, Music music) {
+    public void loadRemoteCover(Music music) {
         Bitmap coverLocal = FileUtils.getCoverLocal(music);
         if (coverLocal != null) {
             for (LoadResultListener loadResultListener : loadResultListenerList) {
@@ -58,24 +60,54 @@ public class CoverLoadUtils {
             return;
         }
 
-        Glide.with(context)
-                .asBitmap()
-                .load(music.getImgUrl())
-                .override(300, 300)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .priority(Priority.HIGH)
-                .into(new CustomTarget<Bitmap>() {
+//        Glide.with(context)
+//                .asBitmap()
+//                .load(music.getImgUrl())
+//                .override(300, 300)
+//                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                .priority(Priority.HIGH)
+//                .into(new CustomTarget<Bitmap>() {
+//                    @Override
+//                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                        FileUtils.saveCoverToLocal(resource, music, loadResultListenerList);
+//                    }
+//
+//                    @Override
+//                    public void onLoadCleared(@Nullable Drawable placeholder) {
+////                        for (LoadResultListener loadResultListener : loadResultListenerList) {
+////                            loadResultListener.coverLoadFail();
+////                        }
+//                    }
+//                });
+        AudioPlayer.get().addDisposable(dataRepository.getSongCover(music.getImgUrl())
+                .compose(RxSchedulers.apply())
+                .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        FileUtils.saveCoverToLocal(resource, music, loadResultListenerList);
+                    public void accept(Disposable disposable) throws Exception {
+                        for (LoadResultListener loadResultListener : loadResultListenerList) {
+                            loadResultListener.coverLoading();
+                        }
                     }
-
+                })
+                .map(new Function<ResponseBody, Bitmap>() {
                     @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-//                        for (LoadResultListener loadResultListener : loadResultListenerList) {
-//                            loadResultListener.coverLoadFail();
-//                        }
+                    public Bitmap apply(@io.reactivex.annotations.NonNull ResponseBody responseBody) throws Exception {
+                        Bitmap bitmap = BitmapFactory.decodeStream(responseBody.byteStream());
+                        return bitmap;
                     }
-                });
+                })
+                .subscribe(new Consumer<Bitmap>() {
+                    @Override
+                    public void accept(Bitmap bitmap) throws Exception {
+                        FileUtils.saveCoverToLocal(bitmap, music, loadResultListenerList);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        for (LoadResultListener loadResultListener : loadResultListenerList) {
+                            loadResultListener.coverLoadFail();
+                        }
+                    }
+                }));
     }
 }

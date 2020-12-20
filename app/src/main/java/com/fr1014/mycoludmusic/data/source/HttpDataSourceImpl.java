@@ -41,6 +41,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
+    public Observable<ResponseBody> getSongCover(String coverPath) {
+        return kwApiService.getSongCover(coverPath);
+    }
+
+    @Override
     public Observable<TopListEntity> getTopList() {
         return wyApiService.getTopList();
     }

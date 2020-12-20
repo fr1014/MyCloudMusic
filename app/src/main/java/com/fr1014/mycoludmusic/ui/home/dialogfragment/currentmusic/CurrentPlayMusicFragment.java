@@ -206,11 +206,12 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             return;
         }
 
-        if (oldResource != null) {    //加载网图时的替代图
-            mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
-        }
+//        if (oldResource != null) {    //加载网图时的替代图
+//            mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+//        }
 
-        CoverLoadUtils.get().loadRemoteCover(getContext(),music);
+        setBitmap(FileUtils.getCoverLocal(music));
+//        CoverLoadUtils.get().loadRemoteCover(getContext(),music);
 
 //        Bitmap coverLocal = FileUtils.getCoverLocal(music);
 //        if (coverLocal != null) {
@@ -261,9 +262,11 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     private void setBitmap(Bitmap resource) {
-        mViewBinding.albumCoverView.songImgSetBitmap(resource);
-        mViewBinding.biBackground.setBitmap(resource);
-        oldResource = resource;
+        if (resource != null) {
+            mViewBinding.albumCoverView.songImgSetBitmap(resource);
+            mViewBinding.biBackground.setBitmap(resource);
+            oldResource = resource;
+        }
     }
 
     public void playPreMusic() {
@@ -362,6 +365,11 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public boolean onPlayClick(LrcView view, long time) {
         return false;
+    }
+
+    @Override
+    public void coverLoading() {
+        mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
     }
 
     @Override

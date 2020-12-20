@@ -98,12 +98,11 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     public void initViewData(Music music) {
-        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
         setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
         if (music != null) {
             setVisibility(VISIBLE);
             setText(music);
-            CoverLoadUtils.get().loadRemoteCover(mContext, music);
+//            CoverLoadUtils.get().loadRemoteCover(mContext, music);
         } else {
             setVisibility(GONE);
         }
@@ -164,6 +163,11 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     @Override
     public void onBufferingUpdate(int percent) {
 
+    }
+
+    @Override
+    public void coverLoading() {
+        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
     }
 
     @Override
