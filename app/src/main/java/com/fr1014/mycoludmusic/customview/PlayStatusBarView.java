@@ -2,6 +2,7 @@ package com.fr1014.mycoludmusic.customview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,15 +11,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
@@ -30,7 +22,6 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
-import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
  * 底部播放状态栏
@@ -42,7 +33,6 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private FragmentManager fragmentManager;
     private PlayListDialogFragment listDialogFragment;
     private CurrentPlayMusicFragment musicDialogFragment;
-    private Music oldMusic;
     private Context mContext;
 
     public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
@@ -67,7 +57,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         addView(mViewBinding.getRoot());
         listDialogFragment = new PlayListDialogFragment();
         musicDialogFragment = new CurrentPlayMusicFragment();
-        onChange(AudioPlayer.get().getPlayMusic());
+        initViewData(AudioPlayer.get().getPlayMusic());
         initClickListener();
     }
 
@@ -96,44 +86,21 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         }
     }
 
-    public void setMusic(Music music) {
+    public void initViewData(Music music) {
+        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
         if (music != null) {
-            if (music != oldMusic) {
-                setVisibility(VISIBLE);
-                setText(music);
-                setImageUrl(music);
-            }
+            setVisibility(VISIBLE);
+            setText(music);
+            CoverLoadUtils.get().loadRemoteCover(mContext, music);
         } else {
             setVisibility(GONE);
         }
-        oldMusic = music;
     }
 
     private void setText(Music music) {
         mViewBinding.tvName.setText(music.getTitle());
         mViewBinding.tvAuthor.setText(music.getArtist());
-    }
-
-    private void setImageUrl(Music music) {
-
-        mViewBinding.ivCoverImg.setImageDrawable(mContext.getDrawable(R.drawable.film));
-        CoverLoadUtils.loadRemoteCover(mContext,music,this);
-//        Bitmap coverLocal = FileUtils.getCoverLocal(music);
-//        if (coverLocal != null){
-//            mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
-//        }else {
-//            RequestOptions options = new RequestOptions()
-//                    .centerCrop()
-//                    .placeholder(R.drawable.film)
-//                    .error(R.drawable.bg_play)
-//                    .diskCacheStrategy(DiskCacheStrategy.NONE);
-//
-//            Glide.with(mContext)
-//                    .asBitmap()
-//                    .load(music.getImgUrl())
-//                    .apply(options)
-//                    .into(mViewBinding.ivCoverImg);
-//        }
     }
 
     @Override
@@ -164,11 +131,8 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     @Override
     public void onChange(Music music) {
-        setMusic(music);
-        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-//        if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
-//            musicInfoListener.songUrlIsEmpty(music);
-//        }
+        initViewData(music);
+//        mViewBinding.ivCoverImg.setImageBitmap(FileUtils.getCoverLocal(music));
     }
 
     @Override
@@ -192,10 +156,12 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     }
 
     @Override
-    public void success() {
-        Bitmap coverLocal = FileUtils.getCoverLocal(AudioPlayer.get().getPlayMusic());
-        if (coverLocal != null){
-            mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
-        }
+    public void coverLoadSuccess(Bitmap coverLocal) {
+        mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
+    }
+
+    @Override
+    public void coverLoadFail() {
+        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
     }
 }

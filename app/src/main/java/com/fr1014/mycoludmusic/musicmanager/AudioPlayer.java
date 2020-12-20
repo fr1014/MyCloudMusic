@@ -2,6 +2,7 @@ package com.fr1014.mycoludmusic.musicmanager;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -63,8 +64,13 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     @Override
-    public void success() {
+    public void coverLoadSuccess(Bitmap coverLocal) {
         notifyShowPlay(getPlayMusic());
+    }
+
+    @Override
+    public void coverLoadFail() {
+
     }
 
     private static class SingletonHolder {
@@ -76,6 +82,7 @@ public class AudioPlayer implements LoadResultListener {
 
     public void init(Context context) {
         this.context = context.getApplicationContext();
+        CoverLoadUtils.get().registerLoadListener(this);
         musicList = DBManager.get().getMusicCurrent();
         audioFocusManager = new AudioFocusManager(context);
         mediaPlayer = new MediaPlayer();
@@ -88,12 +95,12 @@ public class AudioPlayer implements LoadResultListener {
          */
         noisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         mediaPlayer.setOnCompletionListener(mp -> {
-            DBManager.get().insert(getPlayMusic(), true);
             playNext();
         });
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
+                DBManager.get().insert(getPlayMusic(), true);
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
@@ -156,7 +163,7 @@ public class AudioPlayer implements LoadResultListener {
 
         try {
             notifyShowPlay(music);
-            CoverLoadUtils.loadRemoteCover(context,music,this);
+            CoverLoadUtils.get().loadRemoteCover(MyApplication.getInstance(),music);
             if (isEmptySongUrl(music)) return;
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());

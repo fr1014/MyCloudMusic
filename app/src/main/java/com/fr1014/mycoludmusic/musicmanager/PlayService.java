@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -28,6 +29,7 @@ public class PlayService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate: " + getClass().getSimpleName());
+        CoverLoadUtils.get().init();
         AudioPlayer.get().init(this);
         MediaSessionManager.get().init(this);
         Notifier.get().init(this);
@@ -65,6 +67,7 @@ public class PlayService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         MediaPlayer mediaPlayer = AudioPlayer.get().getMediaPlayer();
         if (mediaPlayer != null) {
             mediaPlayer.release();

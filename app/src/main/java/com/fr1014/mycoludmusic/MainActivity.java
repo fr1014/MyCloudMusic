@@ -16,6 +16,7 @@ import com.fr1014.mycoludmusic.eventbus.CoverSaveEvent;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 
@@ -104,6 +105,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     protected void onServiceBound() {
         statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
         AudioPlayer.get().addOnPlayEventListener(statusBar);
+        CoverLoadUtils.get().registerLoadListener(statusBar);
         mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
         AudioPlayer.get().addOnPlayEventListener(statusBar);
     }
@@ -162,6 +164,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         super.onDestroy();
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
+            CoverLoadUtils.get().removeLoadListener(statusBar);
         }
 //        EventBus.getDefault().unregister(this);
     }

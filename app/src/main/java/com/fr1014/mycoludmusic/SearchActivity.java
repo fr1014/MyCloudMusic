@@ -18,15 +18,17 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding;
+import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailAdapter;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
 import java.util.List;
 
-public class SearchActivity extends BasePlayActivity<ActivitySearchBinding,TopListViewModel> {
+public class SearchActivity extends BasePlayActivity<ActivitySearchBinding, TopListViewModel> {
     private PlayListDetailAdapter adapter;
     private PlayStatusBarView statusBarView;
 
@@ -70,6 +72,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding,TopLi
     protected void onServiceBound() {
         statusBarView = new PlayStatusBarView(this, getSupportFragmentManager());
         AudioPlayer.get().addOnPlayEventListener(statusBarView);
+        CoverLoadUtils.get().registerLoadListener(statusBarView);
         mViewBinding.flPlaystatus.addView(statusBarView);
     }
 
@@ -135,6 +138,7 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding,TopLi
         super.onDestroy();
         if (statusBarView != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBarView);
+            CoverLoadUtils.get().removeLoadListener(statusBarView);
         }
     }
 }

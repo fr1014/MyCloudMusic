@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.eventbus.CoverSaveEvent;
+import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 
 import org.greenrobot.eventbus.EventBus;
@@ -16,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,8 +94,8 @@ public class FileUtils {
         return !file.exists() || file.length() == 0;
     }
 
-    public static void saveCoverToLocal(Bitmap bitmap, Music music) {
-        String path = FileUtils.getCoverDir() + FileUtils.getLrcFileName(music.getArtist(), music.getTitle());
+    public static void saveCoverToLocal(Bitmap bitmap, Music music, List<LoadResultListener> loadResultListeners) {
+        String path = FileUtils.getCoverDir() + FileUtils.getCoverFileName(music.getArtist(), music.getTitle());
         File file = new File(path);
         if (file.exists()) {
             return;
@@ -103,9 +105,15 @@ public class FileUtils {
             out = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
+            for (LoadResultListener loadResultListener:loadResultListeners){
+                loadResultListener.coverLoadSuccess(bitmap);
+            }
 //            EventBus.getDefault().post(new CoverSaveEvent(true));
         } catch (IOException e) {
             e.printStackTrace();
+            for (LoadResultListener loadResultListener:loadResultListeners){
+                loadResultListener.coverLoadFail();
+            }
         }finally {
             try {
                 if (out != null){
@@ -118,7 +126,8 @@ public class FileUtils {
     }
 
     public static Bitmap getCoverLocal(Music music){
-        String path = FileUtils.getCoverDir() + FileUtils.getLrcFileName(music.getArtist(), music.getTitle());
+        if (music==null) return null;
+        String path = FileUtils.getCoverDir() + FileUtils.getCoverFileName(music.getArtist(), music.getTitle());
         Bitmap bitmap = null;
         try {
             FileInputStream fis = new FileInputStream(path);

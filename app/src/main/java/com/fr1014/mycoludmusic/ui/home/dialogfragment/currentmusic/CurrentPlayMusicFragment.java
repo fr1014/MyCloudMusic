@@ -67,6 +67,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         initListener();
         initCoverLrc();
         AudioPlayer.get().addOnPlayEventListener(this);
+        CoverLoadUtils.get().registerLoadListener(this);
         player = AudioPlayer.get().getMediaPlayer();
         Music playMusic = AudioPlayer.get().getPlayMusic();
         if (playMusic == null) return;
@@ -209,7 +210,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
         }
 
-        CoverLoadUtils.loadRemoteCover(getContext(),music,this);
+        CoverLoadUtils.get().loadRemoteCover(getContext(),music);
 
 //        Bitmap coverLocal = FileUtils.getCoverLocal(music);
 //        if (coverLocal != null) {
@@ -355,6 +356,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         super.onDestroy();
         mViewBinding.albumCoverView.endAnimator();
         AudioPlayer.get().removeOnPlayEventListener(this);
+        CoverLoadUtils.get().removeLoadListener(this);
     }
 
     @Override
@@ -363,10 +365,12 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     @Override
-    public void success() {
-        Bitmap coverLocal = FileUtils.getCoverLocal(AudioPlayer.get().getPlayMusic());
-        if (coverLocal != null) {
-            setBitmap(coverLocal);
-        }
+    public void coverLoadSuccess(Bitmap coverLocal) {
+        setBitmap(coverLocal);
+    }
+
+    @Override
+    public void coverLoadFail() {
+        mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
     }
 }
