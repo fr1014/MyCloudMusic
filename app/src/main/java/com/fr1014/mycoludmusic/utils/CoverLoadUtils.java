@@ -72,9 +72,9 @@ public class CoverLoadUtils {
 
                     @Override
                     public void onLoadCleared(@Nullable Drawable placeholder) {
-                        for (LoadResultListener loadResultListener : loadResultListenerList) {
-                            loadResultListener.coverLoadFail();
-                        }
+//                        for (LoadResultListener loadResultListener : loadResultListenerList) {
+//                            loadResultListener.coverLoadFail();
+//                        }
                     }
                 });
     }

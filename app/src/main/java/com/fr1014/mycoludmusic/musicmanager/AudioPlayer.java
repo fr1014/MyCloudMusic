@@ -163,8 +163,8 @@ public class AudioPlayer implements LoadResultListener {
 
         try {
             notifyShowPlay(music);
-            CoverLoadUtils.get().loadRemoteCover(MyApplication.getInstance(),music);
             if (isEmptySongUrl(music)) return;
+            CoverLoadUtils.get().loadRemoteCover(MyApplication.getInstance(),music);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();

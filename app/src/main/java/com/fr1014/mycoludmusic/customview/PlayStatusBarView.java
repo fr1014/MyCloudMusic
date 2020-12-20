@@ -68,6 +68,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             }
             setText(music);
         }
+        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
         initClickListener();
     }
 
