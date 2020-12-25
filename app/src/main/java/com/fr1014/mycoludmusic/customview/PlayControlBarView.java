@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -82,19 +83,23 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
         }
     }
 
+    Toast toast;
     private void switchPlayMode() {
+        if (toast != null){
+            toast.cancel();
+        }
         PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
         switch (mode) {
             case SINGLE:
-                CommonUtil.toastShort("循环播放");
+                toast = CommonUtil.toastShort("循环播放");
                 mode = PlayModeEnum.LOOP;
                 break;
             case LOOP:
-                CommonUtil.toastShort("随机播放");
+                toast = CommonUtil.toastShort("随机播放");
                 mode = PlayModeEnum.SHUFFLE;
                 break;
             case SHUFFLE:
-                CommonUtil.toastShort("单曲循环");
+                toast = CommonUtil.toastShort("单曲循环");
                 mode = PlayModeEnum.SINGLE;
                 break;
         }

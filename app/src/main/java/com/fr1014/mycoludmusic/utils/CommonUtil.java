@@ -16,12 +16,18 @@ import java.util.List;
  */
 public class CommonUtil {
 
-    public static void toastShort(String message) {
-        Toast.makeText(MyApplication.getInstance(), message, Toast.LENGTH_SHORT).show();
+    public static Toast toastShort(String message) {
+        Toast toast = Toast.makeText(MyApplication.getInstance(), null, Toast.LENGTH_SHORT);
+        toast.setText(message);
+        toast.show();
+        return toast;
     }
 
-    public static void toastLong(String message) {
-        Toast.makeText(MyApplication.getInstance(), message, Toast.LENGTH_LONG).show();
+    public static Toast toastLong(String message) {
+        Toast toast = Toast.makeText(MyApplication.getInstance(), null, Toast.LENGTH_LONG);
+        toast.setText(message);
+        toast.show();
+        return toast;
     }
 
     //格式化歌曲时间
