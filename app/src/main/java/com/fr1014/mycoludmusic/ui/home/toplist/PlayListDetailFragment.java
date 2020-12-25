@@ -92,6 +92,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         ViewCompat.setTransitionName(mViewBinding.ivCover, name);
         mViewBinding.toolbar.setPadding(0, ScreenUtil.getStatusHeight(MyApplication.getInstance()), 0, 0);
         mViewBinding.name.setText(name);
+        mViewBinding.lavLoading.setAnimation(R.raw.loading_music);
 
         postponeEnterTransition();
         Glide.with(this)
@@ -181,7 +182,6 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                 if (isStart){
                     adapter.getHeaderView().setVisibility(View.INVISIBLE);
                     mViewBinding.llLoading.setVisibility(View.VISIBLE);
-                    mViewBinding.lavLoading.setAnimation(R.raw.loading);
                     mViewBinding.lavLoading.playAnimation();
                     mViewBinding.lavLoading.loop(true);
                 }
