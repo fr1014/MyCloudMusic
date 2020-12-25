@@ -121,8 +121,12 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewModel.getSongLrcPath().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String lrcPath) {
-                mViewBinding.lrcView.loadLrc(new File(lrcPath));
                 mViewBinding.lrcView.setLabel("暂无歌词");
+                if (!lrcPath.equals("")) {
+                    mViewBinding.lrcView.loadLrc(new File(lrcPath));
+                }else {
+                    mViewBinding.lrcView.loadLrc("暂无歌词");
+                }
             }
         });
     }
@@ -288,7 +292,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onChange(Music music) {
         initViewData(music);
-        getSongLrc(music); //切换歌时，请求歌词
+        if (mViewBinding.llLrc.getVisibility() == View.VISIBLE){
+            getSongLrc(music); //切换歌时，请求歌词
+        }
     }
 
     @Override
