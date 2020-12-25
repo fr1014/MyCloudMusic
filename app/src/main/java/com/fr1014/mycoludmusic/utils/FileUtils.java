@@ -117,14 +117,12 @@ public class FileUtils {
                     break;
                 case 4:
                 case 3:
-                    inSampleSize = 8;
-                    break;
-                case 2:
                     inSampleSize = 6;
                     break;
-                case 1:
+                case 2:
                     inSampleSize = 4;
                     break;
+                case 1:
                 case 0:
                     inSampleSize = 2;
                     break;
