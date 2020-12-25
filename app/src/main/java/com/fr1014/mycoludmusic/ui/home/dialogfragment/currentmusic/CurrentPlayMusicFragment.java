@@ -210,34 +210,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             return;
         }
 
-//        if (oldResource != null) {    //加载网图时的替代图
-//            mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
-//        }
-
         setBitmap(FileUtils.getCoverLocal(music));
-//        CoverLoadUtils.get().loadRemoteCover(getContext(),music);
-
-//        Bitmap coverLocal = FileUtils.getCoverLocal(music);
-//        if (coverLocal != null) {
-//            setBitmap(coverLocal);
-//        } else {
-//            Glide.with(CurrentPlayMusicFragment.this)
-//                    .asBitmap()
-//                    .load(music.getImgUrl())
-//                    .override(300, 300)
-//                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                    .into(new CustomTarget<Bitmap>() {
-//                        @Override
-//                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-//                            setBitmap(resource);
-//                        }
-//
-//                        @Override
-//                        public void onLoadCleared(@Nullable Drawable placeholder) {
-//
-//                        }
-//                    });
-//        }
 
         mViewBinding.tvTitle.setText(music.getTitle());
         mViewBinding.tvArtist.setText(music.getArtist());
@@ -370,6 +343,13 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public boolean onPlayClick(LrcView view, long time) {
+        if (AudioPlayer.get().isPlaying() || AudioPlayer.get().isPausing()) {
+            AudioPlayer.get().seekTo((int) time);
+            if (AudioPlayer.get().isPausing()) {
+                AudioPlayer.get().playPause();
+            }
+            return true;
+        }
         return false;
     }
 
