@@ -529,6 +529,11 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         public void accept(String s) throws Exception {
                             getSongLrcPath().setValue(filePath);
                         }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            getSongLrcPath().setValue("");
+                        }
                     })
             );
         }
