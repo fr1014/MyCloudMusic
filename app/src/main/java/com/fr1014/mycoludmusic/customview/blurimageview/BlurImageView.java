@@ -85,7 +85,7 @@ public class BlurImageView extends AppCompatImageView {
         Bitmap scaleBitmap = Bitmap.createScaledBitmap(cropBitmap, bitmap.getWidth() / 50, bitmap
                 .getHeight() / 50, false);
         /*模糊化*/
-        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, 8, true);
+        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, 5, true);
 
         final Drawable foregroundDrawable = new BitmapDrawable(blurBitmap);
         /*加入灰色遮罩层，避免图片过亮影响其他控件*/
