@@ -151,53 +151,10 @@
                 android:textSize="8sp" />
         </LinearLayout>
 
-        <LinearLayout
+        <com.fr1014.mycoludmusic.customview.PlayControlBarView
+            android:id="@+id/playControlBar"
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:layout_marginBottom="16dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/iv_mode"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackground" />
-
-            <ImageView
-                android:id="@+id/iv_pre"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_song_back_white" />
-
-            <ImageView
-                android:id="@+id/iv_state"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_stop_white" />
-
-            <ImageView
-                android:id="@+id/iv_next"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_song_next_white" />
-
-            <ImageView
-                android:id="@+id/iv_music_menu"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_weight="1"
-                android:foreground="?attr/selectableItemBackground"
-                android:src="@drawable/ic_music_menu_white" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 </FrameLayout>

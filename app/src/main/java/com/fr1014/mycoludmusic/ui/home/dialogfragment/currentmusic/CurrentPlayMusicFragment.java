@@ -2,11 +2,8 @@ package com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -15,14 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.customview.PlayControlBarView;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
@@ -30,8 +23,6 @@ import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
-import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
-import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
@@ -43,7 +34,6 @@ import com.fr1014.mymvvm.base.BaseFragment;
 import java.io.File;
 
 public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, TopListViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener, LoadResultListener {
-    private Bitmap oldResource = null;
     private MediaPlayer player;
 
     public CurrentPlayMusicFragment() {
@@ -74,21 +64,17 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         initViewData(playMusic);
         if (AudioPlayer.get().isPlaying()) {
             mViewBinding.albumCoverView.startAnimator();
-            mViewBinding.ivState.setImageResource(R.drawable.ic_stop_white);
+            mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
         } else {
-            mViewBinding.ivState.setImageResource(R.drawable.ic_play_white);
+            mViewBinding.playControlBar.setStateImage(R.drawable.ic_play_white);
         }
-        initPlayMode();
+        mViewBinding.playControlBar.initPlayMode();
     }
 
     private void initListener() {
         mViewBinding.icBack.setOnClickListener(this);
-        mViewBinding.ivState.setOnClickListener(this);
-        mViewBinding.ivMusicMenu.setOnClickListener(this);
-        mViewBinding.ivMode.setOnClickListener(this);
-        mViewBinding.ivPre.setOnClickListener(this);
-        mViewBinding.ivNext.setOnClickListener(this);
         mViewBinding.albumCoverView.setOnClickListener(this);
+
         mViewBinding.sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -104,6 +90,23 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 AudioPlayer.get().seekTo(seekBar.getProgress());
+            }
+        });
+
+        mViewBinding.playControlBar.setPlayControlBarClick(new PlayControlBarView.OnPlayControlBarClick() {
+            @Override
+            public void pre() {
+                mViewBinding.albumCoverView.endAnimator();
+            }
+
+            @Override
+            public void next() {
+                mViewBinding.albumCoverView.endAnimator();
+            }
+
+            @Override
+            public void openMenu() {
+                new PlayListDialogFragment().show(getParentFragmentManager(), "playlist_dialog");
             }
         });
     }
@@ -124,75 +127,19 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                 mViewBinding.lrcView.setLabel("暂无歌词");
                 if (!lrcPath.equals("")) {
                     mViewBinding.lrcView.loadLrc(new File(lrcPath));
-                }else {
+                } else {
                     mViewBinding.lrcView.loadLrc("暂无歌词");
                 }
             }
         });
     }
 
-    private void initPlayMode() {
-        int mode = Preferences.getPlayMode();
-        setImageMode(mode);
-    }
-
-    private void switchPlayMode() {
-        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
-        switch (mode) {
-            case SINGLE:
-                CommonUtil.toastShort("循环播放");
-                mode = PlayModeEnum.LOOP;
-                break;
-            case LOOP:
-                CommonUtil.toastShort("随机播放");
-                mode = PlayModeEnum.SHUFFLE;
-                break;
-            case SHUFFLE:
-                CommonUtil.toastShort("单曲循环");
-                mode = PlayModeEnum.SINGLE;
-                break;
-        }
-        Preferences.savePlayMode(mode.value());
-        initPlayMode();
-    }
-
-    private void setImageMode(int mode) {
-        switch (mode) {
-            case 0:
-                mViewBinding.ivMode.setImageResource(R.drawable.ic_loop_white);
-                break;
-            case 1:
-                mViewBinding.ivMode.setImageResource(R.drawable.ic_random_white);
-                break;
-            case 2:
-                mViewBinding.ivMode.setImageResource(R.drawable.ic_cycle_white);
-                break;
-        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_mode:
-                switchPlayMode();
-                break;
             case R.id.ic_back:
                 mViewBinding.albumCoverView.endAnimator();
                 getActivity().onBackPressed();
-                break;
-            case R.id.iv_pre:
-                playPreMusic();
-                mViewBinding.albumCoverView.endAnimator();
-                break;
-            case R.id.iv_next:
-                playNextMusic();
-                mViewBinding.albumCoverView.endAnimator();
-                break;
-            case R.id.iv_state:
-                AudioPlayer.get().playPause();
-                break;
-            case R.id.iv_music_menu:
-                new PlayListDialogFragment().show(getParentFragmentManager(), "playlist_dialog");
                 break;
             case R.id.album_cover_view:
                 if (mViewBinding.albumCoverView.getVisibility() == View.VISIBLE) {
@@ -242,37 +189,20 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         if (resource != null) {
             mViewBinding.albumCoverView.songImgSetBitmap(resource);
             mViewBinding.biBackground.setBitmap(resource);
-            oldResource = resource;
         }
-    }
-
-    public void playPreMusic() {
-        int playPosition = AudioPlayer.get().playPre();
-        Music pre = AudioPlayer.get().getMusicList().get(playPosition);
-        playOtherMusic(pre);
-    }
-
-    public void playNextMusic() {
-        int playPosition = AudioPlayer.get().playNext();
-        Music next = AudioPlayer.get().getMusicList().get(playPosition);
-        playOtherMusic(next);
-    }
-
-    public void playOtherMusic(Music music) {
-        initViewData(music);
     }
 
     @Override
     public void onChange(Music music) {
         initViewData(music);
-        if (mViewBinding.llLrc.getVisibility() == View.VISIBLE){
+        if (mViewBinding.llLrc.getVisibility() == View.VISIBLE) {
             getSongLrc(music); //切换歌时，请求歌词
         }
     }
 
     @Override
     public void onPlayerStart() {
-        mViewBinding.ivState.setImageResource(R.drawable.ic_stop_white);
+        mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
         Music music = AudioPlayer.get().getPlayMusic();
         mViewBinding.albumCoverView.resumeOrStartAnimator();
         initSeekBarData(music);
@@ -281,7 +211,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onPlayerPause() {
         mViewBinding.albumCoverView.pauseAnimator();
-        mViewBinding.ivState.setImageResource(R.drawable.ic_play_white);
+        mViewBinding.playControlBar.setStateImage(R.drawable.ic_play_white);
     }
 
     @Override
@@ -319,6 +249,35 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         }
     }
 
+    //点击歌词
+    @Override
+    public boolean onPlayClick(LrcView view, long time) {
+        if (AudioPlayer.get().isPlaying() || AudioPlayer.get().isPausing()) {
+            AudioPlayer.get().seekTo((int) time);
+            if (AudioPlayer.get().isPausing()) {
+                AudioPlayer.get().playPause();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    //加载图片
+    @Override
+    public void coverLoading() {
+        mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+    }
+
+    @Override
+    public void coverLoadSuccess(Bitmap coverLocal) {
+        setBitmap(coverLocal);
+    }
+
+    @Override
+    public void coverLoadFail() {
+        mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -339,32 +298,5 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewBinding.albumCoverView.endAnimator();
         AudioPlayer.get().removeOnPlayEventListener(this);
         CoverLoadUtils.get().removeLoadListener(this);
-    }
-
-    @Override
-    public boolean onPlayClick(LrcView view, long time) {
-        if (AudioPlayer.get().isPlaying() || AudioPlayer.get().isPausing()) {
-            AudioPlayer.get().seekTo((int) time);
-            if (AudioPlayer.get().isPausing()) {
-                AudioPlayer.get().playPause();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void coverLoading() {
-        mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
-    }
-
-    @Override
-    public void coverLoadSuccess(Bitmap coverLocal) {
-        setBitmap(coverLocal);
-    }
-
-    @Override
-    public void coverLoadFail() {
-        mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
     }
 }
