@@ -14,7 +14,7 @@ public class Music {
     private String imgUrl;          //歌曲图片地址
     private String MUSICRID;        //酷我musicID
     private long duration;          // 持续时间
-    private String original;        //是否为原唱
+    private String original;        //是否为原唱 1为原唱，0为非原唱
     private String album;           //歌曲专辑
     private boolean isOnlineMusic;  //是否为在线歌曲
 

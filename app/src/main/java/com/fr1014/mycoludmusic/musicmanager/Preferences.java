@@ -16,6 +16,7 @@ public class Preferences {
     private static final String PLAY_MODE = "play_mode";
     private static final String SPLASH_URL = "splash_url";
     private static final String NIGHT_MODE = "night_mode";
+    private static final String MUSIC_SOURCE = "music_source";
 
     private static Context sContext;
 
@@ -47,6 +48,10 @@ public class Preferences {
         saveString(SPLASH_URL, url);
     }
 
+    public static void saveMusicSource(String source){
+        saveMusicSource(MUSIC_SOURCE,source);
+    }
+
 //    public static boolean enableMobileNetworkPlay() {
 //        return getBoolean(sContext.getString(R.string.setting_key_mobile_network_play), false);
 //    }
@@ -67,7 +72,15 @@ public class Preferences {
         saveBoolean(NIGHT_MODE, on);
     }
 
-//    public static String getFilterSize() {
+    private static void saveMusicSource(String key, String source) {
+        getPreferences().edit().putString(key, source).apply();
+    }
+
+    public static String getMusicSource() {
+        return getString(MUSIC_SOURCE,"酷我");
+    }
+
+    //    public static String getFilterSize() {
 //        return getString(sContext.getString(R.string.setting_key_filter_size), "0");
 //    }
 //

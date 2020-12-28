@@ -30,6 +30,7 @@ import java.util.List;
 public class SearchActivity extends BasePlayActivity<ActivitySearchBinding, TopListViewModel> {
     private PlayListDetailAdapter adapter;
     private PlayStatusBarView statusBarView;
+    private String source;
 
     /**
      * 沉浸式状态栏
@@ -53,18 +54,8 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding, TopL
     @Override
     protected void initView() {
         initAdapter();
-        initEditText();
         initSystemBar();
         initListener();
-    }
-
-    private void initListener() {
-        mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     @Override
@@ -77,6 +68,11 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding, TopL
 
     @Override
     public void initData() {
+        source = SourceHolder.get().getSource();
+    }
+
+    @Override
+    public void initViewObservable() {
         mViewModel.getSearch().observe(this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> music) {
@@ -96,7 +92,21 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding, TopL
         });
     }
 
-    private void initEditText() {
+    private void initAdapter() {
+        adapter = new PlayListDetailAdapter(false);
+        adapter.setDisplayMarginView(true);
+        mViewBinding.rvSearch.setLayoutManager(new LinearLayoutManager(this));
+        mViewBinding.rvSearch.setAdapter(adapter);
+    }
+
+    private void initListener() {
+        mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         mViewBinding.etKeywords.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -108,26 +118,35 @@ public class SearchActivity extends BasePlayActivity<ActivitySearchBinding, TopL
                             InputMethodManager.HIDE_NOT_ALWAYS);
 //                    viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
 //                    viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 30);
-                    mViewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 0, 30);
+                    String searchKey = mViewBinding.etKeywords.getText().toString();
+                    switch (source){
+                        case "酷我":
+                            mViewModel.getSearchEntityKW(searchKey, 0, 30);
+                            break;
+                        case "网易":
+                            mViewModel.getSearchEntityWYY(searchKey,0);
+                            break;
+                    }
                     return true;
                 }
                 return false;
             }
         });
-    }
-
-    private void initAdapter() {
-        adapter = new PlayListDetailAdapter(false);
-        adapter.setDisplayMarginView(true);
-        mViewBinding.rvSearch.setLayoutManager(new LinearLayoutManager(this));
-        mViewBinding.rvSearch.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseAdapter adapter, View view, int position) {
-//                viewModel.getSongUrlEntity((Music) adapter.getData(position));
-//                viewModel.checkSong((Music) adapter.getData(position));
-                mViewModel.getKWSongUrl((Music) adapter.getData(position));
+
+                switch (source){
+                    case "酷我":
+                        mViewModel.getKWSongUrl((Music) adapter.getData(position));
+                        break;
+                    case "网易":
+                        mViewModel.getWYYSongUrl((Music) adapter.getData(position));
+//                        mViewModel.checkSong((Music) adapter.getData(position));
+                        break;
+                }
+
             }
         });
     }
