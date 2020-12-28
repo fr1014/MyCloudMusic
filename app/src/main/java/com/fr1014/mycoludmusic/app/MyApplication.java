@@ -18,6 +18,7 @@ import com.fr1014.mycoludmusic.http.WYYServiceProvider;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
 import com.fr1014.mycoludmusic.rx.RxJavaError;
 import com.fr1014.mymvvm.base.BaseApplication;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +42,7 @@ public class MyApplication extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        CrashReport.initCrashReport(getApplicationContext(), "11c03b3b54", false);
         Preferences.init(this); //SharePreferences
         Intent intent = new Intent(this, PlayService.class);
         startService(intent);
