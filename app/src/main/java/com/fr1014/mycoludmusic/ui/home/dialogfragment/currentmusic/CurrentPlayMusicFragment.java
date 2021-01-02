@@ -62,6 +62,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         Music playMusic = AudioPlayer.get().getPlayMusic();
         if (playMusic == null) return;
         initViewData(playMusic);
+        initSeekBarData(playMusic);
         if (AudioPlayer.get().isPlaying()) {
             mViewBinding.albumCoverView.startAnimator();
             mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
@@ -161,7 +162,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
         mViewBinding.tvTitle.setText(music.getTitle());
         mViewBinding.tvArtist.setText(music.getArtist());
-        initSeekBarData(music);
+//        initSeekBarData(music);
     }
 
     private void initSeekBarData(Music music) {
@@ -202,6 +203,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onPlayerStart() {
+        initSeekBarData(AudioPlayer.get().getPlayMusic());
         mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
         mViewBinding.albumCoverView.resumeOrStartAnimator();
     }
@@ -228,8 +230,13 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     private void getSongLrc(Music music) {
-        mViewBinding.lrcView.setLabel("正在搜索歌词");
-        mViewModel.getSongLrc(music);
+        String mTag = music.getTitle() + music.getArtist();
+        Object tag = mViewBinding.lrcView.getTag();
+        if (tag == null || !tag.equals(mTag)) {
+            mViewBinding.lrcView.setTag(mTag);
+            mViewBinding.lrcView.setLabel("正在搜索歌词");
+            mViewModel.getSongLrc(music);
+        }
     }
 
     @Override
