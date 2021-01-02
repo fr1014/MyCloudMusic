@@ -13,6 +13,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -255,15 +256,15 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     //获取搜索结果（网易）
     public void getSearchEntityWYY(String keywords, int offset) {
-        addSubscribe(model.getSearch(keywords, offset)
-                .map(new Function<WYSearchEntity, List<Music>>() {
+        addSubscribe(model.getWYSearch(keywords, offset)
+                .map(new Function<WYSearchDetail, List<Music>>() {
                     @Override
-                    public List<Music> apply(WYSearchEntity searchEntity) throws Exception {
+                    public List<Music> apply(@io.reactivex.annotations.NonNull WYSearchDetail wySearchDetail) throws Exception {
                         List<Music> musics = new ArrayList<>();
-                        List<WYSearchEntity.ResultBean.SongsBean> songs = searchEntity.getResult().getSongs();
-                        for (WYSearchEntity.ResultBean.SongsBean song : songs) {
+                        List<WYSearchDetail.ResultBean.SongsBean> songs = wySearchDetail.getResult().getSongs();
+                        for (WYSearchDetail.ResultBean.SongsBean song : songs) {
                             Music music = new Music();
-                            List<WYSearchEntity.ResultBean.SongsBean.ArtistsBean> artists = song.getArtists();
+                            List<WYSearchDetail.ResultBean.SongsBean.ArBean> artists = song.getAr();
                             StringBuilder sb = new StringBuilder();
                             for (int i = 0; i < artists.size(); i++) {
                                 if (i < artists.size() - 1) {
@@ -274,11 +275,11 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                             }
                             music.setArtist(sb.toString());
                             music.setTitle(song.getName());
-                            List<?> alias = song.getAlias();
+                            List<?> alias = song.getAlia();
                             if (!CommonUtil.isEmptyList(alias)){
-                                music.setSubTitle(song.getAlias().get(0).toString());
+                                music.setSubTitle(song.getAlia().get(0).toString());
                             }
-//                            music.setOriginal(song.);
+                            music.setOriginal(song.getOriginCoverType()+"");
                             music.setId(song.getId());
                             musics.add(music);
                         }

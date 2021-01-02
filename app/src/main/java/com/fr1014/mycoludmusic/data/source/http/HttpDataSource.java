@@ -6,6 +6,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
@@ -46,7 +47,7 @@ public interface HttpDataSource {
     Observable<SongUrlEntity> getWYSongUrl(String id);
     Observable<SongUrlEntity> getWYSongUrl(long id);
 
-    Observable<WYSearchEntity> getSearch(String keywords, int offset);
+    Observable<WYSearchDetail> getWYSearch(String keywords, int offset);
 
     Observable<WYSongLrcEntity> getWYSongLrcEntity(long id);
 
