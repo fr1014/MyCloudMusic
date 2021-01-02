@@ -203,9 +203,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onPlayerStart() {
         mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
-        Music music = AudioPlayer.get().getPlayMusic();
         mViewBinding.albumCoverView.resumeOrStartAnimator();
-        initSeekBarData(music);
     }
 
     @Override
@@ -238,9 +236,15 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
+            AudioPlayer.get().removeOnPlayEventListener(this);
+            CoverLoadUtils.get().removeLoadListener(this);
+
             StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
             mViewBinding.albumCoverView.endAnimator();
         } else {
+            AudioPlayer.get().addOnPlayEventListener(this);
+            CoverLoadUtils.get().registerLoadListener(this);
+
             initViewData(AudioPlayer.get().getPlayMusic());
             if (AudioPlayer.get().isPlaying()) {
                 StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
@@ -296,7 +300,5 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     public void onDestroy() {
         super.onDestroy();
         mViewBinding.albumCoverView.endAnimator();
-        AudioPlayer.get().removeOnPlayEventListener(this);
-        CoverLoadUtils.get().removeLoadListener(this);
     }
 }

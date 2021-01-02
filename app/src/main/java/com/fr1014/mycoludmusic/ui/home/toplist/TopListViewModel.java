@@ -456,6 +456,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         @Override
                         public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
                             music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
+                            music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
                             getSongUrl().postValue(music);
                         }
                     }));

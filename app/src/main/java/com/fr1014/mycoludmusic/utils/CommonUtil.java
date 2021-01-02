@@ -37,11 +37,11 @@ public class CommonUtil {
         return dateFormat.format(data);
     }
 
-//    public static long stringToDuration(String str) throws ParseException {
-//        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
-//        Date date = (Date) formatter.parse(str);
-//        return date.getTime();
-//    }
+    public static long stringToDuration(String str) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
+        Date date = (Date) formatter.parse(str);
+        return date.getTime();
+    }
 
     public static String strFormatTime(String str) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("ss.SSS");
