@@ -19,6 +19,7 @@ import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -182,6 +183,7 @@ public class AudioPlayer implements LoadResultListener {
             MediaSessionManager.get().updateMetaData(music);
             MediaSessionManager.get().updatePlaybackState();
         } catch (IOException e) {
+            CrashReport.postCatchedException(e);  // bugly会将这个throwable上报
             e.printStackTrace();
         }
     }
