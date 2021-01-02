@@ -2,6 +2,8 @@ package com.fr1014.mycoludmusic.rx;
 
 import android.util.Log;
 
+import com.tencent.bugly.crashreport.CrashReport;
+
 import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -21,8 +23,10 @@ public class RxJavaError {
             @Override
             public void accept(Throwable throwable) throws Exception {
                 // throwable.printStackTrace();
-                if (null != throwable)
+                if (null != throwable) {
                     Log.e("MyApplication", "setRxJavaErrorHandler " + throwable.getMessage());
+                    CrashReport.postCatchedException(throwable);  // bugly会将这个throwable上报
+                }
             }
         });
     }
