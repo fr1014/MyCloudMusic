@@ -8,13 +8,16 @@ import android.view.ViewGroup;
 
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.customview.recyclerview.GridSpaceItemDecoration;
 import com.fr1014.mycoludmusic.databinding.FragmentTopListBinding;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 //排行榜榜单页面
 public class TopListFragment extends BaseFragment<FragmentTopListBinding, TopListViewModel> {
     private TopListAdapter topListAdapter;
+    private final int column = 3;
 
 
     public TopListFragment() {
@@ -41,8 +44,9 @@ public class TopListFragment extends BaseFragment<FragmentTopListBinding, TopLis
     @Override
     protected void initView() {
         topListAdapter = new TopListAdapter();
-        mViewBinding.rvTopList.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        mViewBinding.rvTopList.setLayoutManager(new GridLayoutManager(getContext(), column));
         mViewBinding.rvTopList.setAdapter(topListAdapter);
+        mViewBinding.rvTopList.addItemDecoration(new GridSpaceItemDecoration(ScreenUtil.dp2px(getContext(),16),column,false));
     }
 
     @Override
