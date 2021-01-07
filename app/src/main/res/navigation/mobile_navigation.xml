@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_nav_home_to_topListFragment"
             app:destination="@id/topListFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_playListDetailFragment"
+            app:destination="@id/playListDetailFragment" />
     </fragment>
 
     <fragment

@@ -22,6 +22,7 @@ import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mycoludmusic.ui.vm.CommonViewModel;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 import com.fr1014.mymvvm.base.BaseViewModel;
@@ -46,26 +47,17 @@ import okhttp3.ResponseBody;
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class TopListViewModel extends BaseViewModel<DataRepository> {
+public class TopListViewModel extends CommonViewModel {
 
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
-    private BusLiveData<List<Music>> getPlayListDetail;
     private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSongListUrl;
     private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
     private BusLiveData<String> getSongLrcPath;
-    private BusLiveData<Boolean> getStartPlayListDetail;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
-    }
-
-    public BusLiveData<Boolean> getStartPlayListDetail() {
-        if (getStartPlayListDetail == null){
-            getStartPlayListDetail = new BusLiveData<>();
-        }
-        return getStartPlayListDetail;
     }
 
     public BusLiveData<String> getSongLrcPath() {
@@ -103,14 +95,6 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         }
         getWYYSongUrl(musicList);
         return getSongListUrl;
-    }
-
-    public BusLiveData<List<Music>> getPlayListDetail(long id) {
-        if (getPlayListDetail == null) {
-            getPlayListDetail = new BusLiveData<>();
-        }
-        getPlayListDetailEntity(id);
-        return getPlayListDetail;
     }
 
     public MutableLiveData<TopListDetailEntity> getTopListDetail() {
@@ -183,54 +167,6 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     @Override
                     public void accept(List<Music> musicList) throws Exception {
                         getSongListUrl.setValue(musicList);
-                    }
-                }));
-    }
-
-    //获取排行榜歌单详情(网易)
-    private void getPlayListDetailEntity(final long id) {
-        addSubscribe(model.getTopList(id)
-                .map(new Function<PlayListDetailEntity, List<Music>>() {
-                    @Override
-                    public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
-                        List<Music> musics = new ArrayList<>();
-                        List<PlayListDetailEntity.PlaylistBean.TracksBean> tracks = playListDetailEntity.getPlaylist().getTracks();
-                        for (PlayListDetailEntity.PlaylistBean.TracksBean data : tracks) {
-                            Music music = new Music();
-                            StringBuilder sb = new StringBuilder();
-                            for (int i = 0; i < data.getAr().size(); i++) {
-                                PlayListDetailEntity.PlaylistBean.TracksBean.ArBean ar = data.getAr().get(i);
-                                if (i < data.getAr().size() - 1) {
-                                    sb.append(ar.getName()).append('&');
-                                } else {
-                                    sb.append(ar.getName());
-                                }
-                            }
-                            music.setId(data.getId());
-                            music.setArtist(sb.toString());
-                            music.setTitle(data.getName());
-                            music.setImgUrl(data.getAl().getPicUrl());
-                            music.setDuration(data.getDt());
-                            music.setAlbum(data.getAl().getName());
-                            musics.add(music);
-                        }
-
-                        return musics;
-                    }
-                })
-                .compose(RxSchedulers.apply())
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
-                        getStartPlayListDetail.setValue(true);
-//                        showDialog();
-                    }
-                })
-                .subscribe(new Consumer<List<Music>>() {
-                    @Override
-                    public void accept(List<Music> musicList) throws Exception {
-//                        dismissDialog();
-                        getPlayListDetail.postValue(musicList);
                     }
                 }));
     }
