@@ -6,6 +6,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
@@ -52,6 +53,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
+    public Observable<ResponseBody> getSongCover(String coverPath) {
+        return httpDataSource.getSongCover(coverPath);
+    }
+
+    @Override
     public Observable<TopListEntity> getTopList() {
         return httpDataSource.getTopList();
     }
@@ -90,8 +96,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<WYSearchEntity> getSearch(String keywords, int offset) {
-        return httpDataSource.getSearch(keywords, offset);
+    public Observable<WYSearchDetail> getWYSearch(String keywords, int offset) {
+        return httpDataSource.getWYSearch(keywords, offset);
     }
 
     @Override

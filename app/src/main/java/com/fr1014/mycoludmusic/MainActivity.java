@@ -2,26 +2,25 @@ package com.fr1014.mycoludmusic;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
-import com.fr1014.mycoludmusic.eventbus.CoverSaveEvent;
-import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
-import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -31,21 +30,32 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListViewModel> implements View.OnClickListener {
-    private static final String TAG = "MainActivity";
+public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListViewModel> implements View.OnClickListener, SwitchDialogFragment.MusicSourceCallback {
     private static final int REQUEST_PERMISSION_CODE = 100;
-
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
+    private Toast toast;
+
+    @Override
+    public void musicSource(int position) {
+        if (toast != null) {
+            toast.cancel();
+        }
+        toast = CommonUtil.toastShort("音乐源已切换为: " + SwitchDialogFragment.array[position]);
+        switch (position) {
+            case 0:  //酷我
+                SourceHolder.get().setSource("酷我");
+                break;
+            case 1:  //网易
+                SourceHolder.get().setSource("网易");
+                break;
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
+//        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -61,8 +71,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
 
     @Override
     protected void initView() {
+        initClickListener();
         setSupportActionBar(mViewBinding.appBarMain.toolbar);
-        mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtil.getStatusHeight(this),0,0);
+        mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtil.getStatusHeight(this), 0, 0);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -99,11 +110,16 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         });
     }
 
+    private void initClickListener() {
+        mViewBinding.appBarMain.ivSwitch.setOnClickListener(this);
+    }
+
     //首次绑定Service时该方法被调用
     @Override
     protected void onServiceBound() {
         statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
         AudioPlayer.get().addOnPlayEventListener(statusBar);
+        CoverLoadUtils.get().registerLoadListener(statusBar);
         mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
         AudioPlayer.get().addOnPlayEventListener(statusBar);
     }
@@ -112,23 +128,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     public void initData() {
         requestMyPermissions();
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.action_search:
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -139,14 +138,11 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.iv_switch:
+                new SwitchDialogFragment().show(getSupportFragmentManager(), "switch_dialog");
+                break;
 
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCoverSaveEvent(CoverSaveEvent coverSaveEvent){
-        if (coverSaveEvent.success){
-            Music music = AudioPlayer.get().getPlayMusic();
-            AudioPlayer.get().notifyShowPlay(music);
         }
     }
 
@@ -162,8 +158,8 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         super.onDestroy();
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
+            CoverLoadUtils.get().removeLoadListener(statusBar);
         }
-        EventBus.getDefault().unregister(this);
     }
 
     private void requestMyPermissions() {

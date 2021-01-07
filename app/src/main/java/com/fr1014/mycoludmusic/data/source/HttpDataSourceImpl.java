@@ -1,12 +1,11 @@
 package com.fr1014.mycoludmusic.data.source;
 
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
-import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -38,6 +37,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     private HttpDataSourceImpl(WYApiService wyApiService,KWApiService kwApiService){
         this.wyApiService = wyApiService;
         this.kwApiService = kwApiService;
+    }
+
+    @Override
+    public Observable<ResponseBody> getSongCover(String coverPath) {
+        return kwApiService.getSongCover(coverPath);
     }
 
     @Override
@@ -81,8 +85,8 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<WYSearchEntity> getSearch(String keywords, int offset) {
-        return wyApiService.getSearch(keywords, offset);
+    public Observable<WYSearchDetail> getWYSearch(String keywords, int offset) {
+        return wyApiService.getWYSearch(keywords, offset);
     }
 
     @Override

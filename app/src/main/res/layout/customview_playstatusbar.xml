@@ -9,7 +9,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorLightGray"/>
+        android:background="@color/colorLightGray" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_bottom_bar"

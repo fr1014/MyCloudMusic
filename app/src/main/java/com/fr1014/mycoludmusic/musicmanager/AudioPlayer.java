@@ -2,6 +2,7 @@ package com.fr1014.mycoludmusic.musicmanager;
 
 import android.content.Context;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -12,28 +13,28 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
+import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import okhttp3.ResponseBody;
 
 /**
  * 创建时间:2020/9/28
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class AudioPlayer {
+public class AudioPlayer implements LoadResultListener {
     private static final int STATE_IDLE = 0;
     private static final int STATE_PREPARING = 1;
     private static final int STATE_PLAYING = 2;
@@ -51,8 +52,9 @@ public class AudioPlayer {
     private final List<OnPlayerEventListener> listeners = new ArrayList<>();
     private int state = STATE_IDLE;
     public CompositeDisposable mCompositeDisposable;
+    DataRepository dataRepository;
 
-    private void addDisposable(Disposable disposable) {
+    public void addDisposable(Disposable disposable) {
         if (mCompositeDisposable == null) {
             mCompositeDisposable = new CompositeDisposable();
         }
@@ -61,6 +63,21 @@ public class AudioPlayer {
 
     public static AudioPlayer get() {
         return SingletonHolder.instance;
+    }
+
+    @Override
+    public void coverLoading() {
+
+    }
+
+    @Override
+    public void coverLoadSuccess(Bitmap coverLocal) {
+        notifyShowPlay(getPlayMusic());
+    }
+
+    @Override
+    public void coverLoadFail() {
+
     }
 
     private static class SingletonHolder {
@@ -72,11 +89,13 @@ public class AudioPlayer {
 
     public void init(Context context) {
         this.context = context.getApplicationContext();
+        CoverLoadUtils.get().registerLoadListener(this);
         musicList = DBManager.get().getMusicCurrent();
         audioFocusManager = new AudioFocusManager(context);
         mediaPlayer = new MediaPlayer();
         handler = new Handler(Looper.getMainLooper());
         noisyReceiver = new NoisyAudioStreamReceiver();
+        dataRepository = MyApplication.provideRepository();
         /*
          * 广播意图，是由于音频输出变化而导致音频即将变得“嘈杂”的应用程序的提示。
          * 例如，当拔掉有线耳机时，或当A2DP音频接收器断开，并且音频系统将要自动将音频路由切换到扬声器时，可以发送此意图。
@@ -84,12 +103,12 @@ public class AudioPlayer {
          */
         noisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         mediaPlayer.setOnCompletionListener(mp -> {
-            DBManager.get().insert(getPlayMusic(), true);
             playNext();
         });
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
+                DBManager.get().insert(getPlayMusic(), true);
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
@@ -153,6 +172,7 @@ public class AudioPlayer {
         try {
             notifyShowPlay(music);
             if (isEmptySongUrl(music)) return;
+            CoverLoadUtils.get().loadRemoteCover(music);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
@@ -163,13 +183,13 @@ public class AudioPlayer {
             MediaSessionManager.get().updateMetaData(music);
             MediaSessionManager.get().updatePlaybackState();
         } catch (IOException e) {
+            CrashReport.postCatchedException(e);  // bugly会将这个throwable上报
             e.printStackTrace();
         }
     }
 
     private boolean isEmptySongUrl(Music music) {
         if (TextUtils.isEmpty(music.getSongUrl())) {
-            DataRepository dataRepository = MyApplication.provideRepository();
             if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
                 addDisposable(dataRepository.getKWSongUrl(music.getMUSICRID())
                         .compose(RxSchedulers.apply())

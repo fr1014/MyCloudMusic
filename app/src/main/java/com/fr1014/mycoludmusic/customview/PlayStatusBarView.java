@@ -2,6 +2,7 @@ package com.fr1014.mycoludmusic.customview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,24 +11,17 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.DecodeFormat;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
+import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
@@ -35,12 +29,11 @@ import com.fr1014.mycoludmusic.utils.FileUtils;
  * <p>
  * 仅可在继承了BasePlayActivity的Activity中使用
  */
-public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener {
+public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener, LoadResultListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
     private PlayListDialogFragment listDialogFragment;
     private CurrentPlayMusicFragment musicDialogFragment;
-    private Music oldMusic;
     private Context mContext;
 
     public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
@@ -65,7 +58,17 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         addView(mViewBinding.getRoot());
         listDialogFragment = new PlayListDialogFragment();
         musicDialogFragment = new CurrentPlayMusicFragment();
-        onChange(AudioPlayer.get().getPlayMusic());
+        Music music = AudioPlayer.get().getPlayMusic();
+        if (music != null) {
+            Bitmap coverLocal = FileUtils.getCoverLocal(music);
+            if (coverLocal != null) {
+                mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
+            } else {
+                mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+            }
+            setText(music);
+        }
+        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
         initClickListener();
     }
 
@@ -94,50 +97,20 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         }
     }
 
-    public void setMusic(Music music) {
+    public void initViewData(Music music) {
+        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
         if (music != null) {
-            if (music != oldMusic) {
-                setVisibility(VISIBLE);
-                setText(music);
-                setImageUrl(music);
-            }
+            setVisibility(VISIBLE);
+            setText(music);
+//            CoverLoadUtils.get().loadRemoteCover(mContext, music);
         } else {
             setVisibility(GONE);
         }
-        oldMusic = music;
     }
 
     private void setText(Music music) {
         mViewBinding.tvName.setText(music.getTitle());
         mViewBinding.tvAuthor.setText(music.getArtist());
-    }
-
-    private void setImageUrl(Music music) {
-
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-                .placeholder(R.drawable.film)
-                .error(R.drawable.bg_play)
-                .priority(Priority.HIGH)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC);
-
-        Glide.with(mContext)
-                .asBitmap()
-                .load(music.getImgUrl())
-                .apply(options)
-                .addListener(new RequestListener<Bitmap>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                        FileUtils.saveCoverToLocal(resource, music);
-                        return false;
-                    }
-                })
-                .into(mViewBinding.ivCoverImg);
     }
 
     @Override
@@ -168,11 +141,8 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     @Override
     public void onChange(Music music) {
-        setMusic(music);
-        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-//        if (musicInfoListener != null && TextUtils.isEmpty(music.getSongUrl())) {
-//            musicInfoListener.songUrlIsEmpty(music);
-//        }
+        initViewData(music);
+//        mViewBinding.ivCoverImg.setImageBitmap(FileUtils.getCoverLocal(music));
     }
 
     @Override
@@ -193,5 +163,20 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     @Override
     public void onBufferingUpdate(int percent) {
 
+    }
+
+    @Override
+    public void coverLoading() {
+        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+    }
+
+    @Override
+    public void coverLoadSuccess(Bitmap coverLocal) {
+        mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
+    }
+
+    @Override
+    public void coverLoadFail() {
+        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
     }
 }

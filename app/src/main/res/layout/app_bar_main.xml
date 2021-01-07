@@ -40,6 +40,7 @@
                     android:textColorHint="@color/lrc_normal_text_color" />
 
                 <ImageView
+                    android:id="@+id/iv_switch"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_weight="1.5"

@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.http.api;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
@@ -62,11 +63,14 @@ public interface WYApiService {
      * @param keywords
      * @return
      */
-    @GET("/search")
-    Observable<WYSearchEntity> getSearch(@Query("keywords") String keywords, @Query("offset") int offset);
+//    @GET("/search")
+//    Observable<WYSearchEntity> getSearch(@Query("keywords") String keywords, @Query("offset") int offset);
 
-    @GET("/lyric")
-    Observable<WYSongLrcEntity> getWYSongLrcEntity(@Query("id")long id);
+    @GET("cloudsearch")
+    Observable<WYSearchDetail> getWYSearch(@Query("keywords") String keywords, @Query("offset") int offset);
+
+    @GET("lyric")
+    Observable<WYSongLrcEntity> getWYSongLrcEntity(@Query("id") long id);
 
 //    /**
 //     * KW的api 返回的为json

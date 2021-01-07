@@ -13,6 +13,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -100,7 +101,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         if (getSongListUrl == null) {
             getSongListUrl = new BusLiveData<>();
         }
-        getSongUrlEntity(musicList);
+        getWYYSongUrl(musicList);
         return getSongListUrl;
     }
 
@@ -120,9 +121,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
         return getTopListDetail;
     }
 
-    private static final String TAG = "TopListViewModel";
-
-    public void getSongUrlEntity(Music music) {
+    public void getWYYSongUrl(Music music) {
         //可以调用addSubscribe()添加Disposable，请求与View周期同步
         addSubscribe(model.getWYSongUrl(music.getId())
                 .compose(RxSchedulers.apply())
@@ -148,7 +147,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
     /**
      * @param musicList 需要获取url的歌曲集合
      */
-    private void getSongUrlEntity(List<Music> musicList) {
+    private void getWYYSongUrl(List<Music> musicList) {
         StringBuilder ids = new StringBuilder();
         for (int index = 0; index < musicList.size(); index++) {
             ids.append(musicList.get(index).getId());
@@ -202,7 +201,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                             for (int i = 0; i < data.getAr().size(); i++) {
                                 PlayListDetailEntity.PlaylistBean.TracksBean.ArBean ar = data.getAr().get(i);
                                 if (i < data.getAr().size() - 1) {
-                                    sb.append(ar.getName()).append('/');
+                                    sb.append(ar.getName()).append('&');
                                 } else {
                                     sb.append(ar.getName());
                                 }
@@ -257,25 +256,30 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
 
     //获取搜索结果（网易）
     public void getSearchEntityWYY(String keywords, int offset) {
-        addSubscribe(model.getSearch(keywords, offset)
-                .map(new Function<WYSearchEntity, List<Music>>() {
+        addSubscribe(model.getWYSearch(keywords, offset)
+                .map(new Function<WYSearchDetail, List<Music>>() {
                     @Override
-                    public List<Music> apply(WYSearchEntity searchEntity) throws Exception {
+                    public List<Music> apply(@io.reactivex.annotations.NonNull WYSearchDetail wySearchDetail) throws Exception {
                         List<Music> musics = new ArrayList<>();
-                        List<WYSearchEntity.ResultBean.SongsBean> songs = searchEntity.getResult().getSongs();
-                        for (WYSearchEntity.ResultBean.SongsBean song : songs) {
+                        List<WYSearchDetail.ResultBean.SongsBean> songs = wySearchDetail.getResult().getSongs();
+                        for (WYSearchDetail.ResultBean.SongsBean song : songs) {
                             Music music = new Music();
-                            List<WYSearchEntity.ResultBean.SongsBean.ArtistsBean> artists = song.getArtists();
+                            List<WYSearchDetail.ResultBean.SongsBean.ArBean> artists = song.getAr();
                             StringBuilder sb = new StringBuilder();
                             for (int i = 0; i < artists.size(); i++) {
                                 if (i < artists.size() - 1) {
-                                    sb.append(artists.get(i).getName()).append("/");
+                                    sb.append(artists.get(i).getName()).append("&");
                                 } else {
                                     sb.append(artists.get(i).getName());
                                 }
                             }
                             music.setArtist(sb.toString());
                             music.setTitle(song.getName());
+                            List<?> alias = song.getAlia();
+                            if (!CommonUtil.isEmptyList(alias)){
+                                music.setSubTitle(song.getAlia().get(0).toString());
+                            }
+                            music.setOriginal(song.getOriginCoverType()+"");
                             music.setId(song.getId());
                             musics.add(music);
                         }
@@ -318,7 +322,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                     @Override
                     public void accept(CheckEntity checkEntity) throws Exception {
                         if (checkEntity.isSuccess()) {
-                            getSongUrlEntity(item);
+                            getWYYSongUrl(item);
                         } else {
                             CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
                             //播放下一首
@@ -346,9 +350,9 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                             Music music = new Music();
                             if (!TextUtils.isEmpty(abslistBean.getARTIST())) {
 //                                music.setArtist(abslistBean.getARTIST());
-                                music.setArtist(abslistBean.getARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "/"));
+                                music.setArtist(abslistBean.getARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "&"));
                             } else {
-                                music.setArtist(abslistBean.getAARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "/"));
+                                music.setArtist(abslistBean.getAARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "&"));
                             }
                             music.setTitle(abslistBean.getSONGNAME().replaceAll("&nbsp;", " "));
                             music.setImgUrl(abslistBean.getHts_MVPIC());
@@ -452,6 +456,7 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         @Override
                         public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
                             music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
+                            music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
                             getSongUrl().postValue(music);
                         }
                     }));
@@ -504,6 +509,11 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         public void accept(String filePath) throws Exception {
                             getSongLrcPath().setValue(filePath);
                         }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            getSongLrcPath().setValue("");
+                        }
                     })
             );
         } else {
@@ -523,6 +533,11 @@ public class TopListViewModel extends BaseViewModel<DataRepository> {
                         @Override
                         public void accept(String s) throws Exception {
                             getSongLrcPath().setValue(filePath);
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            getSongLrcPath().setValue("");
                         }
                     })
             );
