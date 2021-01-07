@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//排行榜详情页面
+//歌单详情页面
 public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, TopListViewModel>{
     public static final String KEY_ID = "ID";
     public static final String KEY_NAME = "NAME";
@@ -46,6 +46,14 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     private String name;
     private String cover;
     private PlayListDetailAdapter adapter;
+
+    public static Bundle createBundle(long id,String name,String coverImg){
+        Bundle bundle = new Bundle();
+        bundle.putLong(PlayListDetailFragment.KEY_ID, id);
+        bundle.putString(PlayListDetailFragment.KEY_NAME, name);
+        bundle.putString(PlayListDetailFragment.KEY_COVER, coverImg);
+        return bundle;
+    }
 
     public PlayListDetailFragment() {
         // Required empty public constructor

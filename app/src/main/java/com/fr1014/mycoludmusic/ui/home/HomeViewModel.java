@@ -10,11 +10,12 @@ import androidx.lifecycle.ViewModel;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mycoludmusic.ui.vm.CommonViewModel;
 import com.fr1014.mymvvm.base.BaseViewModel;
 
 import io.reactivex.functions.Consumer;
 
-public class HomeViewModel extends BaseViewModel<DataRepository> {
+public class HomeViewModel extends CommonViewModel {
 
     private MutableLiveData<RecommendPlayList> recommendListLiveData;
 

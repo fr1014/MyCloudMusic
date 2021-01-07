@@ -88,10 +88,7 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
                 FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
                         .addSharedElement(sharedElementView, sharedElementView.getTransitionName())
                         .build();
-                Bundle bundle = new Bundle();
-                bundle.putLong(PlayListDetailFragment.KEY_ID, data.getId());
-                bundle.putString(PlayListDetailFragment.KEY_NAME, data.getName());
-                bundle.putString(PlayListDetailFragment.KEY_COVER, data.getCoverImgUrl());
+                Bundle bundle = PlayListDetailFragment.createBundle(data.getId(), data.getName(), data.getCoverImgUrl());
                 Navigation.findNavController(view)
                         .navigate(R.id.playListDetailFragment, bundle, null, extras);
             }
