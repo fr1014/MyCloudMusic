@@ -15,6 +15,7 @@ import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.ui.search.SearchActivity;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;

@@ -9,10 +9,10 @@ import java.util.List;
  */
 public class WYSearchEntity {
 
-    private ResultBean result;
+    private SearchBean result;
     private int code;
 
-    public ResultBean getResult() {
+    public SearchBean getResult() {
         return result;
     }
 
@@ -20,7 +20,7 @@ public class WYSearchEntity {
         return code;
     }
 
-    public static class ResultBean {
+    public static class SearchBean {
         private boolean hasMore;
         private int songCount;
         private List<SongsBean> songs;
