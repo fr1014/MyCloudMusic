@@ -21,7 +21,7 @@ import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtil
 
 class SearchActivity : BasePlayActivity<ActivitySearchBinding?, TopListViewModel?>() {
-    private var adapter: PlayListDetailAdapter? = null
+    private lateinit var viewAdapter: PlayListDetailAdapter
     private var statusBarView: PlayStatusBarView? = null
     private var source: String? = null
 
@@ -60,7 +60,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding?, TopListViewModel
     }
 
     override fun initViewObservable() {
-        mViewModel!!.search.observe(this, { music -> adapter!!.setData(music) })
+        mViewModel!!.search.observe(this, { music -> viewAdapter.setData(music) })
         mViewModel!!.songUrl.observe(this, { music ->
             if (!TextUtils.isEmpty(music.songUrl)) {
                 AudioPlayer.get().addAndPlay(music)
@@ -71,10 +71,13 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding?, TopListViewModel
     }
 
     private fun initAdapter() {
-        adapter = PlayListDetailAdapter(false)
-        adapter!!.setDisplayMarginView(true)
-        mViewBinding!!.rvSearch.layoutManager = LinearLayoutManager(this)
-        mViewBinding!!.rvSearch.adapter = adapter
+        viewAdapter = PlayListDetailAdapter(false)
+        viewAdapter.setDisplayMarginView(true)
+        mViewBinding!!.rvSearch.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = viewAdapter
+        }
+
     }
 
     private fun initListener() {
@@ -97,7 +100,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding?, TopListViewModel
             }
             false
         })
-        adapter!!.onItemClickListener = BaseAdapter.OnItemClickListener { adapter, view, position ->
+        viewAdapter!!.onItemClickListener = BaseAdapter.OnItemClickListener { adapter, view, position ->
             when (source) {
                 "酷我" -> mViewModel!!.getKWSongUrl(adapter.getData(position) as Music)
                 "网易" -> mViewModel!!.getWYYSongUrl(adapter.getData(position) as Music)
