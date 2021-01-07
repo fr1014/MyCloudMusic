@@ -81,6 +81,9 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.5.0'
 
     implementation 'com.tencent.bugly:crashreport:2.2.0'
+
+    //加载过程中闪烁
+    implementation 'io.supercharge:shimmerlayout:2.1.0'
 }
 repositories {
     mavenCentral()
