@@ -5,6 +5,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
@@ -92,6 +93,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<WYSongLrcEntity> getWYSongLrcEntity(long id) {
         return wyApiService.getWYSongLrcEntity(id);
+    }
+
+    @Override
+    public Observable<RecommendPlayList> getWYRecommendPlayList(int limit) {
+        return wyApiService.getWYRecommendPlayList(limit);
     }
 
 //    @Override

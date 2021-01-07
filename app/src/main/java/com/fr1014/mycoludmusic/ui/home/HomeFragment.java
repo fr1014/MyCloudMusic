@@ -1,31 +1,59 @@
 package com.fr1014.mycoludmusic.ui.home;
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.fr1014.mycoludmusic.R;
+import com.fr1014.mycoludmusic.app.AppViewModelFactory;
+import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
+import com.fr1014.mymvvm.base.BaseFragment;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel> {
 
-    private HomeViewModel homeViewModel;
-    private FragmentHomeBinding binding;
+    @Override
+    protected FragmentHomeBinding getViewBinding(ViewGroup container) {
+        return FragmentHomeBinding.inflate(getLayoutInflater(), container, false);
+    }
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = new ViewModelProvider(getActivity()).get(HomeViewModel.class);
+    @Override
+    protected HomeViewModel initViewModel() {
+        AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
+        return new ViewModelProvider(getActivity(),factory).get(HomeViewModel.class);
+    }
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+    @Override
+    protected void initView() {
+        initRecommendPlayList();
+        initListener();
+    }
 
-        binding.btToplist.setOnClickListener(new View.OnClickListener() {
+    private void initRecommendPlayList() {
+        mViewBinding.blockRecommend.setTitle("推荐歌单");
+    }
+
+    @Override
+    public void initData() {
+        mViewModel.getWYRecommendList(30);
+    }
+
+    @Override
+    public void initViewObservable() {
+        mViewModel.getRecommendListLiveData().observe(this, new Observer<RecommendPlayList>() {
+            @Override
+            public void onChanged(RecommendPlayList recommendPlayList) {
+                mViewBinding.blockRecommend.bindData(recommendPlayList.getResult());
+            }
+        });
+    }
+
+    private void initListener() {
+        mViewBinding.btToplist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                Intent intent = new Intent(getActivity(), TopListActivity.class);
@@ -33,13 +61,6 @@ public class HomeFragment extends Fragment {
                 Navigation.findNavController(v).navigate(R.id.topListFragment);
             }
         });
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
     }
 
 }

@@ -1,19 +1,45 @@
 package com.fr1014.mycoludmusic.ui.home;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HomeViewModel extends ViewModel {
+import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
+import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mymvvm.base.BaseViewModel;
 
-    private MutableLiveData<String> mText;
+import io.reactivex.functions.Consumer;
 
-    public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+public class HomeViewModel extends BaseViewModel<DataRepository> {
+
+    private MutableLiveData<RecommendPlayList> recommendListLiveData;
+
+    public HomeViewModel(@NonNull Application application, DataRepository model) {
+        super(application, model);
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public LiveData<RecommendPlayList> getRecommendListLiveData() {
+        if (recommendListLiveData == null) {
+            recommendListLiveData = new MutableLiveData<>();
+        }
+        return recommendListLiveData;
     }
+
+    public void getWYRecommendList(int limit) {
+        addSubscribe(
+                model.getWYRecommendPlayList(limit)
+                        .compose(RxSchedulers.apply())
+                        .subscribe(new Consumer<RecommendPlayList>() {
+                            @Override
+                            public void accept(RecommendPlayList recommendPlayList) throws Exception {
+                                recommendListLiveData.setValue(recommendPlayList);
+                            }
+                        })
+        );
+    }
+
 }
