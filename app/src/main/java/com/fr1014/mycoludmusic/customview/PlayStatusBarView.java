@@ -15,13 +15,12 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
-import com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic.CurrentPlayMusicFragment;
+import com.fr1014.mycoludmusic.ui.home.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
-import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 
 /**
