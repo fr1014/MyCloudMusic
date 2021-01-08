@@ -22,7 +22,7 @@ import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtil
 
-class SearchActivity : BasePlayActivity<ActivitySearchBinding, TopListViewModel>() {
+class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
     private lateinit var viewAdapter: PlayListDetailAdapter
     private var statusBarView: PlayStatusBarView? = null
     private var source: String? = null
@@ -39,9 +39,9 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, TopListViewModel>
         mViewBinding.llSearch.setPadding(0, top, 0, 0)
     }
 
-    override fun initViewModel(): TopListViewModel {
+    override fun initViewModel(): SearchViewModel {
         val factory = AppViewModelFactory.getInstance(MyApplication.getInstance())
-        return ViewModelProvider(this, factory).get(TopListViewModel::class.java)
+        return ViewModelProvider(this, factory).get(SearchViewModel::class.java)
     }
 
     override fun initView() {
@@ -64,7 +64,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, TopListViewModel>
     }
 
     override fun initViewObservable() {
-        mViewModel.search.observe(this){
+        mViewModel.getSearchLive().observe(this){
             music ->
             run {
                 mViewBinding.rvSearch.scrollToPosition(0)

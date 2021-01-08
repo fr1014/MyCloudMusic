@@ -50,9 +50,7 @@ import okhttp3.ResponseBody;
 public class TopListViewModel extends CommonViewModel {
 
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
-    private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getSongListUrl;
-    private BusLiveData<List<Music>> getSearch;
     private BusLiveData<Boolean> getCheckSongResult;
     private BusLiveData<String> getSongLrcPath;
 
@@ -74,21 +72,6 @@ public class TopListViewModel extends CommonViewModel {
         return getCheckSongResult;
     }
 
-    //搜索
-    public BusLiveData<List<Music>> getSearch() {
-        if (getSearch == null) {
-            getSearch = new BusLiveData<>();
-        }
-        return getSearch;
-    }
-
-    public BusLiveData<Music> getSongUrl() {
-        if (getSongUrl == null) {
-            getSongUrl = new BusLiveData<>();
-        }
-        return getSongUrl;
-    }
-
     public BusLiveData<List<Music>> getSongListUrl(List<Music> musicList) {
         if (getSongListUrl == null) {
             getSongListUrl = new BusLiveData<>();
@@ -103,29 +86,6 @@ public class TopListViewModel extends CommonViewModel {
             getTopListDetailEntity();
         }
         return getTopListDetail;
-    }
-
-    public void getWYYSongUrl(Music music) {
-        //可以调用addSubscribe()添加Disposable，请求与View周期同步
-        addSubscribe(model.getWYSongUrl(music.getId())
-                .compose(RxSchedulers.apply())
-                .map(new Function<SongUrlEntity, Music>() {
-                    @Override
-                    public Music apply(SongUrlEntity songUrlEntity) throws Exception {
-                        music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
-                        return music;
-                    }
-                })
-                .subscribe(new Consumer<Music>() {
-                    @Override
-                    public void accept(Music music) throws Exception {
-                        if (TextUtils.isEmpty(music.getSongUrl())) {
-                            CommonUtil.toastShort("该歌曲暂不支持播放");
-                        } else {
-                            getSongDetailEntity(music);
-                        }
-                    }
-                }));
     }
 
     /**
@@ -190,66 +150,6 @@ public class TopListViewModel extends CommonViewModel {
                 }));
     }
 
-    //获取搜索结果（网易）
-    public void getSearchEntityWYY(String keywords, int offset) {
-        addSubscribe(model.getWYSearch(keywords, offset)
-                .map(new Function<WYSearchDetail, List<Music>>() {
-                    @Override
-                    public List<Music> apply(@io.reactivex.annotations.NonNull WYSearchDetail wySearchDetail) throws Exception {
-                        List<Music> musics = new ArrayList<>();
-                        List<WYSearchDetail.ResultBean.SongsBean> songs = wySearchDetail.getResult().getSongs();
-                        for (WYSearchDetail.ResultBean.SongsBean song : songs) {
-                            Music music = new Music();
-                            List<WYSearchDetail.ResultBean.SongsBean.ArBean> artists = song.getAr();
-                            StringBuilder sb = new StringBuilder();
-                            for (int i = 0; i < artists.size(); i++) {
-                                if (i < artists.size() - 1) {
-                                    sb.append(artists.get(i).getName()).append("&");
-                                } else {
-                                    sb.append(artists.get(i).getName());
-                                }
-                            }
-                            music.setArtist(sb.toString());
-                            music.setTitle(song.getName());
-                            List<?> alias = song.getAlia();
-                            if (!CommonUtil.isEmptyList(alias)){
-                                music.setSubTitle(song.getAlia().get(0).toString());
-                            }
-                            music.setOriginal(song.getOriginCoverType()+"");
-                            music.setId(song.getId());
-                            musics.add(music);
-                        }
-                        return musics;
-                    }
-                })
-                .compose(RxSchedulers.apply())
-                .subscribe(new Consumer<List<Music>>() {
-                    @Override
-                    public void accept(List<Music> musicList) throws Exception {
-                        getSearch.postValue(musicList);
-                    }
-                }));
-    }
-
-    //通过搜索得到的歌曲，需要通过获取歌曲详情来获取音乐专辑图片
-    private void getSongDetailEntity(Music music) {
-        addSubscribe(model.getSongDetail(music.getId())
-                .map(songDetailEntity -> {
-                    if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
-                        music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
-                        music.setDuration(songDetailEntity.getSongs().get(0).getDt());
-                    }
-                    return music;
-                })
-                .compose(RxSchedulers.apply())
-                .subscribe(new Consumer<Music>() {
-                    @Override
-                    public void accept(Music music) throws Exception {
-                        getSongUrl().postValue(music);
-                    }
-                }));
-    }
-
     //检索歌曲是否可以听
     public void checkSong(Music item) {
         addSubscribe(model.checkMusic(item.getId())
@@ -266,139 +166,6 @@ public class TopListViewModel extends CommonViewModel {
                         }
                     }
                 }));
-    }
-
-    //获取搜索结果（酷我）
-    public void getSearchEntityKW(String name, int count) {
-        addSubscribe(model.getSearchResult(name, count)
-                .map(new Function<ResponseBody, List<Music>>() {
-                    @Override
-                    public List<Music> apply(@io.reactivex.annotations.NonNull ResponseBody responseBody) throws Exception {
-                        String result = responseBody.string();
-                        String replace1 = result.replace("try{var jsondata=", "");
-                        String replace2 = replace1.replace("; song(jsondata);}catch(e){jsonError(e)}", "");
-                        String json = replace2.replaceAll("'", "\"");
-                        Gson gson = new Gson();
-                        KWSearchEntity searchEntity = gson.fromJson(json, KWSearchEntity.class);
-                        List<Music> musics = new ArrayList<>();
-                        List<KWSearchEntity.AbslistBean> abslistBeanList = searchEntity.getAbslist();
-                        for (KWSearchEntity.AbslistBean abslistBean : abslistBeanList) {
-                            Music music = new Music();
-                            if (!TextUtils.isEmpty(abslistBean.getARTIST())) {
-//                                music.setArtist(abslistBean.getARTIST());
-                                music.setArtist(abslistBean.getARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "&"));
-                            } else {
-                                music.setArtist(abslistBean.getAARTIST().replaceAll("&nbsp;", " ").replaceAll("###", "&"));
-                            }
-                            music.setTitle(abslistBean.getSONGNAME().replaceAll("&nbsp;", " "));
-                            music.setImgUrl(abslistBean.getHts_MVPIC());
-                            music.setMUSICRID(abslistBean.getMUSICRID());
-                            musics.add(music);
-                        }
-                        return musics;
-                    }
-                }).compose(RxSchedulers.apply())
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
-//                        showDialog();
-                    }
-                })
-                .subscribe(new Consumer<List<Music>>() {
-                    @Override
-                    public void accept(List<Music> musicList) throws Exception {
-//                        dismissDialog();
-                        getSearch().postValue(musicList);
-                    }
-                }));
-
-    }
-
-    //获取搜索结果（酷我）新的接口
-    public void getSearchEntityKW(String name, int page, int count) {
-        addSubscribe(model.getKWSearchResult(name, page, count)
-                .map(new Function<KWNewSearchEntity, List<Music>>() {
-                    @Override
-                    public List<Music> apply(@io.reactivex.annotations.NonNull KWNewSearchEntity kwNewSearchEntity) throws Exception {
-                        List<KWNewSearchEntity.AbslistBean> list = kwNewSearchEntity.getAbslist();
-                        List<Music> musicList = new ArrayList<>();
-                        String pattern = "([\\s\\S]+)-([\\s\\S]+)";
-                        Pattern r = Pattern.compile(pattern);
-                        for (KWNewSearchEntity.AbslistBean bean : list) {
-                            Music music = new Music();
-                            music.setMUSICRID(bean.getMUSICRID());
-                            music.setArtist(bean.getARTIST());
-                            music.setOriginal(bean.getOriginalsongtype());
-                            music.setAlbum(bean.getALBUM());
-                            Matcher m = r.matcher(bean.getNAME());
-                            if(m.matches()){
-                                music.setTitle(m.group(1));
-                                music.setSubTitle(m.group(2));
-                            }else {
-                                music.setTitle(bean.getNAME());
-                            }
-                            music.setSubTitle(music.getSubTitle());
-                            musicList.add(music);
-                        }
-                        return musicList;
-                    }
-                }).compose(RxSchedulers.apply())
-                .doOnSubscribe(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable disposable) throws Exception {
-                        showDialog();
-                    }
-                })
-                .subscribe(new Consumer<List<Music>>() {
-                    @Override
-                    public void accept(List<Music> musicList) throws Exception {
-                        dismissDialog();
-                        getSearch().postValue(musicList);
-                    }
-                }));
-
-    }
-
-    /**
-     * 酷我
-     *
-     * @param music
-     */
-    public void getKWSongUrl(Music music) {
-        if (TextUtils.isEmpty(music.getMUSICRID())) return;
-
-        addSubscribe(model.getKWSongUrl(music.getMUSICRID())
-                .compose(RxSchedulers.applyIO())
-                .subscribe(new Consumer<ResponseBody>() {
-                    @Override
-                    public void accept(ResponseBody responseBody) throws Exception {
-                        try {
-                            String url = responseBody.string();
-                            music.setSongUrl(url);
-                            getKWSongDetail(music);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }));
-    }
-
-    public void getKWSongDetail(Music music) {
-        try {
-            long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_", ""));
-            addSubscribe(model.getKWSongDetail(mid)
-                    .compose(RxSchedulers.apply())
-                    .subscribe(new Consumer<KWSongDetailEntity>() {
-                        @Override
-                        public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
-                            music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
-                            music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
-                            getSongUrl().postValue(music);
-                        }
-                    }));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
     }
 
     public void getSongLrc(Music music) {
