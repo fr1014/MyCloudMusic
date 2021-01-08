@@ -33,7 +33,7 @@
         </receiver>
 
         <activity
-            android:name=".SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".MainActivity"
