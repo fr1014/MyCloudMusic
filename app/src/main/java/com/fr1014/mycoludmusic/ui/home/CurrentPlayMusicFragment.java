@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.dialogfragment.currentmusic;
+package com.fr1014.mycoludmusic.ui.home;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -62,7 +62,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         Music playMusic = AudioPlayer.get().getPlayMusic();
         if (playMusic == null) return;
         initViewData(playMusic);
-        initSeekBarData(playMusic);
+
         if (AudioPlayer.get().isPlaying()) {
             mViewBinding.albumCoverView.startAnimator();
             mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
@@ -125,12 +125,13 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewModel.getSongLrcPath().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String lrcPath) {
-                mViewBinding.lrcView.setLabel("暂无歌词");
+                mViewBinding.lrcView.setLabel("该歌曲暂无歌词");
                 if (!lrcPath.equals("")) {
                     mViewBinding.lrcView.loadLrc(new File(lrcPath));
-                } else {
-                    mViewBinding.lrcView.loadLrc("暂无歌词");
+                }else {
+                    mViewBinding.lrcView.loadLrc("[00:00.000]该歌曲暂无歌词");
                 }
+
             }
         });
     }
@@ -145,6 +146,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             case R.id.album_cover_view:
                 if (mViewBinding.albumCoverView.getVisibility() == View.VISIBLE) {
                     mViewBinding.albumCoverView.setVisibility(View.GONE);
+                    mViewBinding.albumCoverView.pauseAnimator();
                     mViewBinding.llLrc.setVisibility(View.VISIBLE);
                     getSongLrc(AudioPlayer.get().getPlayMusic());
                 }
@@ -157,12 +159,10 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             mViewBinding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
             return;
         }
-
         setBitmap(FileUtils.getCoverLocal(music));
-
         mViewBinding.tvTitle.setText(music.getTitle());
         mViewBinding.tvArtist.setText(music.getArtist());
-//        initSeekBarData(music);
+        initSeekBarData(music);
     }
 
     private void initSeekBarData(Music music) {
@@ -171,6 +171,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             duration = player.getDuration();
         }
         mViewBinding.sbProgress.setMax((int) duration);
+        mViewBinding.sbProgress.setSecondaryProgress(0);
         mViewBinding.tvDuration.setText(CommonUtil.formatTime(duration));
     }
 
@@ -181,6 +182,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void onTap(LrcView view, float x, float y) {
                 mViewBinding.albumCoverView.setVisibility(View.VISIBLE);
+                mViewBinding.albumCoverView.resumeAnimator();
                 mViewBinding.llLrc.setVisibility(View.GONE);
             }
         });
@@ -203,7 +205,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onPlayerStart() {
-        initSeekBarData(AudioPlayer.get().getPlayMusic());
+//        initSeekBarData(AudioPlayer.get().getPlayMusic());
         mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
         mViewBinding.albumCoverView.resumeOrStartAnimator();
     }
@@ -226,7 +228,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onBufferingUpdate(int percent) {
-
+        mViewBinding.sbProgress.setSecondaryProgress(mViewBinding.sbProgress.getMax() * 100 / percent);
     }
 
     private void getSongLrc(Music music) {
@@ -234,6 +236,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         Object tag = mViewBinding.lrcView.getTag();
         if (tag == null || !tag.equals(mTag)) {
             mViewBinding.lrcView.setTag(mTag);
+            mViewBinding.lrcView.loadLrc(new File(""));
             mViewBinding.lrcView.setLabel("正在搜索歌词");
             mViewModel.getSongLrc(music);
         }
@@ -243,14 +246,14 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
-            AudioPlayer.get().removeOnPlayEventListener(this);
-            CoverLoadUtils.get().removeLoadListener(this);
+//            AudioPlayer.get().removeOnPlayEventListener(this);
+//            CoverLoadUtils.get().removeLoadListener(this);
 
             StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
             mViewBinding.albumCoverView.endAnimator();
         } else {
-            AudioPlayer.get().addOnPlayEventListener(this);
-            CoverLoadUtils.get().registerLoadListener(this);
+//            AudioPlayer.get().addOnPlayEventListener(this);
+//            CoverLoadUtils.get().registerLoadListener(this);
 
             initViewData(AudioPlayer.get().getPlayMusic());
             if (AudioPlayer.get().isPlaying()) {
@@ -305,7 +308,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         mViewBinding.albumCoverView.endAnimator();
+        super.onDestroy();
     }
+
 }
