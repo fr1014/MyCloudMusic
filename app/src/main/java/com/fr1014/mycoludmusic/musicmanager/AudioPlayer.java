@@ -11,11 +11,9 @@ import android.text.TextUtils;
 
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
-import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
@@ -108,7 +106,9 @@ public class AudioPlayer implements LoadResultListener {
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
-                DBManager.get().insert(getPlayMusic(), true);
+                Music music = getPlayMusic();
+                resetMusicUrl(music);
+                DBManager.get().insert(music, true);
             }
         });
         mediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
@@ -168,10 +168,17 @@ public class AudioPlayer implements LoadResultListener {
 
         setPlayPosition(position);
         Music music = getPlayMusic();
+        notifyShowPlay(music);
+        //网络歌曲，每次都需要重新获取url
+        if (music.isOnlineMusic() && TextUtils.isEmpty(music.getSongUrl())) {
+            getSongUrl(music);
+            return;
+        }
+        play(music);
+    }
 
+    private void play(Music music) {
         try {
-            notifyShowPlay(music);
-            if (isEmptySongUrl(music)) return;
             CoverLoadUtils.get().loadRemoteCover(music);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
@@ -188,30 +195,22 @@ public class AudioPlayer implements LoadResultListener {
         }
     }
 
-    private boolean isEmptySongUrl(Music music) {
-        if (TextUtils.isEmpty(music.getSongUrl())) {
-            if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
-                addDisposable(dataRepository.getKWSongUrl(music.getMUSICRID())
-                        .compose(RxSchedulers.apply())
-                        .subscribe(responseBody -> {
-                            try {
-                                music.setSongUrl(responseBody.string());
-                                AudioPlayer.get().addAndPlay(music);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }));
-            } else if (music.getId() != 0) {//网易的歌
-                addDisposable(dataRepository.getWYSongUrl(music.getId())
-                        .compose(RxSchedulers.apply())
-                        .subscribe(songUrlEntity -> {
-                            music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
-                            AudioPlayer.get().addAndPlay(music);
-                        }));
-            }
-            return true;
+    private void getSongUrl(Music music) {
+        if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
+            addDisposable(dataRepository.getKWSongUrl(music.getMUSICRID())
+                    .compose(RxSchedulers.apply())
+                    .subscribe(responseBody -> {
+                        music.setSongUrl(responseBody.string());
+                        play(music);
+                    }));
+        } else if (music.getId() != 0) {//网易的歌
+            addDisposable(dataRepository.getWYSongUrl(music.getId())
+                    .compose(RxSchedulers.apply())
+                    .subscribe(songUrlEntity -> {
+                        music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
+                        play(music);
+                    }));
         }
-        return false;
     }
 
     public void delete(int position) {
@@ -441,5 +440,13 @@ public class AudioPlayer implements LoadResultListener {
 
     private void setPlayPosition(int position) {
         Preferences.savePlayPosition(position);
+    }
+
+    private Music resetMusicUrl(Music music){
+        String url = music.getSongUrl();
+        if (url.contains("http")){
+            music.setSongUrl("");
+        }
+        return music;
     }
 }

@@ -16,7 +16,7 @@ public class Music {
     private long duration;          // 持续时间
     private String original;        //是否为原唱 1为原唱，0为非原唱
     private String album;           //歌曲专辑
-    private boolean isOnlineMusic;  //是否为在线歌曲
+    private boolean isOnlineMusic = true;  //是否为在线歌曲
 
     public Music() {
     }
