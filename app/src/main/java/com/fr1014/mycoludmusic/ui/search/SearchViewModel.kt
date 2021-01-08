@@ -44,8 +44,7 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
                             original = song.originCoverType.toString() + ""
                             id = song.id.toLong()
                         }
-                        val alias = song.alia
-                        if (!CommonUtil.isEmptyList(alias)) {
+                        song.alia?.let {
                             music.subTitle = song.alia[0].toString()
                         }
                         musics.add(music)

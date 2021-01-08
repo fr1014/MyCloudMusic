@@ -24,6 +24,7 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
             DBManager.get().getHistoryListMusicEntity().observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
                 @Override
                 public void onChanged(List<MusicEntity> musicEntities) {
-                    if (!CommonUtil.isEmptyList(musicEntities)) {
+                    if (!CollectionUtils.isEmptyList(musicEntities)) {
                         Observable.just(musicEntities)
                                 .compose(RxSchedulers.applyIO())
                                 .map(new Function<List<MusicEntity>, List<Music>>() {

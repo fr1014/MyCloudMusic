@@ -49,8 +49,4 @@ public class CommonUtil {
         Date date = (Date) formatter.parse(str);
         return f.format(date);
     }
-
-    public static boolean isEmptyList(List list) {
-        return list == null || list.size() == 0;
-    }
 }

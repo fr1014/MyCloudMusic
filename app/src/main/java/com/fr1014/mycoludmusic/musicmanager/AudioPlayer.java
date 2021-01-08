@@ -15,7 +15,7 @@ import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -140,7 +140,7 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public void addAndPlay(Music music) {
-        int position = musicList.indexOf(music);
+        int position = indexOf(music);
         if (position < 0) {
             musicList.add(music);
 //            DBManager.get().insert(music,false);
@@ -150,8 +150,8 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public void addAndPlay(List<Music> musics) {
-        if (CommonUtil.isEmptyList(musics)) return;
-        if (CommonUtil.isEmptyList(musicList)) {
+        if (CollectionUtils.isEmptyList(musics)) return;
+        if (!CollectionUtils.isEmptyList(musicList)) {
             musicList.clear();
         }
         musicList = musics;
@@ -442,11 +442,21 @@ public class AudioPlayer implements LoadResultListener {
         Preferences.savePlayPosition(position);
     }
 
-    private Music resetMusicUrl(Music music){
+    private void resetMusicUrl(Music music){
         String url = music.getSongUrl();
         if (url.contains("http")){
             music.setSongUrl("");
         }
-        return music;
+    }
+
+    private int indexOf(Music music){
+        if (CollectionUtils.isEmptyList(musicList)) return -1;
+        for (int index = 0 ; index < musicList.size() ; index++){
+            Music m = musicList.get(index);
+            if (TextUtils.equals(m.getArtist(),music.getArtist()) && TextUtils.equals(m.getTitle(),music.getTitle())){
+                return index;
+            }
+        }
+        return -1;
     }
 }
