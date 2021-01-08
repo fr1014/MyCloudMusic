@@ -7,6 +7,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
+import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CommonUtil
 import com.fr1014.mymvvm.base.BusLiveData
 import com.google.gson.Gson
@@ -26,8 +27,7 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
         addSubscribe(model.getWYSearch(keywords, offset)
                 .map<List<Music>> { wySearchDetail ->
                     val musics: MutableList<Music> = ArrayList()
-                    val songs = wySearchDetail.result.songs
-                    for (song in songs) {
+                    for (song in wySearchDetail.result.songs) {
                         val music = Music()
                         val artists = song.ar
                         val sb = StringBuilder()
@@ -44,7 +44,7 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
                             original = song.originCoverType.toString() + ""
                             id = song.id.toLong()
                         }
-                        song.alia?.let {
+                        if (!CollectionUtils.isEmptyList(song.alia)){
                             music.subTitle = song.alia[0].toString()
                         }
                         musics.add(music)
@@ -71,11 +71,9 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
                     val replace1 = result.replace("try{var jsondata=", "")
                     val replace2 = replace1.replace("; song(jsondata);}catch(e){jsonError(e)}", "")
                     val json = replace2.replace("'".toRegex(), "\"")
-                    val gson = Gson()
-                    val searchEntity = gson.fromJson(json, KWSearchEntity::class.java)
+                    val searchEntity = Gson().fromJson(json, KWSearchEntity::class.java)
                     val musics: MutableList<Music> = ArrayList()
-                    val abslistBeanList = searchEntity.abslist
-                    for (abslistBean in abslistBeanList) {
+                    for (abslistBean in searchEntity.abslist) {
                         val music = Music()
                         if (!TextUtils.isEmpty(abslistBean.artist)) {
 //                                music.setArtist(abslistBean.getARTIST());
@@ -103,11 +101,10 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
     fun getSearchEntityKW(name: String, page: Int, count: Int) {
         addSubscribe(model.getKWSearchResult(name, page, count)
                 .map<List<Music>> { kwNewSearchEntity ->
-                    val list = kwNewSearchEntity.abslist
                     val musicList: MutableList<Music> = ArrayList()
                     val pattern = "([\\s\\S]+)-([\\s\\S]+)"
                     val r = Pattern.compile(pattern)
-                    for (bean in list) {
+                    for (bean in kwNewSearchEntity.abslist) {
                         val m = r.matcher(bean.name)
                         val music = Music()
                         music.apply {
