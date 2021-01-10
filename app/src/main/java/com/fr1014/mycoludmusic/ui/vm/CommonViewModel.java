@@ -29,6 +29,10 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
     protected BusLiveData<Boolean> getStartPlayListDetail;
     private BusLiveData<Music> getSongUrl;
 
+    public CommonViewModel(@NonNull Application application) {
+        super(application);
+    }
+
     public CommonViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
     }
