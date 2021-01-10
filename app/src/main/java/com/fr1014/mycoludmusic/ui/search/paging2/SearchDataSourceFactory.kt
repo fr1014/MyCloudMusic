@@ -10,12 +10,12 @@ import com.fr1014.mycoludmusic.musicmanager.Music
  * Create by fanrui on 2021/1/10
  * Describe:
  */
-class SearchDataSourceFactory(private val searchKey: String) : DataSource.Factory<Int, Music>() {
+class SearchDataSourceFactory(private val searchKey : String) : DataSource.Factory<Int, Music>() {
     private val _searchDataSource = MutableLiveData<SearchDataSource>()
     val searchDataSource: LiveData<SearchDataSource> = _searchDataSource
 
     override fun create(): DataSource<Int, Music> {
-        return SearchDataSource().also {
+        return SearchDataSource(searchKey).also {
             _searchDataSource.postValue(it)
         }
     }
