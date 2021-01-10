@@ -44,38 +44,4 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
     fun retry(searchKey: String) {
 //        factory.searchDataSource.value?.retry?.invoke()
     }
-
-//    //获取搜索结果（酷我）
-//    fun getSearchEntityKW(name: String?, count: Int) {
-//        addSubscribe(model.getSearchResult(name, count)
-//                .map<List<Music>> { responseBody ->
-//                    val result = responseBody.string()
-//                    val replace1 = result.replace("try{var jsondata=", "")
-//                    val replace2 = replace1.replace("; song(jsondata);}catch(e){jsonError(e)}", "")
-//                    val json = replace2.replace("'".toRegex(), "\"")
-//                    val searchEntity = Gson().fromJson(json, KWSearchEntity::class.java)
-//                    val musics: MutableList<Music> = ArrayList()
-//                    for (abslistBean in searchEntity.abslist) {
-//                        val music = Music()
-//                        if (!TextUtils.isEmpty(abslistBean.artist)) {
-////                                music.setArtist(abslistBean.getARTIST());
-//                            music.artist = abslistBean.artist.replace("&nbsp;".toRegex(), " ").replace("###".toRegex(), "&")
-//                        } else {
-//                            music.artist = abslistBean.aartist.replace("&nbsp;".toRegex(), " ").replace("###".toRegex(), "&")
-//                        }
-//                        music.title = abslistBean.songname.replace("&nbsp;".toRegex(), " ")
-//                        music.imgUrl = abslistBean.hts_MVPIC
-//                        music.musicrid = abslistBean.musicrid
-//                        musics.add(music)
-//                    }
-//                    musics
-//                }.compose(RxSchedulers.apply())
-//                .doOnSubscribe {
-//                    //showDialog();
-//                }
-//                .subscribe { musicList ->
-//                    //dismissDialog();
-//                    searchLive.postValue(musicList)
-//                })
-//    }
 }
