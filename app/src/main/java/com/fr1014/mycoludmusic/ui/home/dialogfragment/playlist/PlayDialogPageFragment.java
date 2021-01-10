@@ -93,8 +93,8 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
 
     private void inPageTypeData() {
         if (pageType == PAGE_TYPE_HISTORY) {
-            //删除之后刷新adapter中的数据
-            DBManager.get().getHistoryListMusicEntity().observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
+            //刷新adapter中的数据
+            DBManager.get().getLocalMusicList(true).observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
                 @Override
                 public void onChanged(List<MusicEntity> musicEntities) {
                     if (!CollectionUtils.isEmptyList(musicEntities)) {
@@ -156,7 +156,6 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
                             }
                         }
                     } else {
-                        dialogListener.dialogDismiss();
                         Music item = (Music) adapter.getData(position);
                         List<Music> musicList = AudioPlayer.get().getMusicList();
                         for (Music music : musicList) {
@@ -166,6 +165,7 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
                             }
                         }
                         AudioPlayer.get().addAndPlay(item);
+                        dialogListener.dialogDismiss();
                     }
                     break;
                 case R.id.iv_del:
