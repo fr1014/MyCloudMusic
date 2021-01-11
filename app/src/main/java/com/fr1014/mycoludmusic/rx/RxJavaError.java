@@ -24,7 +24,7 @@ public class RxJavaError {
             public void accept(Throwable throwable) throws Exception {
                 // throwable.printStackTrace();
                 if (null != throwable) {
-                    Log.e("MyApplication", "setRxJavaErrorHandler " + throwable.getMessage());
+                    Log.e("hello_world", "setRxJavaErrorHandler " + throwable.getMessage());
                     CrashReport.postCatchedException(throwable);  // bugly会将这个throwable上报
                 }
             }
