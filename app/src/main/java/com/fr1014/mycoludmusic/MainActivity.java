@@ -5,13 +5,18 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Profile;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
+import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent;
+import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
@@ -31,11 +36,16 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListViewModel> implements View.OnClickListener, SwitchDialogFragment.MusicSourceCallback {
     private static final int REQUEST_PERMISSION_CODE = 100;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
     private Toast toast;
+    private ImageView avatar;
 
     @Override
     public void musicSource(int position) {
@@ -56,7 +66,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -72,7 +82,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
 
     @Override
     protected void initView() {
-        initClickListener();
         setSupportActionBar(mViewBinding.appBarMain.toolbar);
         mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtil.getStatusHeight(this), 0, 0);
         // Passing each menu ID as a set of Ids because each
@@ -109,10 +118,37 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
                 return true;
             }
         });
+        initNavHeaderView();
+        initClickListener();
+    }
+
+    private void initNavHeaderView() {
+        avatar = mViewBinding.navView.getHeaderView(0).findViewById(R.id.avatar);
+        initNavHeaderViewData(getUserProfile());
     }
 
     private void initClickListener() {
         mViewBinding.appBarMain.ivSwitch.setOnClickListener(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onStringEvent(LoginStatusEvent event) {
+        if (event.isLogin) {
+            initNavHeaderViewData(getUserProfile());
+        }
+    }
+
+    private void initNavHeaderViewData(Profile profile) {
+        if (profile != null) {
+            Glide.with(this)
+                    .load(profile.getAvatarUrl())
+                    .circleCrop()
+                    .into(avatar);
+        }
+    }
+
+    private Profile getUserProfile() {
+        return Preferences.getUserProfile();
     }
 
     //首次绑定Service时该方法被调用
@@ -157,6 +193,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         if (statusBar != null) {
             AudioPlayer.get().removeOnPlayEventListener(statusBar);
             CoverLoadUtils.get().removeLoadListener(statusBar);

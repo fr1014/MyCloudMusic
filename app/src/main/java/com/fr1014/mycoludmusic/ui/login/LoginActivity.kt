@@ -4,8 +4,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.databinding.ActivityLoginBinding
+import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mymvvm.base.BaseActivity
+import org.greenrobot.eventbus.EventBus
 
 class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>() {
 
@@ -29,6 +31,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding, LoginViewModel>() {
     override fun initViewObservable() {
         mViewModel.getProfile().observe(this, Observer {
             Preferences.saveUserProfile(it)
+            EventBus.getDefault().post(LoginStatusEvent(true))
         })
     }
 }
