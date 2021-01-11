@@ -100,7 +100,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         ViewCompat.setTransitionName(mViewBinding.ivCover, name);
         mViewBinding.toolbar.setPadding(0, ScreenUtil.getStatusHeight(MyApplication.getInstance()), 0, 0);
         mViewBinding.name.setText(name);
-        mViewBinding.lavLoading.setAnimation(R.raw.loading_music);
+        mViewBinding.llLoading.lavLoading.setAnimation(R.raw.loading_music);
 
         postponeEnterTransition();
         Glide.with(this)
@@ -189,9 +189,9 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             public void onChanged(Boolean isStart) {
                 if (isStart){
                     adapter.getHeaderView().setVisibility(View.INVISIBLE);
-                    mViewBinding.llLoading.setVisibility(View.VISIBLE);
-                    mViewBinding.lavLoading.playAnimation();
-                    mViewBinding.lavLoading.loop(true);
+                    mViewBinding.llLoading.llLoading.setVisibility(View.VISIBLE);
+                    mViewBinding.llLoading.lavLoading.playAnimation();
+                    mViewBinding.llLoading.lavLoading.loop(true);
                 }
             }
         });
@@ -200,8 +200,8 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             @Override
             public void onChanged(List<Music> musics) {
                 adapter.getHeaderView().setVisibility(View.VISIBLE);
-                mViewBinding.lavLoading.cancelAnimation();
-                mViewBinding.llLoading.setVisibility(View.GONE);
+                mViewBinding.llLoading.lavLoading.cancelAnimation();
+                mViewBinding.llLoading.llLoading.setVisibility(View.GONE);
                 adapter.setData(musics);
             }
         });

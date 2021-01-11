@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".ui.home.dialogfragment.currentmusic.CurrentPlayMusicFragment">
+        tools:context=".ui.home.CurrentPlayMusicFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -51,9 +51,9 @@
             <TextView
                 android:id="@+id/tv_artist"
                 android:layout_width="0dp"
-                android:gravity="center_horizontal"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
+                android:gravity="center_horizontal"
                 android:maxLines="1"
                 android:textColor="@color/light_gray"
                 android:textSize="12sp"
@@ -93,10 +93,10 @@
                 android:id="@+id/ll_lrc"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="invisible">
+                android:visibility="invisible"
+                android:orientation="vertical">
 
-<!--                <include layout="@layout/include_play_page_volume_bar" />-->
+                <!--                <include layout="@layout/include_play_page_volume_bar" />-->
 
                 <com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView
                     android:id="@+id/lrc_view"
@@ -139,9 +139,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:maxHeight="2dp"
-                android:minHeight="2dp"
-                android:progressDrawable="@drawable/bg_seekbar_light" />
+                android:maxHeight="1.5dp"
+                android:minHeight="1.5dp"
+                android:progressDrawable="@drawable/bg_seekbar_light"
+                android:thumb="@drawable/ic_seek_bar_progress_btn" />
 
             <TextView
                 android:id="@+id/tv_duration"
@@ -154,7 +155,7 @@
         <com.fr1014.mycoludmusic.customview.PlayControlBarView
             android:id="@+id/playControlBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 </FrameLayout>

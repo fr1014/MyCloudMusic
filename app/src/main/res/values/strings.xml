@@ -23,5 +23,6 @@
 
     <!--LrcView-->
     <string name="lrc_label">暂无歌词</string>
+    <string name="noLrc">该歌曲暂无歌词</string>
     <!--LrcView-->
 </resources>

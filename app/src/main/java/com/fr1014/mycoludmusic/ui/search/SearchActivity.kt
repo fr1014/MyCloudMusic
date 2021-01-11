@@ -2,10 +2,12 @@ package com.fr1014.mycoludmusic.ui.search
 
 import android.content.Context
 import android.text.TextUtils
+import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fr1014.frecyclerviewadapter.BaseAdapter
@@ -17,8 +19,8 @@ import com.fr1014.mycoludmusic.customview.PlayStatusBarView
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
-import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailAdapter
-import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel
+import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
+import com.fr1014.mycoludmusic.ui.search.paging2.PlayListDetailAdapter
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtil
 
@@ -64,13 +66,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     override fun initViewObservable() {
-        mViewModel.getSearchLive().observe(this){
-            music ->
-            run {
-                mViewBinding.rvSearch.scrollToPosition(0)
-                viewAdapter.setData(music)
-            }
-        }
         mViewModel.songUrl.observe(this, { music ->
             if (!TextUtils.isEmpty(music.songUrl)) {
                 AudioPlayer.get().addAndPlay(music)
@@ -81,13 +76,12 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     private fun initAdapter() {
-        viewAdapter = PlayListDetailAdapter(false)
-        viewAdapter.setDisplayMarginView(true)
+        viewAdapter = PlayListDetailAdapter(mViewModel)
+//        viewAdapter.setDisplayMarginView(true)
         mViewBinding.rvSearch.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewAdapter
         }
-
     }
 
     private fun initListener() {
@@ -101,21 +95,24 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                         InputMethodManager.HIDE_NOT_ALWAYS)
                 //viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
                 //viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 30);
+
+                loadView(true)
                 val searchKey = mViewBinding.etKeywords.text.toString()
-                when (source) {
-                    "酷我" -> mViewModel.getSearchEntityKW(searchKey, 0, 30)
-                    "网易" -> mViewModel.getSearchEntityWYY(searchKey, 0)
-                }
+                mViewModel.search(searchKey).observe(this, Observer {
+                    //paging2
+                    viewAdapter.submitList(it)
+                })
+
+                mViewModel.networkStatus.observe(this, Observer {
+                    viewAdapter.updateNetworkStatus(it)
+                    if (it == NetworkStatus.COMPLETED) {
+                        loadView(false)
+                    }
+                })
                 return@OnEditorActionListener true
             }
             false
         })
-        viewAdapter.onItemClickListener = BaseAdapter.OnItemClickListener { adapter, view, position ->
-            when (source) {
-                "酷我" -> mViewModel.getKWSongUrl(adapter.getData(position) as Music)
-                "网易" -> mViewModel.getWYYSongUrl(adapter.getData(position) as Music)
-            }
-        }
     }
 
     override fun onDestroy() {
@@ -124,5 +121,10 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             AudioPlayer.get().removeOnPlayEventListener(statusBarView)
             CoverLoadUtils.get().removeLoadListener(statusBarView)
         }
+    }
+
+    fun loadView(isLoading: Boolean) {
+        mViewBinding.rvSearch.visibility = if (isLoading) View.GONE else View.VISIBLE
+        mViewBinding.loadingView.llLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

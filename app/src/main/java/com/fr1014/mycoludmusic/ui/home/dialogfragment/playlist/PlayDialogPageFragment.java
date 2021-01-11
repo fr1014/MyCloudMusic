@@ -24,6 +24,7 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 
 import java.util.ArrayList;
@@ -92,11 +93,11 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
 
     private void inPageTypeData() {
         if (pageType == PAGE_TYPE_HISTORY) {
-            //删除之后刷新adapter中的数据
-            DBManager.get().getHistoryListMusicEntity().observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
+            //刷新adapter中的数据
+            DBManager.get().getLocalMusicList(true).observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
                 @Override
                 public void onChanged(List<MusicEntity> musicEntities) {
-                    if (!CommonUtil.isEmptyList(musicEntities)) {
+                    if (!CollectionUtils.isEmptyList(musicEntities)) {
                         Observable.just(musicEntities)
                                 .compose(RxSchedulers.applyIO())
                                 .map(new Function<List<MusicEntity>, List<Music>>() {
@@ -155,7 +156,6 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
                             }
                         }
                     } else {
-                        dialogListener.dialogDismiss();
                         Music item = (Music) adapter.getData(position);
                         List<Music> musicList = AudioPlayer.get().getMusicList();
                         for (Music music : musicList) {
@@ -165,6 +165,7 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
                             }
                         }
                         AudioPlayer.get().addAndPlay(item);
+                        dialogListener.dialogDismiss();
                     }
                     break;
                 case R.id.iv_del:

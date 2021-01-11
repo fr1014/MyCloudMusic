@@ -9,6 +9,7 @@ import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mymvvm.base.BusLiveData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +20,6 @@ import io.reactivex.annotations.NonNull;
 
 public class DBManager {
     private DataRepository model;
-    MutableLiveData<Boolean> musicChange;
 
     private DBManager() {
         model = MyApplication.provideRepository();
@@ -27,13 +27,6 @@ public class DBManager {
 
     public static DBManager get() {
         return StaticInstanceHolder.instance;
-    }
-
-    public LiveData<Boolean> getMusicListMutable() {
-        if (musicChange == null){
-            musicChange = new MutableLiveData<>();
-        }
-        return musicChange;
     }
 
     public static class StaticInstanceHolder {
@@ -44,12 +37,8 @@ public class DBManager {
         return model.getItemLive(music.getTitle(), music.getArtist());
     }
 
-    public LiveData<List<MusicEntity>> getHistoryListMusicEntity(){
-        return model.getAllHistoryOrCurrentLive(true);
-    }
-
-    public LiveData<List<MusicEntity>> getCurrentListMusicEntity(){
-        return model.getAllHistoryOrCurrentLive(false);
+    public LiveData<List<MusicEntity>> getLocalMusicList(boolean isHistory){
+        return model.getAllHistoryOrCurrentLive(isHistory);
     }
 
     public void insert(Music music,boolean isHistory) {
@@ -62,7 +51,6 @@ public class DBManager {
                         if (entity == null) {
                             MusicEntity musicEntity = new MusicEntity(music.getTitle(), music.getArtist(), music.getImgUrl(), music.getId(), music.getMUSICRID(),music.getDuration(),isHistory);
                             model.insert(musicEntity);
-                            musicChange.postValue(true);
                         }
                     }
                 });
