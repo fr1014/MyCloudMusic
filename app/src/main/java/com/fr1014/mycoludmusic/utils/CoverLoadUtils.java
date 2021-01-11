@@ -23,16 +23,11 @@ import okhttp3.ResponseBody;
  * Describe: 歌曲封面下载并保存到本地
  */
 public class CoverLoadUtils {
-    private List<LoadResultListener> loadResultListenerList;
-    DataRepository dataRepository;
+    private final List<LoadResultListener> loadResultListenerList = new ArrayList<>();
+    DataRepository dataRepository = MyApplication.provideRepository();
 
     private CoverLoadUtils() {
 
-    }
-
-    public void init() {
-        dataRepository = MyApplication.provideRepository();
-        loadResultListenerList = new ArrayList<>();
     }
 
     public void registerLoadListener(LoadResultListener loadResultListener) {
@@ -48,7 +43,7 @@ public class CoverLoadUtils {
     }
 
     private static class SingletonHolder {
-        private static CoverLoadUtils instance = new CoverLoadUtils();
+        private static final CoverLoadUtils instance = new CoverLoadUtils();
     }
 
     public void loadRemoteCover(Music music) {
