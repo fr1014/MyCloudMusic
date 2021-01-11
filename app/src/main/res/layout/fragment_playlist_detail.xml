@@ -9,14 +9,15 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        app:elevation="0dp">
+        app:elevation="0dp"
+        app:layout_behavior=".customview.behavior.AppbarZoomBehavior">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:contentScrim="@color/content_scrim"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|exitUntilCollapsed">
 
             <ImageView
                 android:id="@+id/iv_cover"
@@ -78,29 +79,7 @@
 
     <include
         android:id="@+id/ll_loading"
+        layout="@layout/loading_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        layout="@layout/loading_view"/>
-
-<!--    <LinearLayout-->
-<!--        android:id="@+id/ll_loading"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:gravity="center"-->
-<!--        android:orientation="horizontal">-->
-
-<!--        <com.airbnb.lottie.LottieAnimationView-->
-<!--            android:id="@+id/lav_loading"-->
-<!--            android:layout_width="40dp"-->
-<!--            android:layout_height="40dp"-->
-<!--            app:lottie_rawRes="@raw/loading_music"-->
-<!--            android:layout_gravity="center_vertical" />-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/tv_loading"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center_vertical"-->
-<!--            android:text="@string/loading" />-->
-<!--    </LinearLayout>-->
+        android:layout_height="match_parent" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
