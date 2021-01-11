@@ -28,8 +28,7 @@ public class PlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(TAG, "onCreate: " + getClass().getSimpleName());
-        CoverLoadUtils.get().init();
+        Log.i(TAG, "hello_world" + getClass().getSimpleName());
         AudioPlayer.get().init(this);
         MediaSessionManager.get().init(this);
         Notifier.get().init(this);
