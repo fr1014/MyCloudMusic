@@ -6,6 +6,13 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Profile;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+
 /**
  * 创建时间:2020/9/28
  * 作者:fr
@@ -17,11 +24,33 @@ public class Preferences {
     private static final String SPLASH_URL = "splash_url";
     private static final String NIGHT_MODE = "night_mode";
     private static final String MUSIC_SOURCE = "music_source";
+    private static final String USER_PROFILE = "profile";
 
     private static Context sContext;
 
     public static void init(Context context) {
         sContext = context.getApplicationContext();
+    }
+
+    public static Profile getUserProfile(){
+        Profile profile = null;
+        try {
+            Gson gson = new Gson();
+            String json = getString(USER_PROFILE,"");
+            Type type = new TypeToken<Profile>() {
+            }.getType();
+            profile = gson.fromJson(json, type);
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        }
+        return profile;
+
+    }
+
+    public static void saveUserProfile(Profile profile){
+        Gson gson = new Gson();
+        String json = gson.toJson(profile);
+        saveString(USER_PROFILE,json);
     }
 
     public static int getPlayPosition() {

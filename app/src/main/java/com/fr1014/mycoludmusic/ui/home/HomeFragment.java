@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.ui.home;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -10,8 +11,11 @@ import androidx.navigation.Navigation;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Profile;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
+import com.fr1014.mycoludmusic.musicmanager.Preferences;
+import com.fr1014.mycoludmusic.ui.login.LoginActivity;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel> {
@@ -59,6 +63,17 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel
 //                Intent intent = new Intent(getActivity(), TopListActivity.class);
 //                startActivity(intent);
                 Navigation.findNavController(v).navigate(R.id.topListFragment);
+            }
+        });
+
+        mViewBinding.btLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(LoginActivity.class);
+//                Profile userProfile = Preferences.getUserProfile();
+//                if (userProfile != null){
+//                    Log.d("hello", "onClick: "+userProfile.toString());
+//                }
             }
         });
     }

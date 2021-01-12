@@ -1,11 +1,10 @@
 package com.fr1014.mycoludmusic.http.api;
 
-import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
@@ -14,6 +13,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -23,6 +23,9 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    @POST("login/cellphone")
+    Observable<UserEntity> getWYUserProfile(@Query("phone") String phone,@Query("password") String password);
 
     //所有榜单
     @GET("toplist")
