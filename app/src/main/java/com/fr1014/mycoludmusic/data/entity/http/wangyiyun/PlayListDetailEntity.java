@@ -40,9 +40,9 @@ public class PlayListDetailEntity {
         private boolean subscribed;
         private CreatorBean creator;
         private Object updateFrequency;
-        private int backgroundCoverId;
+        private long backgroundCoverId;
         private Object backgroundCoverUrl;
-        private int titleImage;
+        private long titleImage;
         private Object titleImageUrl;
         private Object englishTitle;
         private boolean opRecommend;
@@ -89,7 +89,7 @@ public class PlayListDetailEntity {
             return updateFrequency;
         }
 
-        public int getBackgroundCoverId() {
+        public long getBackgroundCoverId() {
             return backgroundCoverId;
         }
 
@@ -97,7 +97,7 @@ public class PlayListDetailEntity {
             return backgroundCoverUrl;
         }
 
-        public int getTitleImage() {
+        public long getTitleImage() {
             return titleImage;
         }
 
@@ -107,10 +107,6 @@ public class PlayListDetailEntity {
 
         public Object getEnglishTitle() {
             return englishTitle;
-        }
-
-        public void setEnglishTitle(Object englishTitle) {
-            this.englishTitle = englishTitle;
         }
 
         public boolean isOpRecommend() {

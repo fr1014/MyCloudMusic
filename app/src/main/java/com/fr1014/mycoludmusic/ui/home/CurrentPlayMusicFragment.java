@@ -155,14 +155,14 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     private void initViewData(Music music) {
+        mViewBinding.tvTitle.setText(music.getTitle());
+        mViewBinding.tvArtist.setText(music.getArtist());
+        initSeekBarData(music);
         if (TextUtils.isEmpty(music.getImgUrl())) {
             mViewBinding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
             return;
         }
         setBitmap(FileUtils.getCoverLocal(music));
-        mViewBinding.tvTitle.setText(music.getTitle());
-        mViewBinding.tvArtist.setText(music.getArtist());
-        initSeekBarData(music);
     }
 
     private void initSeekBarData(Music music) {

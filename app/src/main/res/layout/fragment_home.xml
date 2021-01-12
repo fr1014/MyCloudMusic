@@ -13,6 +13,12 @@
         android:layout_height="wrap_content"
         android:text="排行榜" />
 
+    <Button
+        android:id="@+id/bt_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="登录"/>
+
     <com.fr1014.mycoludmusic.ui.block.RecommendPlayListBlock
         android:id="@+id/block_recommend"
         android:layout_width="match_parent"
