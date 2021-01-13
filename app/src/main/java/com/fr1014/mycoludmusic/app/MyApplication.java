@@ -11,8 +11,10 @@ import com.fr1014.mycoludmusic.http.LenientGsonConverterFactory;
 import com.fr1014.mycoludmusic.http.SSLUtils;
 import com.fr1014.mycoludmusic.http.api.KWApiService;
 import com.fr1014.mycoludmusic.http.api.WYApiService;
+import com.fr1014.mycoludmusic.http.interceptor.AddCookiesInterceptor;
 import com.fr1014.mycoludmusic.http.interceptor.NetCacheInterceptor;
 import com.fr1014.mycoludmusic.http.interceptor.OfflineCacheInterceptor;
+import com.fr1014.mycoludmusic.http.interceptor.ReceivedCookiesInterceptor;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.http.WYYServiceProvider;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
@@ -57,19 +59,42 @@ public class MyApplication extends BaseApplication {
 
     private Retrofit.Builder createWYYRetrofitBuilder() {
         return new Retrofit.Builder()
-                .client(createOkHttpClient())
+                .client(createWYYOkHttpClient())
                 .addConverterFactory(LenientGsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
     private Retrofit.Builder createKWRetrofitBuilder() {
         return new Retrofit.Builder()
-                .client(createOkHttpClient())
+                .client(createKWOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
-    private OkHttpClient createOkHttpClient(){
+    private OkHttpClient createWYYOkHttpClient(){
+        try {
+            //setup cache
+            File httpCacheDirectory = new File(getCacheDir(), "okHttpCache");
+            int cacheSize = 10 * 1024 * 1024; // 10 MiB
+            Cache cache = new Cache(httpCacheDirectory, cacheSize);
+            return new OkHttpClient.Builder()
+                    .addNetworkInterceptor(new NetCacheInterceptor())
+                    .addInterceptor(new OfflineCacheInterceptor())
+                    .addInterceptor(new AddCookiesInterceptor()) //添加Cookie
+                    .addInterceptor(new ReceivedCookiesInterceptor()) //拦截Cookie
+                    .cache(cache)
+                    .sslSocketFactory(SSLUtils.getSSLSocketFactory())
+                    .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                    .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                    .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private OkHttpClient createKWOkHttpClient(){
         try {
             //setup cache
             File httpCacheDirectory = new File(getCacheDir(), "okHttpCache");
@@ -90,18 +115,18 @@ public class MyApplication extends BaseApplication {
         return null;
     }
 
-    private OkHttpClient createKWOkHttpClient(){
-        try {
-            return new OkHttpClient.Builder()
-                    .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-                    .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-                    .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    private OkHttpClient createKWOkHttpClient(){
+//        try {
+//            return new OkHttpClient.Builder()
+//                    .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+//                    .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+//                    .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())
+//                    .build();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
     public static DataRepository provideRepository() {
         //WYY api

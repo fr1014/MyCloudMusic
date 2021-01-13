@@ -4,15 +4,19 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.UserEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -25,7 +29,22 @@ import retrofit2.http.Query;
 public interface WYApiService {
 
     @POST("login/cellphone")
-    Observable<UserEntity> getWYUserProfile(@Query("phone") String phone,@Query("password") String password);
+    Observable<UserEntity> getWYUserProfile(@Query("phone") String phone, @Query("password") String password);
+
+    /*
+    说明 : 调用此接口 , 传入音乐 id, 可喜欢该音乐
+    必选参数 : id: 歌曲 id
+    可选参数 : like: 布尔值 , 默认为 true 即喜欢 , 若传 false, 则取消喜欢
+     */
+    @GET("like")
+    Observable<WYLikeMusic> likeMusicWY(@Query("id") long id, @Query("like") boolean like);
+
+    //喜欢音乐列表
+    @GET("likelist")
+    Observable<WYLikeList> getWYLikeList(@Query("uid") long uid);
+
+    @GET("user/playlist")
+    Observable<WYUserPlayList> getWYUserPlayList(@Query("uid")long uid);
 
     //所有榜单
     @GET("toplist")
@@ -69,7 +88,6 @@ public interface WYApiService {
      */
 //    @GET("/search")
 //    Observable<WYSearchEntity> getSearch(@Query("keywords") String keywords, @Query("offset") int offset);
-
     @GET("cloudsearch")
     Observable<WYSearchDetail> getWYSearch(@Query("keywords") String keywords, @Query("offset") int offset);
 

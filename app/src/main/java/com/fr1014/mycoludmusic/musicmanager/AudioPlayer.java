@@ -251,6 +251,8 @@ public class AudioPlayer implements LoadResultListener {
         }
         if (TextUtils.isEmpty(music.getImgUrl())) {
             getSongInfo(music);
+        }else {
+            CoverLoadUtils.get().loadRemoteCover(music);
         }
     }
 

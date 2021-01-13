@@ -11,10 +11,8 @@ import androidx.navigation.Navigation;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Profile;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
-import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.ui.login.LoginActivity;
 import com.fr1014.mymvvm.base.BaseFragment;
 
@@ -75,6 +73,10 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel
 //                    Log.d("hello", "onClick: "+userProfile.toString());
 //                }
             }
+        });
+
+        mViewBinding.btLikeList.setOnClickListener(v ->{
+            Navigation.findNavController(v).navigate(R.id.userInfoFragment);
         });
     }
 

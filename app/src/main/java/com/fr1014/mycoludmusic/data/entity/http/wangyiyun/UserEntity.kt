@@ -75,7 +75,7 @@ data class Profile(
     val province: Int,
     val remarkName: Any,
     val signature: String,
-    val userId: Int,
+    val userId: Int?,
     val userType: Int,
     val vipType: Int
 )

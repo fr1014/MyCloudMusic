@@ -9,6 +9,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel;
 import com.fr1014.mymvvm.base.BaseViewModel;
@@ -43,4 +46,16 @@ public class HomeViewModel extends CommonViewModel {
         );
     }
 
+    public void getWYUserPlayList(){
+        addSubscribe(
+                model.getWYUserPlayList(Preferences.getUserProfile().getUserId())
+                .compose(RxSchedulers.apply())
+                .subscribe(new Consumer<WYUserPlayList>() {
+                    @Override
+                    public void accept(WYUserPlayList wyUserPlayList) throws Exception {
+
+                    }
+                })
+        );
+    }
 }

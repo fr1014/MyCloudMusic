@@ -12,6 +12,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.Set;
 
 /**
  * 创建时间:2020/9/28
@@ -25,11 +26,20 @@ public class Preferences {
     private static final String NIGHT_MODE = "night_mode";
     private static final String MUSIC_SOURCE = "music_source";
     private static final String USER_PROFILE = "profile";
+    private static final String COOKIE_DATA = " cookie_data";
 
     private static Context sContext;
 
     public static void init(Context context) {
         sContext = context.getApplicationContext();
+    }
+
+    public static Set<String> getCookie(){
+        return getStringSet(COOKIE_DATA,null);
+    }
+
+    public static void saveCookie(Set<String> cookie){
+        saveStringSet(COOKIE_DATA,cookie);
     }
 
     public static Profile getUserProfile(){
@@ -155,6 +165,14 @@ public class Preferences {
 
     private static void saveString(String key, @Nullable String value) {
         getPreferences().edit().putString(key, value).apply();
+    }
+
+    private static Set<String> getStringSet(String key, Set<String> defValue){
+        return getPreferences().getStringSet(key, defValue);
+    }
+
+    private static void saveStringSet(String key, Set<String> stringSet){
+        getPreferences().edit().putStringSet(key,stringSet).apply();
     }
 
     private static SharedPreferences getPreferences() {

@@ -8,8 +8,11 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.UserEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
@@ -62,6 +65,21 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<UserEntity> getWYUserProfile(String phone, String password) {
         return httpDataSource.getWYUserProfile(phone,password);
+    }
+
+    @Override
+    public Observable<WYLikeMusic> likeMusicWY(long id, boolean like) {
+        return httpDataSource.likeMusicWY(id,like);
+    }
+
+    @Override
+    public Observable<WYLikeList> getWYLikeList(long uid) {
+        return httpDataSource.getWYLikeList(uid);
+    }
+
+    @Override
+    public Observable<WYUserPlayList> getWYUserPlayList(long uid) {
+        return httpDataSource.getWYUserPlayList(uid);
     }
 
     @Override

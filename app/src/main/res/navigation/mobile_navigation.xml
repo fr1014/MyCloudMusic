@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_nav_home_to_playListDetailFragment"
             app:destination="@id/playListDetailFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_userInfoFragment"
+            app:destination="@id/userInfoFragment" />
     </fragment>
 
     <fragment
@@ -44,4 +47,13 @@
         android:name="com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment"
         android:label="歌单列表"
         tools:layout="@layout/fragment_playlist_detail" />
+    <fragment
+        android:id="@+id/userInfoFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.userinfo.UserInfoFragment"
+        android:label="用户信息"
+        tools:layout="@layout/fragment_user_info">
+        <action
+            android:id="@+id/action_userInfoFragment_to_playListDetailFragment"
+            app:destination="@id/playListDetailFragment" />
+    </fragment>
 </navigation>

@@ -15,7 +15,7 @@ data class PlayListResult(
     val id: Long,
     val name: String,
     val picUrl: String,
-    val playCount: Int,
+    val playCount: Long,
     val trackCount: Int,
     val trackNumberUpdateTime: Long,
     val type: Int
