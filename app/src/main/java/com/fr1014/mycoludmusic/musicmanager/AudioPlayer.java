@@ -11,11 +11,13 @@ import android.text.TextUtils;
 
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
+import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -26,6 +28,7 @@ import java.util.Random;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * 创建时间:2020/9/28
@@ -179,7 +182,6 @@ public class AudioPlayer implements LoadResultListener {
 
     private void play(Music music) {
         try {
-            CoverLoadUtils.get().loadRemoteCover(music);
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
@@ -192,6 +194,42 @@ public class AudioPlayer implements LoadResultListener {
         } catch (IOException e) {
             CrashReport.postCatchedException(e);  // bugly会将这个throwable上报
             e.printStackTrace();
+        }
+    }
+
+    private void getSongInfo(Music music) {
+        if (!TextUtils.isEmpty(music.getMUSICRID())) {//酷我的歌
+            try {
+                long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_", ""));
+                addDisposable(dataRepository.getKWSongDetail(mid)
+                        .compose(RxSchedulers.apply())
+                        .subscribe(new Consumer<KWSongDetailEntity>() {
+                            @Override
+                            public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
+                                music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
+                                music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
+                                CoverLoadUtils.get().loadRemoteCover(music);
+                            }
+                        }));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } else if (music.getId() != 0) {//网易的歌
+            addDisposable(dataRepository.getSongDetail(music.getId())
+                    .map(songDetailEntity -> {
+                        if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
+                            music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
+                            music.setDuration(songDetailEntity.getSongs().get(0).getDt());
+                        }
+                        return music;
+                    })
+                    .compose(RxSchedulers.apply())
+                    .subscribe(new Consumer<Music>() {
+                        @Override
+                        public void accept(Music music) throws Exception {
+                            CoverLoadUtils.get().loadRemoteCover(music);
+                        }
+                    }));
         }
     }
 
@@ -210,6 +248,9 @@ public class AudioPlayer implements LoadResultListener {
                         music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
                         play(music);
                     }));
+        }
+        if (TextUtils.isEmpty(music.getImgUrl())) {
+            getSongInfo(music);
         }
     }
 
@@ -442,18 +483,18 @@ public class AudioPlayer implements LoadResultListener {
         Preferences.savePlayPosition(position);
     }
 
-    private void resetMusicUrl(Music music){
+    private void resetMusicUrl(Music music) {
         String url = music.getSongUrl();
-        if (url.contains("http")){
+        if (url.contains("http")) {
             music.setSongUrl("");
         }
     }
 
-    private int indexOf(Music music){
+    private int indexOf(Music music) {
         if (CollectionUtils.isEmptyList(musicList)) return -1;
-        for (int index = 0 ; index < musicList.size() ; index++){
+        for (int index = 0; index < musicList.size(); index++) {
             Music m = musicList.get(index);
-            if (TextUtils.equals(m.getArtist(),music.getArtist()) && TextUtils.equals(m.getTitle(),music.getTitle())){
+            if (TextUtils.equals(m.getArtist(), music.getArtist()) && TextUtils.equals(m.getTitle(), music.getTitle())) {
                 return index;
             }
         }
