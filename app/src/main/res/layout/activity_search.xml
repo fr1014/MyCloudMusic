@@ -45,6 +45,11 @@
                 app:closeIcon="@drawable/ic_clear_24" />
         </LinearLayout>
 
+        <include
+            android:id="@+id/include_play_all"
+            layout="@layout/item_playlist_detail_header"
+            />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search"
             android:layout_width="match_parent"

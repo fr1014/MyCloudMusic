@@ -21,6 +21,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.ui.search.paging2.PlayListDetailAdapter
+import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtil
 
@@ -51,6 +52,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         initSystemBar()
         //避免自动弹出输入框
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        mViewBinding.includePlayAll.llPlaylist.visibility = View.GONE
         initListener()
     }
 
@@ -77,7 +79,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     private fun initAdapter() {
         viewAdapter = PlayListDetailAdapter(mViewModel)
-//        viewAdapter.setDisplayMarginView(true)
         mViewBinding.rvSearch.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewAdapter
@@ -98,7 +99,8 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
                 loadView(true)
                 val searchKey = mViewBinding.etKeywords.text.toString()
-                mViewModel.search(searchKey).observe(this, Observer {
+                mViewBinding.includePlayAll.llPlaylist.visibility = View.VISIBLE
+                mViewModel.search(searchKey).observe(this, Observer { it ->
                     //paging2
                     viewAdapter.submitList(it)
                 })
@@ -113,6 +115,10 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             }
             false
         })
+
+        mViewBinding.includePlayAll.llPlaylist.setOnClickListener {
+            AudioPlayer.get().addAndPlay(viewAdapter.currentList?.toList())
+        }
     }
 
     override fun onDestroy() {
