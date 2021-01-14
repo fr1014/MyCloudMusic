@@ -104,20 +104,14 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
                     mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
                     mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
+                }else if(destination.getId() == R.id.userInfoFragment){
+                    mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                    mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
                 } else {
                     mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
                     mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
                 }
-            }
-        });
-        mViewBinding.appBarMain.etKeywords.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    startActivity(SearchActivity.class);
-                }
-                return true;
             }
         });
         initNavHeaderView();
@@ -131,6 +125,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
 
     private void initClickListener() {
         mViewBinding.appBarMain.ivSwitch.setOnClickListener(this);
+        mViewBinding.appBarMain.tvSearch.setOnClickListener(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -183,7 +178,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
             case R.id.iv_switch:
                 new SwitchDialogFragment().show(getSupportFragmentManager(), "switch_dialog");
                 break;
-
+            case R.id.tv_search:
+                startActivity(SearchActivity.class);
+                break;
         }
     }
 

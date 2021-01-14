@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.fr1014.frecyclerviewadapter.BaseAdapter
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
@@ -63,8 +65,10 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<PlayListResult, B
             setShimmerAngle(0)
             startShimmerAnimation()
         }
+        val options = RequestOptions().centerCrop().transform(RoundedCorners(30))
         Glide.with(holder.itemView)
                 .load(data.picUrl)
+                .apply(options)
                 .placeholder(R.drawable.ic_placeholder)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {

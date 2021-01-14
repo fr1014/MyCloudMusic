@@ -12,11 +12,13 @@
         android:theme="@style/AppTheme.AppBarOverlay"
         app:elevation="0dp">
 
+        <!--app:contentInsetStart="0dp" 解决toolbar中内容有左边距的问题-->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
+            app:contentInsetStart="0dp"
             app:elevation="0dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat"
             app:theme="@style/ThemeOverlay.AppCompat.Light">
@@ -28,22 +30,23 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <com.fr1014.mycoludmusic.customview.SearchView
-                    android:id="@+id/et_keywords"
-                    style="@style/Widget.AppCompat.EditText"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tv_search"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="8.5"
-                    android:background="@drawable/bg_edittext"
+                    android:layout_weight="9"
+                    android:background="@drawable/bg_white_corner"
                     android:hint="@string/search"
-                    android:padding="6dp"
-                    android:textColorHint="@color/lrc_normal_text_color" />
+                    android:padding="8dp"
+                    android:textColorHint="@color/lrc_normal_text_color"
+                    android:textSize="18sp"
+                    app:drawableStartCompat="@drawable/ic_search_normal" />
 
                 <ImageView
                     android:id="@+id/iv_switch"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_weight="1.5"
+                    android:layout_weight="1"
                     android:layout_gravity="end|center_vertical"
                     android:src="@drawable/ic_switch" />
             </LinearLayout>

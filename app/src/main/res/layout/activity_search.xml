@@ -35,7 +35,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_edittext"
+                android:background="@drawable/bg_white_corner"
                 android:hint="@string/search"
                 android:imeOptions="actionSearch"
                 android:maxLines="1"
