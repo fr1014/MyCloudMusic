@@ -17,6 +17,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Profile;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
+import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
@@ -46,6 +47,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     private PlayStatusBarView statusBar;
     private Toast toast;
     private ImageView avatar;
+    private OnPlayerEventListener playEventListener;
 
     @Override
     public void musicSource(int position) {
@@ -155,10 +157,12 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     @Override
     protected void onServiceBound() {
         statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
-        AudioPlayer.get().addOnPlayEventListener(statusBar);
+        playEventListener = statusBar.getOnPlayEventListener();
+        if (playEventListener != null){
+            AudioPlayer.get().addOnPlayEventListener(playEventListener);
+        }
         CoverLoadUtils.get().registerLoadListener(statusBar);
         mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
-        AudioPlayer.get().addOnPlayEventListener(statusBar);
     }
 
     @Override
@@ -195,8 +199,10 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         if (statusBar != null) {
-            AudioPlayer.get().removeOnPlayEventListener(statusBar);
             CoverLoadUtils.get().removeLoadListener(statusBar);
+        }
+        if (playEventListener != null){
+            AudioPlayer.get().removeOnPlayEventListener(playEventListener);
         }
     }
 

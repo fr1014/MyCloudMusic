@@ -11,47 +11,26 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
-import com.fr1014.mycoludmusic.base.BasePlayActivity;
-import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
-import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
-import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
-import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
-import com.fr1014.mycoludmusic.rx.RxSchedulers;
-import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 
 
 public class PlayListDialogFragment extends DialogFragment implements PlayDialogPageFragment.OnDialogListener {

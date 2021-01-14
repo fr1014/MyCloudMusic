@@ -2,7 +2,6 @@ package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +20,13 @@ import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaydialogpageBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
+import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +40,7 @@ import io.reactivex.functions.Function;
  * Create by fanrui on 2020/12/17
  * Describe:
  */
-public class PlayDialogPageFragment extends Fragment implements OnPlayerEventListener {
+public class PlayDialogPageFragment extends Fragment{
     private static String PAGE_TYPE = "page_type";
     private static final int PAGE_TYPE_HISTORY = 0; //历史播放
     private static final int PAGE_TYPE_CURRENT = 1; //当前播放
@@ -48,6 +49,7 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
     private PlayListAdapter playListAdapter;
     private int oldPosition = -1;  //当前播放音乐的位置
     private OnDialogListener dialogListener;
+    private OnPlayerEventListener onPlayerEventListener;
 
     public PlayDialogPageFragment() {
 
@@ -84,12 +86,28 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
         binding.rvPlaylist.setAdapter(playListAdapter);
 
         inPageTypeData();
-
-        AudioPlayer.get().addOnPlayEventListener(this);
         return binding.getRoot();
     }
 
-    private static final String TAG = "PlayDialogPageFragment";
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        AudioPlayer.get().addOnPlayEventListener(onPlayerEventListener = new OnPlayEventAdapterListener() {
+            @Override
+            public void onChange(@NotNull Music music) {
+                if (pageType == PAGE_TYPE_CURRENT) {
+                    List<Music> musicList = AudioPlayer.get().getMusicList();
+                    int position = musicList.indexOf(music);
+                    setHeaderCount(musicList.size());
+                    playListAdapter.setData(musicList);
+                    if (oldPosition != position) {
+                        playListAdapter.setCurrentMusic(music);
+                        playListAdapter.notifyDataSetChanged();
+                        oldPosition = position;
+                    }
+                }
+            }
+        });
+    }
 
     private void inPageTypeData() {
         if (pageType == PAGE_TYPE_HISTORY) {
@@ -206,45 +224,11 @@ public class PlayDialogPageFragment extends Fragment implements OnPlayerEventLis
     }
 
     @Override
-    public void onChange(Music music) {
-        if (pageType == PAGE_TYPE_CURRENT) {
-            List<Music> musicList = AudioPlayer.get().getMusicList();
-            int position = musicList.indexOf(music);
-            setHeaderCount(musicList.size());
-            playListAdapter.setData(musicList);
-            if (oldPosition != position) {
-                playListAdapter.setCurrentMusic(music);
-                playListAdapter.notifyDataSetChanged();
-                oldPosition = position;
-            }
-        }
-    }
-
-    @Override
-    public void onPlayerStart() {
-
-    }
-
-    @Override
-    public void onPlayerPause() {
-
-    }
-
-    @Override
-    public void onPublish(int progress) {
-
-    }
-
-    @Override
-    public void onBufferingUpdate(int percent) {
-
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
-        AudioPlayer.get().removeOnPlayEventListener(this);
-
+        if (onPlayerEventListener != null){
+            AudioPlayer.get().removeOnPlayEventListener(onPlayerEventListener);
+        }
     }
 
     public interface OnDialogListener {

@@ -15,25 +15,29 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
+import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
 import com.fr1014.mycoludmusic.ui.home.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.FileUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 底部播放状态栏
  * <p>
  * 仅可在继承了BasePlayActivity的Activity中使用
  */
-public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, OnPlayerEventListener, LoadResultListener {
+public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, LoadResultListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
     private PlayListDialogFragment listDialogFragment;
     private CurrentPlayMusicFragment musicDialogFragment;
     private Context mContext;
+    private OnPlayerEventListener onPlayerEventListener;
 
     public PlayStatusBarView(Context context, FragmentManager fragmentManager) {
         super(context);
@@ -55,6 +59,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private void initView() {
         mViewBinding = CustomviewPlaystatusbarBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
+        initListener();
         listDialogFragment = new PlayListDialogFragment();
         musicDialogFragment = new CurrentPlayMusicFragment();
         Music music = AudioPlayer.get().getPlayMusic();
@@ -68,14 +73,34 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             setText(music);
         }
         setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-        initClickListener();
     }
 
-    private void initClickListener() {
+    private void initListener() {
+        onPlayerEventListener = new OnPlayEventAdapterListener() {
+            @Override
+            public void onChange(@NotNull Music music) {
+                initViewData(music);
+                //mViewBinding.ivCoverImg.setImageBitmap(FileUtils.getCoverLocal(music));
+            }
+
+            @Override
+            public void onPlayerStart() {
+                setPlayPause(true);
+            }
+
+            @Override
+            public void onPlayerPause() {
+                setPlayPause(false);
+            }
+        };
         mViewBinding.clBottomBar.setOnClickListener(this);
         mViewBinding.ivStateStop.setOnClickListener(this);
         mViewBinding.ivStatePlay.setOnClickListener(this);
         mViewBinding.ivMusicMenu.setOnClickListener(this);
+    }
+
+    public OnPlayerEventListener getOnPlayEventListener(){
+        return onPlayerEventListener;
     }
 
     private void setPlayStatus(int visibility) {
@@ -136,32 +161,6 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onChange(Music music) {
-        initViewData(music);
-//        mViewBinding.ivCoverImg.setImageBitmap(FileUtils.getCoverLocal(music));
-    }
-
-    @Override
-    public void onPlayerStart() {
-        setPlayPause(true);
-    }
-
-    @Override
-    public void onPlayerPause() {
-        setPlayPause(false);
-    }
-
-    @Override
-    public void onPublish(int progress) {
-
-    }
-
-    @Override
-    public void onBufferingUpdate(int percent) {
-
     }
 
     @Override

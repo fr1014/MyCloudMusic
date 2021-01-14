@@ -1,4 +1,7 @@
-package com.fr1014.mycoludmusic.musicmanager;
+package com.fr1014.mycoludmusic.musicmanager.listener;
+
+import com.fr1014.mycoludmusic.musicmanager.Music;
+
 /**
  *  播放进度监听器
  */
@@ -7,6 +10,11 @@ public interface OnPlayerEventListener {
      * 切换歌曲
      */
     void onChange(Music music);
+
+    /**
+     * 歌曲播放完成
+     */
+    void onPlayerComplete();
 
     /**
      * 继续播放

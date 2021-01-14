@@ -67,12 +67,10 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
                 switchPlayMode();
                 break;
             case R.id.ll_pre:
-                playPreMusic();
-                playControlBarClick.pre();
+                playControlBarClick.pre(playPreMusic());
                 break;
             case R.id.ll_next:
-                playNextMusic();
-                playControlBarClick.next();
+                playControlBarClick.next(playNextMusic());
                 break;
             case R.id.ll_state:
                 AudioPlayer.get().playPause();
@@ -126,20 +124,14 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
         }
     }
 
-    public void playPreMusic() {
+    public Music playPreMusic() {
         int playPosition = AudioPlayer.get().playPre();
-        Music pre = AudioPlayer.get().getMusicList().get(playPosition);
-        playOtherMusic(pre);
+        return AudioPlayer.get().getMusicList().get(playPosition);
     }
 
-    public void playNextMusic() {
+    public Music playNextMusic() {
         int playPosition = AudioPlayer.get().playNext();
-        Music next = AudioPlayer.get().getMusicList().get(playPosition);
-        playOtherMusic(next);
-    }
-
-    public void playOtherMusic(Music music) {
-//        initViewData(music);
+        return AudioPlayer.get().getMusicList().get(playPosition);
     }
 
     public void setStateImage(@DrawableRes int resId) {
@@ -147,9 +139,9 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
     }
 
     public interface OnPlayControlBarClick {
-        void pre();
+        void pre(Music pre);
 
-        void next();
+        void next(Music next);
 
         void openMenu();
     }

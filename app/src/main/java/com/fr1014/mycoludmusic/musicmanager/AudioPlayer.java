@@ -14,6 +14,7 @@ import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
+import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
@@ -104,6 +105,9 @@ public class AudioPlayer implements LoadResultListener {
          */
         noisyFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         mediaPlayer.setOnCompletionListener(mp -> {
+            for (OnPlayerEventListener listener : listeners) {
+                listener.onPlayerComplete();
+            }
             playNext();
         });
         mediaPlayer.setOnPreparedListener(mp -> {

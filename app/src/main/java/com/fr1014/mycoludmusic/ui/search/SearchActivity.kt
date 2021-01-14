@@ -58,9 +58,11 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun onServiceBound() {
         statusBarView = PlayStatusBarView(this, supportFragmentManager)
-        AudioPlayer.get().addOnPlayEventListener(statusBarView)
+        statusBarView?.onPlayEventListener?.let {
+            AudioPlayer.get().addOnPlayEventListener(it)
+        }
         CoverLoadUtils.get().registerLoadListener(statusBarView)
-        mViewBinding!!.flPlaystatus.addView(statusBarView)
+        mViewBinding.flPlaystatus.addView(statusBarView)
     }
 
     override fun initData() {
@@ -123,13 +125,15 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun onDestroy() {
         super.onDestroy()
-        if (statusBarView != null) {
-            AudioPlayer.get().removeOnPlayEventListener(statusBarView)
-            CoverLoadUtils.get().removeLoadListener(statusBarView)
+        statusBarView?.let {
+            CoverLoadUtils.get().removeLoadListener(it)
+            it.onPlayEventListener?.let { listener ->
+                AudioPlayer.get().removeOnPlayEventListener(listener)
+            }
         }
     }
 
-    fun loadView(isLoading: Boolean) {
+    private fun loadView(isLoading: Boolean) {
         mViewBinding.rvSearch.visibility = if (isLoading) View.GONE else View.VISIBLE
         mViewBinding.loadingView.llLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
