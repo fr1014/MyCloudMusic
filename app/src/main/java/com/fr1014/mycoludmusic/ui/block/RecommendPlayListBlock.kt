@@ -21,6 +21,7 @@ import com.fr1014.frecyclerviewadapter.BaseAdapter
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListResult
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist
 import com.fr1014.mycoludmusic.databinding.BlockRecommendPlaylistBinding
 import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment
 import io.supercharge.shimmerlayout.ShimmerLayout
@@ -45,9 +46,9 @@ class RecommendPlayListBlock @JvmOverloads constructor(
         }
     }
 
-    fun bindData(playListResults: List<PlayListResult>) {
+    fun bindData(commonPlaylist: List<CommonPlaylist>) {
         viewAdapter.apply {
-            setData(playListResults)
+            setData(commonPlaylist)
         }
     }
 
@@ -56,9 +57,9 @@ class RecommendPlayListBlock @JvmOverloads constructor(
     }
 }
 
-class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<PlayListResult, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
+class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
 
-    override fun convert(holder: BaseViewHolder, data: PlayListResult) {
+    override fun convert(holder: BaseViewHolder, data: CommonPlaylist) {
         holder.getView<TextView>(R.id.tv_description).text = data.name
         holder.getView<ShimmerLayout>(R.id.shimmer).apply {
             setShimmerColor(0x55FFFFFF)
@@ -67,7 +68,7 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<PlayListResult, B
         }
         val options = RequestOptions().centerCrop().transform(RoundedCorners(30))
         Glide.with(holder.itemView)
-                .load(data.picUrl)
+                .load(data.coverImgUrl)
                 .apply(options)
                 .placeholder(R.drawable.ic_placeholder)
                 .listener(object : RequestListener<Drawable> {
@@ -90,7 +91,7 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<PlayListResult, B
         when (view.id) {
             R.id.item -> {
                 val data = getData(position)
-                val bundle = PlayListDetailFragment.createBundle(data.id, data.name, data.picUrl)
+                val bundle = PlayListDetailFragment.createBundle(data.id, data.name, data.coverImgUrl)
                 Navigation.findNavController(view).navigate(R.id.playListDetailFragment, bundle)
             }
             else -> {

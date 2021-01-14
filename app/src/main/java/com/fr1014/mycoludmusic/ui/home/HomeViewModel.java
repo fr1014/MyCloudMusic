@@ -5,28 +5,41 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.NetizensPlaylist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListResult;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlists;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel;
-import com.fr1014.mymvvm.base.BaseViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 public class HomeViewModel extends CommonViewModel {
 
-    private MutableLiveData<RecommendPlayList> recommendListLiveData;
+    private MutableLiveData<List<CommonPlaylist>> recommendListLiveData;
+    private MutableLiveData<List<CommonPlaylist>> netizensPlaylistLiveData;
 
     public HomeViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
     }
 
-    public LiveData<RecommendPlayList> getRecommendListLiveData() {
+    public LiveData<List<CommonPlaylist>> getNetizensPlaylistLiveData() {
+        if (netizensPlaylistLiveData == null) {
+            netizensPlaylistLiveData = new MutableLiveData<>();
+        }
+        return netizensPlaylistLiveData;
+    }
+
+    public LiveData<List<CommonPlaylist>> getRecommendListLiveData() {
         if (recommendListLiveData == null) {
             recommendListLiveData = new MutableLiveData<>();
         }
@@ -37,25 +50,60 @@ public class HomeViewModel extends CommonViewModel {
         addSubscribe(
                 model.getWYRecommendPlayList(limit)
                         .compose(RxSchedulers.apply())
-                        .subscribe(new Consumer<RecommendPlayList>() {
+                        .map(new Function<RecommendPlayList, List<CommonPlaylist>>() {
                             @Override
-                            public void accept(RecommendPlayList recommendPlayList) throws Exception {
-                                recommendListLiveData.setValue(recommendPlayList);
+                            public List<CommonPlaylist> apply(@io.reactivex.annotations.NonNull RecommendPlayList recommendPlayList) throws Exception {
+                                List<PlayListResult> results = recommendPlayList.component4();
+                                List<CommonPlaylist> commonPlaylists = new ArrayList<>();
+                                for (PlayListResult playListResult : results) {
+                                    commonPlaylists.add(new CommonPlaylist(playListResult.getId(), playListResult.getName(), playListResult.getPicUrl()));
+                                }
+                                return commonPlaylists;
+                            }
+                        })
+                        .subscribe(new Consumer<List<CommonPlaylist>>() {
+                            @Override
+                            public void accept(List<CommonPlaylist> commonPlaylists) throws Exception {
+                                    recommendListLiveData.postValue(commonPlaylists);
                             }
                         })
         );
     }
 
-    public void getWYUserPlayList(){
+    public void getWYNetizensPlayList(String order, String cat, int limit, int offset) {
+        addSubscribe(
+                model.getWYNetizensPlayList(order, cat, limit, offset)
+                        .compose(RxSchedulers.apply())
+                        .map(new Function<NetizensPlaylist, List<CommonPlaylist>>() {
+                            @Override
+                            public List<CommonPlaylist> apply(@io.reactivex.annotations.NonNull NetizensPlaylist netizensPlaylist) throws Exception {
+                                List<Playlists> playlists = netizensPlaylist.component4();
+                                List<CommonPlaylist> commonPlaylists = new ArrayList<>();
+                                for (Playlists playlist : playlists) {
+                                    commonPlaylists.add(new CommonPlaylist(playlist.getId(), playlist.getName(), playlist.getCoverImgUrl()));
+                                }
+                                return commonPlaylists;
+                            }
+                        })
+                        .subscribe(new Consumer<List<CommonPlaylist>>() {
+                            @Override
+                            public void accept(List<CommonPlaylist> commonPlaylists) throws Exception {
+                                netizensPlaylistLiveData.postValue(commonPlaylists);
+                            }
+                        })
+        );
+    }
+
+    public void getWYUserPlayList() {
         addSubscribe(
                 model.getWYUserPlayList(Preferences.getUserProfile().getUserId())
-                .compose(RxSchedulers.apply())
-                .subscribe(new Consumer<WYUserPlayList>() {
-                    @Override
-                    public void accept(WYUserPlayList wyUserPlayList) throws Exception {
+                        .compose(RxSchedulers.apply())
+                        .subscribe(new Consumer<WYUserPlayList>() {
+                            @Override
+                            public void accept(WYUserPlayList wyUserPlayList) throws Exception {
 
-                    }
-                })
+                            }
+                        })
         );
     }
 }

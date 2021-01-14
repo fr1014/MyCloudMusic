@@ -1,26 +1,21 @@
 package com.fr1014.mycoludmusic.ui.home;
 
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 
-import com.fr1014.mycoludmusic.MainActivity;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
 import com.fr1014.mycoludmusic.ui.login.LoginActivity;
 import com.fr1014.mymvvm.base.BaseFragment;
+
+import java.util.List;
 
 public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel> {
 
@@ -38,7 +33,12 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel
     @Override
     protected void initView() {
         initRecommendPlayList();
+        initNetizensPlaylist();
         initListener();
+    }
+
+    private void initNetizensPlaylist() {
+        mViewBinding.blockNetizensPlaylist.setTitle("网友精选碟");
     }
 
     private void initRecommendPlayList() {
@@ -48,14 +48,21 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel
     @Override
     public void initData() {
         mViewModel.getWYRecommendList(30);
+        mViewModel.getWYNetizensPlayList("new","全部",10,0);
     }
 
     @Override
     public void initViewObservable() {
-        mViewModel.getRecommendListLiveData().observe(this, new Observer<RecommendPlayList>() {
+        mViewModel.getRecommendListLiveData().observe(this, new Observer<List<CommonPlaylist>>() {
             @Override
-            public void onChanged(RecommendPlayList recommendPlayList) {
-                mViewBinding.blockRecommend.bindData(recommendPlayList.getResult());
+            public void onChanged(List<CommonPlaylist> commonPlaylists) {
+                mViewBinding.blockRecommend.bindData(commonPlaylists);
+            }
+        });
+        mViewModel.getNetizensPlaylistLiveData().observe(this, new Observer<List<CommonPlaylist>>() {
+            @Override
+            public void onChanged(List<CommonPlaylist> commonPlaylists) {
+                mViewBinding.blockNetizensPlaylist.bindData(commonPlaylists);
             }
         });
     }
