@@ -59,6 +59,10 @@ class RecommendPlayListBlock @JvmOverloads constructor(
 
 class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
 
+    init {
+        mOnItemClickListener = this
+    }
+
     override fun convert(holder: BaseViewHolder, data: CommonPlaylist) {
         holder.getView<TextView>(R.id.tv_description).text = data.name
         holder.getView<ShimmerLayout>(R.id.shimmer).apply {

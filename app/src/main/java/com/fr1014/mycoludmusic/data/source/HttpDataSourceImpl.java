@@ -72,6 +72,16 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
+    public Observable<NetizensPlaylist> getWYNetizensPlayList(String order, String cat, int limit, int offset) {
+        return wyApiService.getWYNetizensPlaylist(order, cat, limit, offset);
+    }
+
+    @Override
+    public Observable<WYLevelInfo> getWYLevelInfo() {
+        return wyApiService.getWYLevelInfo();
+    }
+
+    @Override
     public Observable<TopListEntity> getTopList() {
         return wyApiService.getTopList();
     }
