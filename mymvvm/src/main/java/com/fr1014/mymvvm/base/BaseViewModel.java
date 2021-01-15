@@ -41,7 +41,9 @@ public class BaseViewModel<M extends BaseModel> extends AndroidViewModel impleme
         if (mCompositeDisposable == null){
             mCompositeDisposable = new CompositeDisposable();
         }
-        mCompositeDisposable.add(disposable);
+        if (disposable != null){
+            mCompositeDisposable.add(disposable);
+        }
     }
 
     public UIChangeLiveData getUC() {

@@ -20,7 +20,7 @@ data class Account(
     val baoyueVersion: Int,
     val createTime: Long,
     val donateVersion: Int,
-    val id: Int,
+    val id: Long,
     val salt: String,
     val status: Int,
     val tokenVersion: Int,
@@ -40,7 +40,7 @@ data class Binding(
     val tokenJsonStr: String,
     val type: Int,
     val url: String,
-    val userId: Int
+    val userId: Long
 )
 
 data class Profile(
@@ -51,7 +51,7 @@ data class Profile(
     val avatarImgId: Long,
     val avatarImgIdStr: String,
     val avatarImgId_str: String,
-    val avatarUrl: String,
+    val avatarUrl: String?,
     val backgroundImgId: Long,
     val backgroundImgIdStr: String,
     val backgroundUrl: String,
@@ -75,7 +75,7 @@ data class Profile(
     val province: Int,
     val remarkName: Any,
     val signature: String,
-    val userId: Int?,
+    val userId: Long,
     val userType: Int,
     val vipType: Int
 )

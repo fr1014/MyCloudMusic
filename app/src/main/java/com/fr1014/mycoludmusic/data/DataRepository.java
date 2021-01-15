@@ -8,6 +8,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.UserEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLevelInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
@@ -80,6 +81,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<WYUserPlayList> getWYUserPlayList(long uid) {
         return httpDataSource.getWYUserPlayList(uid);
+    }
+
+    @Override
+    public Observable<WYLevelInfo> getWYLevelInfo() {
+        return httpDataSource.getWYLevelInfo();
     }
 
     @Override

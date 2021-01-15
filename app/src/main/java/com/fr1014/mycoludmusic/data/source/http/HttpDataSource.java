@@ -8,6 +8,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.UserEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLevelInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
@@ -45,6 +46,8 @@ public interface HttpDataSource {
     Observable<WYLikeList> getWYLikeList(long uid);
 
     Observable<WYUserPlayList> getWYUserPlayList(long uid);
+
+    Observable<WYLevelInfo> getWYLevelInfo();
 
     Observable<TopListEntity> getTopList();
 
