@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fr1014.mycoludmusic.data.DataRepository
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.LevelData
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlist
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.rx.RxSchedulers
@@ -18,20 +19,37 @@ class UserInfoViewModel(application: Application, model: DataRepository) : Commo
         MutableLiveData()
     }
 
-    fun getWYPlayList() : LiveData<List<Playlist>> {
+    private val levelInfoLive: MutableLiveData<LevelData> by lazy {
+        MutableLiveData()
+    }
+
+    fun getLevelInfo(): LiveData<LevelData> {
+        return levelInfoLive
+    }
+
+    fun getWYPlayList(): LiveData<List<Playlist>> {
         return playlistWYLive
     }
 
-
-    fun getWYUserPlayList(){
+    fun getWYUserPlayList() {
         addSubscribe(
-                Preferences.getUserProfile().userId?.toLong()?.let { it ->
+                Preferences.getUserProfile()?.userId?.toLong()?.let { it ->
                     model.getWYUserPlayList(it)
                             .compose(RxSchedulers.apply())
-                            .subscribe{
+                            .subscribe {
                                 playlistWYLive.postValue(it.playlist)
                             }
                 }
+        )
+    }
+
+    fun getWYLevelInfo() {
+        addSubscribe(
+                model.wyLevelInfo
+                        .compose(RxSchedulers.apply())
+                        .subscribe {
+                            levelInfoLive.postValue(it.data)
+                        }
         )
     }
 }

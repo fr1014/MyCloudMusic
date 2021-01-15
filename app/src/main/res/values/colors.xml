@@ -15,6 +15,7 @@
     <color name="white_alpha">#F5FFFFFF</color>
     <color name="content_scrim">#663D4D4E</color>
     <color name="shimmer_color">#99FFFFFF</color>
+    <color name="app_gray">#EAEAEC</color>
 
     <!--LrcView -->
     <color name="lrc_normal_text_color">#9E9E9E</color>

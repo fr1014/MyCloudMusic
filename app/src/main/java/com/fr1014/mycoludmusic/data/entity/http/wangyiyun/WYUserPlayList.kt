@@ -50,5 +50,5 @@ data class Playlist(
     val tracks: Any,
     val updateFrequency: Any,
     val updateTime: Long,
-    val userId: Int
+    val userId: Long
 )

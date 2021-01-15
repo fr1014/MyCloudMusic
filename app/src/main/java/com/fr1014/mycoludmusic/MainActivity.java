@@ -105,8 +105,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
                     mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
                 }else if(destination.getId() == R.id.userInfoFragment){
-                    mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
-                    mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
+                    mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
                 } else {
                     mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);

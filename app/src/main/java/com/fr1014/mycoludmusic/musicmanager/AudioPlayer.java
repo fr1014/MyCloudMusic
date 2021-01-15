@@ -177,9 +177,17 @@ public class AudioPlayer implements LoadResultListener {
         Music music = getPlayMusic();
         notifyShowPlay(music);
         //网络歌曲，每次都需要重新获取url
-        if (music.isOnlineMusic() && TextUtils.isEmpty(music.getSongUrl())) {
-            getSongUrl(music);
-            return;
+        if (music.isOnlineMusic()){
+            //如果图片为获取，则拉取图片地址并下载图片
+            if (TextUtils.isEmpty(music.getImgUrl())){
+                getSongInfo(music);
+            }else {
+                CoverLoadUtils.get().loadRemoteCover(music);
+            }
+            if (TextUtils.isEmpty(music.getSongUrl())) {
+                getSongUrl(music);
+                return;
+            }
         }
         play(music);
     }
@@ -252,11 +260,6 @@ public class AudioPlayer implements LoadResultListener {
                         music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
                         play(music);
                     }));
-        }
-        if (TextUtils.isEmpty(music.getImgUrl())) {
-            getSongInfo(music);
-        }else {
-            CoverLoadUtils.get().loadRemoteCover(music);
         }
     }
 
