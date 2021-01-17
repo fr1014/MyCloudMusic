@@ -340,7 +340,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onDestroy() {
-        mViewBinding.albumCoverView.endAnimator();
+        if (mViewBinding != null){
+            mViewBinding.albumCoverView.endAnimator();
+        }
         CoverLoadUtils.get().removeLoadListener(this);
         super.onDestroy();
     }
