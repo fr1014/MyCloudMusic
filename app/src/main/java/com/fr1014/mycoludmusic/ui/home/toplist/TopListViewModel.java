@@ -7,14 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
-import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
-import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
@@ -25,9 +18,7 @@ import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.FileUtils;
-import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +31,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
 
 /**
  * 创建时间:2020/9/4
@@ -51,7 +41,6 @@ public class TopListViewModel extends CommonViewModel {
 
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
     private BusLiveData<List<Music>> getSongListUrl;
-    private BusLiveData<Boolean> getCheckSongResult;
     private BusLiveData<String> getSongLrcPath;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
@@ -63,13 +52,6 @@ public class TopListViewModel extends CommonViewModel {
             getSongLrcPath = new BusLiveData<>();
         }
         return getSongLrcPath;
-    }
-
-    public BusLiveData<Boolean> getCheckSongResult() {
-        if (getCheckSongResult == null) {
-            getCheckSongResult = new BusLiveData<>();
-        }
-        return getCheckSongResult;
     }
 
     public BusLiveData<List<Music>> getSongListUrl(List<Music> musicList) {
@@ -146,24 +128,6 @@ public class TopListViewModel extends CommonViewModel {
                     public void accept(TopListDetailEntity topListDetailEntity) throws Exception {
                         dismissDialog();
                         getTopListDetail.postValue(topListDetailEntity);
-                    }
-                }));
-    }
-
-    //检索歌曲是否可以听
-    public void checkSong(Music item) {
-        addSubscribe(model.checkMusic(item.getId())
-                .compose(RxSchedulers.apply())
-                .subscribe(new Consumer<CheckEntity>() {
-                    @Override
-                    public void accept(CheckEntity checkEntity) throws Exception {
-                        if (checkEntity.isSuccess()) {
-                            getWYYSongUrl(item);
-                        } else {
-                            CommonUtil.toastLong(item.getTitle() + " (无法播放：已播放其它歌曲)");
-                            //播放下一首
-                            getCheckSongResult.postValue(false);
-                        }
                     }
                 }));
     }

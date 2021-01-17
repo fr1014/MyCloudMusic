@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
@@ -257,10 +258,33 @@ public class AudioPlayer implements LoadResultListener {
             addDisposable(dataRepository.getWYSongUrl(music.getId())
                     .compose(RxSchedulers.apply())
                     .subscribe(songUrlEntity -> {
-                        music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
-                        play(music);
+                        if (songUrlEntity.getData().get(0).getFee() != 1){
+                            music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
+                            play(music);
+                        }else {
+                            getWYFeeFromKW(music);
+                        }
                     }));
         }
+    }
+
+    //从酷我搜索网易的付费歌曲
+    private void getWYFeeFromKW(Music music){
+        addDisposable(
+                dataRepository.getKWSearchResult(music.getTitle()+music.getArtist(),0,1)
+                .compose(RxSchedulers.apply())
+                .subscribe(new Consumer<KWNewSearchEntity>() {
+                    @Override
+                    public void accept(KWNewSearchEntity kwNewSearchEntity) throws Exception {
+                        List<KWNewSearchEntity.AbslistBean> abslist = kwNewSearchEntity.getAbslist();
+                        if (!CollectionUtils.isEmptyList(abslist)){
+                            music.setId(0);
+                            music.setMUSICRID(abslist.get(0).getMUSICRID());
+                            getSongUrl(music);
+                        }
+                    }
+                })
+        );
     }
 
     public void delete(int position) {

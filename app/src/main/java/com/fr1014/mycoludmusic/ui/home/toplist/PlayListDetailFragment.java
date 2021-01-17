@@ -138,8 +138,6 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         header.setOnClickListener(v -> {
             List<Music> datas = new ArrayList<>(adapter.getDatas());
             if (datas.size() >= 1) {
-//                AudioPlayer.get().addAndPlay(datas);
-//                viewModel.checkSong(datas.get(0));
                 mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
                     @Override
                     public void onChanged(List<Music> musicList) {
@@ -151,25 +149,12 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
         adapter.setOnItemClickListener((adapter, view, position) -> {
             Music music = (Music) adapter.getData(position);
-            if (TextUtils.isEmpty(music.getSongUrl())) {
-                mViewModel.checkSong(music);
-            } else {
-                AudioPlayer.get().addAndPlay(music);
-            }
+            AudioPlayer.get().addAndPlay(music);
         });
     }
 
     @Override
     public void initViewObservable() {
-        mViewModel.getCheckSongResult().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isCanPlay) {
-                if (!isCanPlay) {
-                    AudioPlayer.get().playNext();
-                }
-            }
-        });
-
         mViewModel.getSongUrl().observe(this, new Observer<Music>() {
             @Override
             public void onChanged(Music music) {
