@@ -207,4 +207,10 @@ public abstract class BaseFragment<VB extends ViewBinding,VM extends BaseViewMod
     public <T extends ViewModel> T createViewModel(FragmentActivity activity, Class<T> cls) {
         return new ViewModelProvider(activity).get(cls);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mViewBinding = null;  //由于Fragment的存在时间比其它视图长，需要在onDestroyView方法中清除对绑定类实例的所有引用
+    }
 }
