@@ -18,7 +18,11 @@
             app:destination="@id/playListDetailFragment" />
         <action
             android:id="@+id/action_nav_home_to_userInfoFragment"
-            app:destination="@id/userInfoFragment" />
+            app:destination="@id/userInfoFragment"
+            app:enterAnim="@anim/anim_enter"
+            app:exitAnim="@anim/anim_exit"
+            app:popEnterAnim="@anim/anim_enter"
+            app:popExitAnim="@anim/anim_exit" />
     </fragment>
 
     <fragment
@@ -46,7 +50,9 @@
         android:id="@+id/playListDetailFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment"
         android:label="歌单列表"
-        tools:layout="@layout/fragment_playlist_detail" />
+        tools:layout="@layout/fragment_playlist_detail" >
+
+    </fragment>
     <fragment
         android:id="@+id/userInfoFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.userinfo.UserInfoFragment"
@@ -54,6 +60,10 @@
         tools:layout="@layout/fragment_user_info">
         <action
             android:id="@+id/action_userInfoFragment_to_playListDetailFragment"
-            app:destination="@id/playListDetailFragment" />
+            app:destination="@id/playListDetailFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 </navigation>

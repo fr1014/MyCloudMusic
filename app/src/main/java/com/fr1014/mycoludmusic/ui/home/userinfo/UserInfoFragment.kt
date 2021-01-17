@@ -3,9 +3,9 @@ package com.fr1014.mycoludmusic.ui.home.userinfo
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -44,6 +44,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
     }
 
     override fun initView() {
+        mViewBinding.toolbar.clToolbar.background.alpha = 0
         initUserInfo()
         initListener()
     }
@@ -82,13 +83,26 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mViewBinding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                if (scrollY > ScreenUtil.dp2px(context, 64F)){
+                if (scrollY > ScreenUtil.dp2px(context, 64F)) {
                     userTitleVisibility(View.VISIBLE)
-                }else{
+                    context?.let {
+                        mViewBinding.toolbar.root.setBackgroundColor(it.getColor(R.color.white))
+                    }
+                } else {
+                    changeToolBarAlpha(scrollY)
                     userTitleVisibility(View.GONE)
                 }
             }
+
         }
+        mViewBinding.toolbar.ivBack.setOnClickListener {
+            Navigation.findNavController(it).popBackStack()
+        }
+    }
+
+    private fun changeToolBarAlpha(scrollY: Int) {
+        val alpha: Float = scrollY.div(ScreenUtil.dp2px(context, 64F).toFloat())
+        mViewBinding.toolbar.clToolbar.background.alpha = (alpha * 255).toInt()
     }
 
     override fun initData() {
