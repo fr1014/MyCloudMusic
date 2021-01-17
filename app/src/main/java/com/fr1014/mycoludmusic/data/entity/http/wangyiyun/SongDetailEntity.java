@@ -246,72 +246,24 @@ public class SongDetailEntity {
 
         public static class HBean {
 
-            private int br;
-            private int fid;
-            private int size;
-            private int vd;
-
-            public int getBr() {
-                return br;
-            }
-
-            public int getFid() {
-                return fid;
-            }
-
-            public int getSize() {
-                return size;
-            }
-
-            public int getVd() {
-                return vd;
-            }
+            public int br;
+            public int fid;
+            public int size;
+            public double vd;
         }
 
         public static class MBean {
-            private int br;
-            private int fid;
-            private int size;
-            private int vd;
-
-            public int getBr() {
-                return br;
-            }
-
-            public int getFid() {
-                return fid;
-            }
-
-            public int getSize() {
-                return size;
-            }
-
-            public int getVd() {
-                return vd;
-            }
+            public int br;
+            public int fid;
+            public int size;
+            public double vd;
         }
 
         public static class LBean {
-            private int br;
-            private int fid;
-            private int size;
-            private int vd;
-
-            public int getBr() {
-                return br;
-            }
-
-            public int getFid() {
-                return fid;
-            }
-
-            public int getSize() {
-                return size;
-            }
-
-            public int getVd() {
-                return vd;
-            }
+            public int br;
+            public int fid;
+            public int size;
+            public double vd;
         }
 
         public static class ArBean {

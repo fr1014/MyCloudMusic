@@ -70,6 +70,13 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder> extends Recycler
         notifyDataSetChanged();
     }
 
+    public void addData(List<T> data){
+        if (data == null) return;
+        int position = mData.size();
+        mData.addAll(data);
+        notifyItemRangeInserted(position,data.size());
+    }
+
     public void clearData() {
         if (mData != null) {
             mData.clear();

@@ -840,14 +840,14 @@ public class PlayListDetailEntity {
         }
 
         public static class TrackIdsBean {
-            private int id;
+            private long id;
             private int v;
             private long at;
             private Object alg;
             private int ratio;
             private int lr;
 
-            public int getId() {
+            public long getId() {
                 return id;
             }
 
@@ -875,7 +875,7 @@ public class PlayListDetailEntity {
     }
 
     public static class PrivilegesBean {
-        private int id;
+        private long id;
         private int fee;
         private int payed;
         private int st;
@@ -893,7 +893,7 @@ public class PlayListDetailEntity {
         private int playMaxbr;
         private int downloadMaxbr;
 
-        public int getId() {
+        public long getId() {
             return id;
         }
 

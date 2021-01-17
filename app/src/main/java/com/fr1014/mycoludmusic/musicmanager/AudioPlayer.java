@@ -227,7 +227,7 @@ public class AudioPlayer implements LoadResultListener {
                 e.printStackTrace();
             }
         } else if (music.getId() != 0) {//网易的歌
-            addDisposable(dataRepository.getSongDetail(music.getId())
+            addDisposable(dataRepository.getWYSongDetail(music.getId()+"")
                     .map(songDetailEntity -> {
                         if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
                             music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());

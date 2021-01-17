@@ -26,6 +26,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
 
@@ -195,10 +196,22 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
             @Override
             public void onChanged(List<Music> musics) {
+               if (CollectionUtils.isEmptyList(musics)) return;
                 adapter.getHeaderView().setVisibility(View.VISIBLE);
                 mViewBinding.llLoading.lavLoading.cancelAnimation();
                 mViewBinding.llLoading.llLoading.setVisibility(View.GONE);
                 adapter.setData(musics);
+            }
+        });
+
+        mViewModel.getPlayTrackList().observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
+            @Override
+            public void onChanged(List<Music> musicList) {
+                if (CollectionUtils.isEmptyList(musicList)) return;
+                adapter.getHeaderView().setVisibility(View.VISIBLE);
+                mViewBinding.llLoading.lavLoading.cancelAnimation();
+                mViewBinding.llLoading.llLoading.setVisibility(View.GONE);
+                adapter.setData(musicList);
             }
         });
     }

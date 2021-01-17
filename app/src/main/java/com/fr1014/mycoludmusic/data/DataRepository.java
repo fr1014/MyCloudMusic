@@ -115,8 +115,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<SongDetailEntity> getSongDetail(long ids) {
-        return httpDataSource.getSongDetail(ids);
+    public Observable<SongDetailEntity> getWYSongDetail(String ids) {
+        return httpDataSource.getWYSongDetail(ids);
     }
 
     public Observable<SongUrlEntity> getWYSongUrl(String ids) {

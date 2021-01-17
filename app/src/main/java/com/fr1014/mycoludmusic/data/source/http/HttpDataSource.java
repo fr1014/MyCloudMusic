@@ -60,7 +60,7 @@ public interface HttpDataSource {
 
     Observable<PlayListDetailEntity> getPlayListDetail(long id);
 
-    Observable<SongDetailEntity> getSongDetail(long ids);
+    Observable<SongDetailEntity> getWYSongDetail(String ids);
 
     Observable<CheckEntity> checkMusic(long id);
 

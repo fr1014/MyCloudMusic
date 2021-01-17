@@ -4,13 +4,16 @@ import android.app.Application;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
@@ -28,6 +31,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
     protected BusLiveData<List<Music>> getPlayListDetail;
     protected BusLiveData<Boolean> getStartPlayListDetail;
     private BusLiveData<Music> getSongUrl;
+    private BusLiveData<List<Music>> getPlayTrackList;
 
     public CommonViewModel(@NonNull Application application) {
         super(application);
@@ -37,21 +41,28 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
         super(application, model);
     }
 
-    public BusLiveData<Music> getSongUrl() {
+    public LiveData<List<Music>> getPlayTrackList() {
+        if (getPlayTrackList == null) {
+            getPlayTrackList = new BusLiveData<>();
+        }
+        return getPlayTrackList;
+    }
+
+    public LiveData<Music> getSongUrl() {
         if (getSongUrl == null) {
             getSongUrl = new BusLiveData<>();
         }
         return getSongUrl;
     }
 
-    public BusLiveData<Boolean> getStartPlayListDetail() {
-        if (getStartPlayListDetail == null){
+    public LiveData<Boolean> getStartPlayListDetail() {
+        if (getStartPlayListDetail == null) {
             getStartPlayListDetail = new BusLiveData<>();
         }
         return getStartPlayListDetail;
     }
 
-    public BusLiveData<List<Music>> getPlayListDetail(long id) {
+    public LiveData<List<Music>> getPlayListDetail(long id) {
         if (getPlayListDetail == null) {
             getPlayListDetail = new BusLiveData<>();
         }
@@ -65,6 +76,16 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                 .map(new Function<PlayListDetailEntity, List<Music>>() {
                     @Override
                     public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
+                        List<PlayListDetailEntity.PlaylistBean.TrackIdsBean> trackIds = playListDetailEntity.getPlaylist().getTrackIds();
+                        if (!CollectionUtils.isEmptyList(trackIds)) {
+                            StringBuilder ids = new StringBuilder();
+                            for (PlayListDetailEntity.PlaylistBean.TrackIdsBean trackIdsBean : trackIds) {
+                                ids.append(trackIdsBean.getId());
+                                ids.append(",");
+                            }
+                            getWYSongDetails(ids.substring(0, ids.length() - 1));
+                            return null;
+                        }
                         List<Music> musics = new ArrayList<>();
                         List<PlayListDetailEntity.PlaylistBean.TracksBean> tracks = playListDetailEntity.getPlaylist().getTracks();
                         for (PlayListDetailEntity.PlaylistBean.TracksBean data : tracks) {
@@ -86,7 +107,6 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                             music.setAlbum(data.getAl().getName());
                             musics.add(music);
                         }
-
                         return musics;
                     }
                 })
@@ -105,6 +125,45 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                         getPlayListDetail.postValue(musicList);
                     }
                 }));
+    }
+
+    public void getWYSongDetails(String ids) {
+        addSubscribe(
+                model.getWYSongDetail(ids)
+                        .compose(RxSchedulers.apply())
+                        .map(new Function<SongDetailEntity, List<Music>>() {
+                            @Override
+                            public List<Music> apply(@io.reactivex.annotations.NonNull SongDetailEntity songDetailEntity) throws Exception {
+                                List<Music> musics = new ArrayList<>();
+                                List<SongDetailEntity.SongsBean> songs = songDetailEntity.getSongs();
+                                for (SongDetailEntity.SongsBean data : songs) {
+                                    Music music = new Music();
+                                    StringBuilder sb = new StringBuilder();
+                                    for (int i = 0; i < data.getAr().size(); i++) {
+                                        SongDetailEntity.SongsBean.ArBean ar = data.getAr().get(i);
+                                        if (i < data.getAr().size() - 1) {
+                                            sb.append(ar.getName()).append('&');
+                                        } else {
+                                            sb.append(ar.getName());
+                                        }
+                                    }
+                                    music.setId(data.getId());
+                                    music.setArtist(sb.toString());
+                                    music.setTitle(data.getName());
+                                    music.setImgUrl(data.getAl().getPicUrl());
+                                    music.setDuration(data.getDt());
+                                    music.setAlbum(data.getAl().getName());
+                                    musics.add(music);
+                                }
+                                return musics;
+                            }
+                        }).subscribe(new Consumer<List<Music>>() {
+                    @Override
+                    public void accept(List<Music> musicList) throws Exception {
+                        getPlayTrackList.postValue(musicList);
+                    }
+                })
+        );
     }
 
     /**
@@ -141,7 +200,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                         public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
                             music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
                             music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
-                            getSongUrl().postValue(music);
+                            getSongUrl.postValue(music);
                         }
                     }));
         } catch (NumberFormatException e) {
@@ -174,7 +233,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
 
     //通过搜索得到的歌曲，需要通过获取歌曲详情来获取音乐专辑图片
     private void getSongDetailEntity(Music music) {
-        addSubscribe(model.getSongDetail(music.getId())
+        addSubscribe(model.getWYSongDetail(music.getId()+"")
                 .map(songDetailEntity -> {
                     if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
                         music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
@@ -186,7 +245,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                 .subscribe(new Consumer<Music>() {
                     @Override
                     public void accept(Music music) throws Exception {
-                        getSongUrl().postValue(music);
+                        getSongUrl.postValue(music);
                     }
                 }));
     }

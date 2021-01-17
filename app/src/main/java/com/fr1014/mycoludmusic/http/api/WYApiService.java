@@ -85,7 +85,7 @@ public interface WYApiService {
     Observable<PlayListDetailEntity> getPlayListDetail(@Query("id") long id);
 
     @GET("song/detail")
-    Observable<SongDetailEntity> getSongDetail(@Query("ids") long ids);
+    Observable<SongDetailEntity> getWYSongDetail(@Query("ids") String ids);
 
     /**
      * 获取音乐url,可传入多个id用 "," 隔开
