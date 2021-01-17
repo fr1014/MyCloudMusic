@@ -49,7 +49,7 @@ public class SongDetailEntity {
         private int djId;
         private int copyright;
         private int s_id;
-        private int mark;
+        private long mark;
         private int originCoverType;
         private int single;
         private Object noCopyrightRcmd;
@@ -159,7 +159,7 @@ public class SongDetailEntity {
             return s_id;
         }
 
-        public int getMark() {
+        public long getMark() {
             return mark;
         }
 

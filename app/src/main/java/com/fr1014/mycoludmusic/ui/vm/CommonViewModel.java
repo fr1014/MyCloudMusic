@@ -77,17 +77,19 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                     @Override
                     public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
                         List<PlayListDetailEntity.PlaylistBean.TrackIdsBean> trackIds = playListDetailEntity.getPlaylist().getTrackIds();
+                        List<PlayListDetailEntity.PlaylistBean.TracksBean> tracks = playListDetailEntity.getPlaylist().getTracks();
                         if (!CollectionUtils.isEmptyList(trackIds)) {
-                            StringBuilder ids = new StringBuilder();
-                            for (PlayListDetailEntity.PlaylistBean.TrackIdsBean trackIdsBean : trackIds) {
-                                ids.append(trackIdsBean.getId());
-                                ids.append(",");
+                            if (trackIds.size() > tracks.size()){
+                                StringBuilder ids = new StringBuilder();
+                                for (PlayListDetailEntity.PlaylistBean.TrackIdsBean trackIdsBean : trackIds) {
+                                    ids.append(trackIdsBean.getId());
+                                    ids.append(",");
+                                }
+                                getWYSongDetails(ids.substring(0, ids.length() - 1));
+                                return null;
                             }
-                            getWYSongDetails(ids.substring(0, ids.length() - 1));
-                            return null;
                         }
                         List<Music> musics = new ArrayList<>();
-                        List<PlayListDetailEntity.PlaylistBean.TracksBean> tracks = playListDetailEntity.getPlaylist().getTracks();
                         for (PlayListDetailEntity.PlaylistBean.TracksBean data : tracks) {
                             Music music = new Music();
                             StringBuilder sb = new StringBuilder();
