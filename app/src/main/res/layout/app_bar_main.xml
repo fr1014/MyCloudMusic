@@ -37,8 +37,9 @@
                     android:layout_weight="9"
                     android:background="@drawable/bg_white_corner"
                     android:hint="@string/search"
+                    android:textColor="@color/light_gray"
                     android:padding="8dp"
-                    android:textColorHint="@color/alpha_text_color"
+                    android:textColorHint="@color/app_gray"
                     android:textSize="15sp"
                     app:drawableStartCompat="@drawable/ic_search_small" />
 
