@@ -54,7 +54,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         if (toast != null) {
             toast.cancel();
         }
-        toast = CommonUtil.toastShort("音乐源已切换为: " + SwitchDialogFragment.array[position]);
+        String source = SwitchDialogFragment.array[position];
+        toast = CommonUtil.toastShort("音乐源已切换为: " + source);
+        mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + source);
         switch (position) {
             case 0:  //酷我
                 SourceHolder.get().setSource("酷我");
@@ -113,8 +115,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
                 }
             }
         });
+        initToolbar();
         initNavHeaderView();
         initClickListener();
+    }
+
+    private void initToolbar() {
+        mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + SourceHolder.get().getSource());
     }
 
     private void initNavHeaderView() {

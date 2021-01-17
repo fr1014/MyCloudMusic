@@ -38,14 +38,15 @@
                     android:background="@drawable/bg_white_corner"
                     android:hint="@string/search"
                     android:padding="8dp"
-                    android:textColorHint="@color/lrc_normal_text_color"
-                    android:textSize="18sp"
-                    app:drawableStartCompat="@drawable/ic_search_normal" />
+                    android:textColorHint="@color/alpha_text_color"
+                    android:textSize="15sp"
+                    app:drawableStartCompat="@drawable/ic_search_small" />
 
                 <ImageView
                     android:id="@+id/iv_switch"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
                     android:layout_weight="1"
                     android:layout_gravity="end|center_vertical"
                     android:src="@drawable/ic_switch" />
