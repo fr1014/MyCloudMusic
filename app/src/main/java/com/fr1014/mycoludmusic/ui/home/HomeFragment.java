@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
@@ -33,8 +35,22 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel
     @Override
     protected void initView() {
         initRecommendPlayList();
+        initPagerTopList();
         initNetizensPlaylist();
         initListener();
+    }
+
+    private void initPagerTopList() {
+        HomeTopListPagerAdapter pagerAdapter = new HomeTopListPagerAdapter(getActivity());
+        //设置滚动方向
+        mViewBinding.pagerTopList.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
+        //一屏多页
+        View recyclerView = mViewBinding.pagerTopList.getChildAt(0);
+        if (recyclerView instanceof RecyclerView) {
+            recyclerView.setPadding(0, 0, 80, 0);
+            ((RecyclerView) recyclerView).setClipToPadding(false);
+        }
+        mViewBinding.pagerTopList.setAdapter(pagerAdapter);
     }
 
     private void initNetizensPlaylist() {

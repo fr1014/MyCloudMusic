@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.NetizensPlaylist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListResult;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlists;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
@@ -19,7 +20,6 @@ import com.fr1014.mycoludmusic.ui.vm.CommonViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
@@ -27,9 +27,17 @@ public class HomeViewModel extends CommonViewModel {
 
     private MutableLiveData<List<CommonPlaylist>> recommendListLiveData;
     private MutableLiveData<List<CommonPlaylist>> netizensPlaylistLiveData;
+    private MutableLiveData<PlayListDetailEntity> playListDetailLive;
 
     public HomeViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
+    }
+
+    public LiveData<PlayListDetailEntity> getPlayListDetail() {
+        if (playListDetailLive == null){
+            playListDetailLive = new MutableLiveData<>();
+        }
+        return playListDetailLive;
     }
 
     public LiveData<List<CommonPlaylist>> getNetizensPlaylistLiveData() {
@@ -44,6 +52,18 @@ public class HomeViewModel extends CommonViewModel {
             recommendListLiveData = new MutableLiveData<>();
         }
         return recommendListLiveData;
+    }
+
+    //获取歌单详情(网易)
+    public void getPlayListDetailEntity(final long id) {
+        addSubscribe(model.getPlayListDetail(id)
+                .compose(RxSchedulers.apply())
+                .subscribe(new Consumer<PlayListDetailEntity>() {
+                    @Override
+                    public void accept(PlayListDetailEntity playListDetailEntity) throws Exception {
+                        playListDetailLive.postValue(playListDetailEntity);
+                    }
+                }));
     }
 
     public void getWYRecommendList(int limit) {
