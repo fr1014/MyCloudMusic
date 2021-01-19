@@ -15,6 +15,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
 import com.fr1014.mycoludmusic.ui.login.LoginActivity;
+import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding,HomeViewModel
         //一屏多页
         View recyclerView = mViewBinding.pagerTopList.getChildAt(0);
         if (recyclerView instanceof RecyclerView) {
-            recyclerView.setPadding(0, 0, 80, 0);
+            recyclerView.setPadding(0, 0, ScreenUtil.dp2px(getContext(),40), 0);
             ((RecyclerView) recyclerView).setClipToPadding(false);
         }
         mViewBinding.pagerTopList.setAdapter(pagerAdapter);

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp">
 
     <io.supercharge.shimmerlayout.ShimmerLayout
         android:id="@+id/shimmer"
@@ -17,7 +18,8 @@
         <FrameLayout
             android:layout_width="100dp"
             android:layout_height="104dp"
-            android:layout_margin="8dp">
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
 
             <View
                 android:layout_width="90dp"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#EAEAEC</color>
+    <color name="colorPrimary">#E7ECEE</color>
     <color name="colorPrimaryDark">#DEDFE4</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="colorLightGray">#D5E2E8</color>
@@ -12,11 +12,13 @@
     <color name="alpha_black">#33615F5F</color>
     <color name="gray">#5EA9B3</color>
     <color name="light_gray">#DCDDE2</color>
+    <color name="bg_white">#FEFFFF</color>
     <color name="white_50p">#80FFFFFF</color>
     <color name="white_alpha">#F5FFFFFF</color>
     <color name="content_scrim">#663D4D4E</color>
     <color name="shimmer_color">#99FFFFFF</color>
-    <color name="app_gray">#EAEAEC</color>
+<!--    <color name="app_gray">#EAEAEC</color>-->
+    <color name="app_gray">#E7ECEE</color>
     <color name="normal_text_color">#9E9E9E</color>
     <color name="alpha_text_color">#CC9E9E9E</color>
 

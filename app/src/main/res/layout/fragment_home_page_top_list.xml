@@ -7,6 +7,6 @@
     <com.fr1014.mycoludmusic.ui.block.TopListBlock
         android:id="@+id/top_list_block"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
 </FrameLayout>
