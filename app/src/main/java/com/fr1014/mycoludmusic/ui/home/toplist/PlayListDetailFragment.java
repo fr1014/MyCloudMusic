@@ -138,12 +138,13 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         header.setOnClickListener(v -> {
             List<Music> datas = new ArrayList<>(adapter.getDatas());
             if (datas.size() >= 1) {
-                mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
-                    @Override
-                    public void onChanged(List<Music> musicList) {
-                        AudioPlayer.get().addAndPlay(musicList);
-                    }
-                });
+                AudioPlayer.get().addAndPlay(datas);
+//                mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
+//                    @Override
+//                    public void onChanged(List<Music> musicList) {
+//                        AudioPlayer.get().addAndPlay(musicList);
+//                    }
+//                });
             }
         });
 
