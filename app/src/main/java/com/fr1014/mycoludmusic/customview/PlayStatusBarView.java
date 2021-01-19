@@ -21,6 +21,7 @@ import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFra
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 
@@ -127,8 +128,6 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             setVisibility(VISIBLE);
             setText(music);
 //            CoverLoadUtils.get().loadRemoteCover(mContext, music);
-        } else {
-            setVisibility(GONE);
         }
     }
 

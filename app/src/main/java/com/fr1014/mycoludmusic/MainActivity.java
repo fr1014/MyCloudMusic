@@ -22,6 +22,7 @@ import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.ui.search.SearchActivity;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
@@ -164,6 +165,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         }
         CoverLoadUtils.get().registerLoadListener(statusBar);
         mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
+        if (CollectionUtils.isEmptyList(AudioPlayer.get().getMusicList())){
+            statusBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
