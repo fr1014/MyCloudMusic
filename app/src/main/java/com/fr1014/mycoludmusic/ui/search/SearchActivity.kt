@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.fr1014.frecyclerviewadapter.BaseAdapter
 import com.fr1014.mycoludmusic.SourceHolder
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
@@ -18,7 +17,6 @@ import com.fr1014.mycoludmusic.base.BasePlayActivity
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
-import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.ui.search.paging2.PlayListDetailAdapter
 import com.fr1014.mycoludmusic.utils.CollectionUtils
@@ -63,6 +61,9 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         }
         CoverLoadUtils.get().registerLoadListener(statusBarView)
         mViewBinding.flPlaystatus.addView(statusBarView)
+        if (CollectionUtils.isEmptyList(AudioPlayer.get().musicList)) {
+            statusBarView?.visibility = View.INVISIBLE
+        }
     }
 
     override fun initData() {
