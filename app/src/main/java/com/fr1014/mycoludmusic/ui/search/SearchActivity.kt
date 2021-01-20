@@ -70,16 +70,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         source = SourceHolder.get().source
     }
 
-    override fun initViewObservable() {
-        mViewModel.songUrl.observe(this, { music ->
-            if (!TextUtils.isEmpty(music.songUrl)) {
-                AudioPlayer.get().addAndPlay(music)
-            } else {
-                AudioPlayer.get().playNext()
-            }
-        })
-    }
-
     private fun initAdapter() {
         viewAdapter = SearchResultAdapter(mViewModel)
         mViewBinding.rvSearch.apply {

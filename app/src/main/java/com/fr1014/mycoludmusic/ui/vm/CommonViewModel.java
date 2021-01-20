@@ -30,7 +30,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
 
     protected BusLiveData<List<Music>> getPlayListDetail;
     protected BusLiveData<Boolean> getStartPlayListDetail;
-    private BusLiveData<Music> getSongUrl;
+//    private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getPlayTrackList;
 
     public CommonViewModel(@NonNull Application application) {
@@ -48,12 +48,12 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
         return getPlayTrackList;
     }
 
-    public LiveData<Music> getSongUrl() {
-        if (getSongUrl == null) {
-            getSongUrl = new BusLiveData<>();
-        }
-        return getSongUrl;
-    }
+//    public LiveData<Music> getSongUrl() {
+//        if (getSongUrl == null) {
+//            getSongUrl = new BusLiveData<>();
+//        }
+//        return getSongUrl;
+//    }
 
     public LiveData<Boolean> getStartPlayListDetail() {
         if (getStartPlayListDetail == null) {
@@ -168,87 +168,87 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
         );
     }
 
-    /**
-     * 酷我
-     *
-     * @param music
-     */
-    public void getKWSongUrl(Music music) {
-        if (TextUtils.isEmpty(music.getMUSICRID())) return;
+//    /**
+//     * 酷我
+//     *
+//     * @param music
+//     */
+//    public void getKWSongUrl(Music music) {
+//        if (TextUtils.isEmpty(music.getMUSICRID())) return;
+//
+//        addSubscribe(model.getKWSongUrl(music.getMUSICRID())
+//                .compose(RxSchedulers.applyIO())
+//                .subscribe(new Consumer<ResponseBody>() {
+//                    @Override
+//                    public void accept(ResponseBody responseBody) throws Exception {
+//                        try {
+//                            String url = responseBody.string();
+//                            music.setSongUrl(url);
+//                            getKWSongDetail(music);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }));
+//    }
+//
+//    public void getKWSongDetail(Music music) {
+//        try {
+//            long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_", ""));
+//            addSubscribe(model.getKWSongDetail(mid)
+//                    .compose(RxSchedulers.apply())
+//                    .subscribe(new Consumer<KWSongDetailEntity>() {
+//                        @Override
+//                        public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
+//                            music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
+//                            music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
+//                            getSongUrl.postValue(music);
+//                        }
+//                    }));
+//        } catch (NumberFormatException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-        addSubscribe(model.getKWSongUrl(music.getMUSICRID())
-                .compose(RxSchedulers.applyIO())
-                .subscribe(new Consumer<ResponseBody>() {
-                    @Override
-                    public void accept(ResponseBody responseBody) throws Exception {
-                        try {
-                            String url = responseBody.string();
-                            music.setSongUrl(url);
-                            getKWSongDetail(music);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }));
-    }
-
-    public void getKWSongDetail(Music music) {
-        try {
-            long mid = Long.parseLong(music.getMUSICRID().replace("MUSIC_", ""));
-            addSubscribe(model.getKWSongDetail(mid)
-                    .compose(RxSchedulers.apply())
-                    .subscribe(new Consumer<KWSongDetailEntity>() {
-                        @Override
-                        public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
-                            music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
-                            music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
-                            getSongUrl.postValue(music);
-                        }
-                    }));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void getWYYSongUrl(Music music) {
-        //可以调用addSubscribe()添加Disposable，请求与View周期同步
-        addSubscribe(model.getWYSongUrl(music.getId())
-                .compose(RxSchedulers.apply())
-                .map(new Function<SongUrlEntity, Music>() {
-                    @Override
-                    public Music apply(SongUrlEntity songUrlEntity) throws Exception {
-                        music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
-                        return music;
-                    }
-                })
-                .subscribe(new Consumer<Music>() {
-                    @Override
-                    public void accept(Music music) throws Exception {
-                        if (TextUtils.isEmpty(music.getSongUrl())) {
-                            CommonUtil.toastShort("该歌曲暂不支持播放");
-                        } else {
-                            getSongDetailEntity(music);
-                        }
-                    }
-                }));
-    }
-
-    //通过搜索得到的歌曲，需要通过获取歌曲详情来获取音乐专辑图片
-    private void getSongDetailEntity(Music music) {
-        addSubscribe(model.getWYSongDetail(music.getId()+"")
-                .map(songDetailEntity -> {
-                    if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
-                        music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
-                        music.setDuration(songDetailEntity.getSongs().get(0).getDt());
-                    }
-                    return music;
-                })
-                .compose(RxSchedulers.apply())
-                .subscribe(new Consumer<Music>() {
-                    @Override
-                    public void accept(Music music) throws Exception {
-                        getSongUrl.postValue(music);
-                    }
-                }));
-    }
+//    public void getWYYSongUrl(Music music) {
+//        //可以调用addSubscribe()添加Disposable，请求与View周期同步
+//        addSubscribe(model.getWYSongUrl(music.getId())
+//                .compose(RxSchedulers.apply())
+//                .map(new Function<SongUrlEntity, Music>() {
+//                    @Override
+//                    public Music apply(SongUrlEntity songUrlEntity) throws Exception {
+//                        music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
+//                        return music;
+//                    }
+//                })
+//                .subscribe(new Consumer<Music>() {
+//                    @Override
+//                    public void accept(Music music) throws Exception {
+//                        if (TextUtils.isEmpty(music.getSongUrl())) {
+//                            CommonUtil.toastShort("该歌曲暂不支持播放");
+//                        } else {
+//                            getSongDetailEntity(music);
+//                        }
+//                    }
+//                }));
+//    }
+//
+//    //通过搜索得到的歌曲，需要通过获取歌曲详情来获取音乐专辑图片
+//    private void getSongDetailEntity(Music music) {
+//        addSubscribe(model.getWYSongDetail(music.getId()+"")
+//                .map(songDetailEntity -> {
+//                    if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
+//                        music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
+//                        music.setDuration(songDetailEntity.getSongs().get(0).getDt());
+//                    }
+//                    return music;
+//                })
+//                .compose(RxSchedulers.apply())
+//                .subscribe(new Consumer<Music>() {
+//                    @Override
+//                    public void accept(Music music) throws Exception {
+//                        getSongUrl.postValue(music);
+//                    }
+//                }));
+//    }
 }

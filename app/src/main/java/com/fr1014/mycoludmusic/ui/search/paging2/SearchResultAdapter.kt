@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
-import com.fr1014.mycoludmusic.SourceHolder
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.search.SearchViewModel
 import com.fr1014.mycoludmusic.utils.ScreenUtil
@@ -72,10 +72,7 @@ class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAd
         return when (viewType) {
             R.layout.item_playlist_detail -> PlayListViewHolder.newInstance(parent).also { holder ->
                 holder.itemView.setOnClickListener {
-                    when (SourceHolder.get().source) {
-                        "酷我" -> mViewModel.getKWSongUrl(getItem(holder.adapterPosition) as Music)
-                        "网易" -> mViewModel.getWYYSongUrl(getItem(holder.adapterPosition) as Music)
-                    }
+                    AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition) as Music)
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {
