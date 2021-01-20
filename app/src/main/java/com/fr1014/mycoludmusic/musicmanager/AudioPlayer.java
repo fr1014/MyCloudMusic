@@ -179,11 +179,11 @@ public class AudioPlayer implements LoadResultListener {
         Music music = getPlayMusic();
         notifyShowPlay(music);
         //网络歌曲，每次都需要重新获取url
-        if (music.isOnlineMusic()){
+        if (music.isOnlineMusic()) {
             //如果图片为获取，则拉取图片地址并下载图片
-            if (TextUtils.isEmpty(music.getImgUrl())){
+            if (TextUtils.isEmpty(music.getImgUrl())) {
                 getSongInfo(music);
-            }else {
+            } else {
                 CoverLoadUtils.get().loadRemoteCover(music);
             }
             if (TextUtils.isEmpty(music.getSongUrl())) {
@@ -229,7 +229,7 @@ public class AudioPlayer implements LoadResultListener {
                 e.printStackTrace();
             }
         } else if (music.getId() != 0) {//网易的歌
-            addDisposable(dataRepository.getWYSongDetail(music.getId()+"")
+            addDisposable(dataRepository.getWYSongDetail(music.getId() + "")
                     .map(songDetailEntity -> {
                         if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
                             music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
@@ -261,8 +261,8 @@ public class AudioPlayer implements LoadResultListener {
                     .subscribe(songUrlEntity -> {
                         SongUrlEntity.DataBean song = songUrlEntity.getData().get(0);
                         //暂无音乐源或付费
-                        if (!TextUtils.isEmpty(song.getUrl())){
-                            if (song.getFee() != 1){
+                        if (!TextUtils.isEmpty(song.getUrl())) {
+                            if (song.getFee() != 1) {
                                 music.setSongUrl(song.getUrl());
                                 play(music);
                                 return;
@@ -275,21 +275,24 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     //从酷我搜索网易的付费歌曲
-    private void getWYFeeFromKW(Music music){
+    private void getWYFeeFromKW(Music music) {
         addDisposable(
-                dataRepository.getKWSearchResult(music.getTitle()+music.getArtist(),0,1)
-                .compose(RxSchedulers.apply())
-                .subscribe(new Consumer<KWNewSearchEntity>() {
-                    @Override
-                    public void accept(KWNewSearchEntity kwNewSearchEntity) throws Exception {
-                        List<KWNewSearchEntity.AbslistBean> abslist = kwNewSearchEntity.getAbslist();
-                        if (!CollectionUtils.isEmptyList(abslist)){
-                            music.setId(0);
-                            music.setMUSICRID(abslist.get(0).getMUSICRID());
-                            getSongUrl(music);
-                        }
-                    }
-                })
+                dataRepository.getKWSearchResult(music.getTitle() + music.getArtist(), 0, 1)
+                        .compose(RxSchedulers.apply())
+                        .subscribe(new Consumer<KWNewSearchEntity>() {
+                            @Override
+                            public void accept(KWNewSearchEntity kwNewSearchEntity) throws Exception {
+                                List<KWNewSearchEntity.AbslistBean> abslist = kwNewSearchEntity.getAbslist();
+                                if (!CollectionUtils.isEmptyList(abslist)) {
+                                    music.setId(0);
+                                    music.setMUSICRID(abslist.get(0).getMUSICRID());
+                                    getSongUrl(music);
+                                } else {
+                                    CommonUtil.toastShort(music.getTitle() + ": 暂时无法播放!!!\n已为您播放了其它歌曲");
+                                    playNext();
+                                }
+                            }
+                        })
         );
     }
 

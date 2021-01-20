@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.toplist;
+package com.fr1014.mycoludmusic.ui.home.playlist;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import androidx.core.view.ViewCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.transition.TransitionInflater;
 
@@ -26,12 +27,10 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.utils.CollectionUtils;
+import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
+import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 //歌单详情页面
 public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, PlayListViewModel>{
@@ -124,20 +123,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         mViewBinding.rvPlaylistDetail.setAdapter(adapter);
 
         mViewBinding.playAll.getRoot().setOnClickListener(v -> {
-            List<Music> datas = new ArrayList<>(adapter.getCurrentList());
-            if (datas.size() >= 1) {
-                mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
-                    @Override
-                    public void onChanged(List<Music> musicList) {
-                        AudioPlayer.get().addAndPlay(musicList);
-                    }
-                });
-            }
-        });
-
-        adapter.setOnItemClickListener((adapter, view, position) -> {
-            Music music = (Music) adapter.getData(position);
-            AudioPlayer.get().addAndPlay(music);
+            AudioPlayer.get().addAndPlay(adapter.getCurrentList());
         });
     }
 
@@ -160,7 +146,10 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                     public void onChanged(NetworkStatus networkStatus) {
                         adapter.updateNetworkStatus(networkStatus);
                         if (networkStatus == NetworkStatus.COMPLETED) {
-
+                            if (mViewModel.getNeedScrollToTop()){
+                                mViewBinding.rvPlaylistDetail.scrollToPosition(0);
+                                mViewModel.setNeedScrollToTop(false);
+                            }
                         }
                     }
                 });

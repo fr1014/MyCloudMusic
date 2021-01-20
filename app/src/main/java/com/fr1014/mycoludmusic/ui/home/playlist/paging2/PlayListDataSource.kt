@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.ui.home.playlist.paging2
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
@@ -12,7 +13,7 @@ import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import java.util.*
 
-class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int,Music>() {
+class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int, Music>() {
 
     var retry: (() -> Any)? = null
     private val _networkStatus = MutableLiveData<NetworkStatus>()
@@ -23,7 +24,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
     }
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(ids, 0, 299)
+        val idsRange = ids.getRangeIds(ids, 0, 99)
         mWYYService.getWYSongDetail(idsRange)
                 .compose(RxSchedulers.apply())
                 .map {
@@ -57,7 +58,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                     _networkStatus.postValue(NetworkStatus.LOADING)
                 }
                 .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
-                    callback.onResult(it,null,300)
+                    callback.onResult(it, null, 100)
                 }, onExecuteOnceError = {
                     retry = { loadInitial(params, callback) }
                     _networkStatus.postValue(NetworkStatus.FAILED)
@@ -72,7 +73,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(ids, params.key, 299)
+        val idsRange = ids.getRangeIds(ids, params.key, 99)
         mWYYService.getWYSongDetail(idsRange)
                 .compose(RxSchedulers.apply())
                 .map {
@@ -106,10 +107,15 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                     _networkStatus.postValue(NetworkStatus.LOADING)
                 }
                 .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
-                    callback.onResult(it,params.key.plus(300))
+                    callback.onResult(it, params.key.plus(100))
                 }, onExecuteOnceError = {
-                    retry = { loadAfter(params, callback) }
-                    _networkStatus.postValue(NetworkStatus.FAILED)
+                    if (it.toString() == "java.lang.NullPointerException: it.songs must not be null") {
+                        _networkStatus.postValue(NetworkStatus.COMPLETED)
+                    }else{
+                        retry = { loadAfter(params, callback) }
+                        _networkStatus.postValue(NetworkStatus.FAILED)
+                    }
+
                 }, onExecuteOnceComplete = {
                     _networkStatus.postValue(NetworkStatus.COMPLETED)
                 })
@@ -123,9 +129,12 @@ fun Array<Long>.getRangeIds(ids: Array<Long>, start: Int, loadRange: Int): Strin
     if (ids.isNotEmpty()) {
         mLoadRange = loadRange
         mLoadSizeSum += mLoadRange
-        if (start >= ids.size) return ""
-        if (mLoadSizeSum >= ids.size){
+        if (start >= ids.size){
+            return ""
+        }
+        if (mLoadSizeSum >= ids.size) {
             mLoadRange = ids.size - start - 1
+            mLoadSizeSum = 0
         }
         val idsRange = StringBuilder()
         for (position in start..(start + mLoadRange)) {

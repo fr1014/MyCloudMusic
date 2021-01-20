@@ -80,9 +80,5 @@
             android:id="@+id/rv_playlist_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

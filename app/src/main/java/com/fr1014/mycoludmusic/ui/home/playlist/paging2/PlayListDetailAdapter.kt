@@ -35,7 +35,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel) : PagedLi
 
     fun updateNetworkStatus(networkStatus: NetworkStatus?) {
         this.networkStatus = networkStatus
-//        if (networkStatus == NetworkStatus.INITIAL_LOADING) hideFooter() else showFooter()
+        if (networkStatus == NetworkStatus.INITIAL_LOADING) hideFooter() else showFooter()
     }
 
     private fun hideFooter() {
@@ -80,7 +80,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel) : PagedLi
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             R.layout.loading_view -> (holder as FooterViewHolder).bindWithNetworkStatus(
-                    networkStatus
+                    networkStatus,itemCount
             )
             else -> {
                 val music = getItem(position) ?: return
@@ -110,6 +110,7 @@ class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
             setText(R.id.tv_author, music.artist + " - " + music.album)
         }
     }
+
 }
 
 class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
@@ -120,7 +121,7 @@ class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
         }
     }
 
-    fun bindWithNetworkStatus(networkStatus: NetworkStatus?) {
+    fun bindWithNetworkStatus(networkStatus: NetworkStatus?,count:Int) {
         with(itemView) {
             when (networkStatus) {
                 NetworkStatus.FAILED -> {
@@ -140,5 +141,10 @@ class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
                 }
             }
         }
+        getView<View>(R.id.view_divider).visibility = if (isShowDivider(count)) View.VISIBLE else View.GONE
+    }
+
+    private fun isShowDivider(count: Int):Boolean {
+        return layoutPosition == count - 1
     }
 }

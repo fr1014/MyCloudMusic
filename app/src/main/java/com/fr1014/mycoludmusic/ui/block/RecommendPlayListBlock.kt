@@ -23,6 +23,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist
 import com.fr1014.mycoludmusic.databinding.BlockRecommendPlaylistBinding
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
+
 import io.supercharge.shimmerlayout.ShimmerLayout
 
 class RecommendPlayListBlock @JvmOverloads constructor(

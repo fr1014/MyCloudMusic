@@ -122,8 +122,12 @@ class SearchDataSource(private val searchKey: String) : PageKeyedDataSource<Int,
                         .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
                             callback.onResult(it, params.key.plus(30))
                         }, onExecuteOnceError = {
-                            retry = { loadAfter(params, callback) }
-                            _networkStatus.postValue(NetworkStatus.FAILED)
+                            if (it.toString() == "java.lang.NullPointerException: Attempt to invoke interface method 'java.util.Iterator java.util.List.iterator()' on a null object reference") {
+                                _networkStatus.postValue(NetworkStatus.COMPLETED)
+                            } else {
+                                retry = { loadAfter(params, callback) }
+                                _networkStatus.postValue(NetworkStatus.FAILED)
+                            }
                         }, onExecuteOnceComplete = {
                             _networkStatus.postValue(NetworkStatus.COMPLETED)
                         }))
