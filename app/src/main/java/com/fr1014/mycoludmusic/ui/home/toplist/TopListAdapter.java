@@ -1,10 +1,8 @@
 package com.fr1014.mycoludmusic.ui.home.toplist;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +17,7 @@ import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
-import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment;
 
 import java.util.List;
 

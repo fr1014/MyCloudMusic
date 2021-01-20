@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.fr1014.mycoludmusic.ui.home.HomeFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.homepage.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -48,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/playListDetailFragment"
-        android:name="com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment"
         android:label="歌单列表"
         tools:layout="@layout/fragment_playlist_detail" >
 

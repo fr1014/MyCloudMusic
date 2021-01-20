@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.toplist;
+package com.fr1014.mycoludmusic.ui.home.playlist;
 
 import android.text.TextUtils;
 import android.view.View;

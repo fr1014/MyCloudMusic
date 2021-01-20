@@ -16,12 +16,11 @@ import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
-import com.fr1014.mycoludmusic.ui.home.CurrentPlayMusicFragment;
-import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
+import com.fr1014.mycoludmusic.ui.home.playdialog.PlayDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
-import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 
@@ -35,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, LoadResultListener {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
-    private PlayListDialogFragment listDialogFragment;
+    private PlayDialogFragment listDialogFragment;
     private CurrentPlayMusicFragment musicDialogFragment;
     private Context mContext;
     private OnPlayerEventListener onPlayerEventListener;
@@ -61,7 +60,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         mViewBinding = CustomviewPlaystatusbarBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
         initListener();
-        listDialogFragment = new PlayListDialogFragment();
+        listDialogFragment = new PlayDialogFragment();
         musicDialogFragment = new CurrentPlayMusicFragment();
         Music music = AudioPlayer.get().getPlayMusic();
         if (music != null) {

@@ -17,7 +17,7 @@ import androidx.viewbinding.ViewBinding;
 import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
-import com.fr1014.mycoludmusic.ui.home.CurrentPlayMusicFragment;
+import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseActivity;

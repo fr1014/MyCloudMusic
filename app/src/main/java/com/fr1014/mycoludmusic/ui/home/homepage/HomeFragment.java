@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home;
+package com.fr1014.mycoludmusic.ui.home.homepage;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +14,7 @@ import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
+import com.fr1014.mycoludmusic.ui.home.HomeTopListPagerAdapter;
 import com.fr1014.mycoludmusic.ui.login.LoginActivity;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;

@@ -22,7 +22,7 @@ import com.fr1014.mycoludmusic.utils.ScreenUtil
  * Create by fanrui on 2021/1/10
  * Describe:
  */
-class PlayListDetailAdapter(private val mViewModel: SearchViewModel) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
+class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     private var networkStatus: NetworkStatus? = null
     private var hasFooter = false

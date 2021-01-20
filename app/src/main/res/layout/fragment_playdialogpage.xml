@@ -6,7 +6,7 @@
     android:layout_height="500dp"
     android:orientation="vertical"
     android:background="@drawable/bg_playdialog"
-    tools:context=".ui.home.dialogfragment.playlist.PlayListDialogFragment">
+    tools:context=".ui.home.playdialog.PlayDialogFragment">
 
     <include
         android:id="@+id/header"

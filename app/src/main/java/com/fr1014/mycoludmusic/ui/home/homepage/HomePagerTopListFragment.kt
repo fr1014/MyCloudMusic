@@ -9,6 +9,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.databinding.FragmentHomePageTopListBinding
+import com.fr1014.mycoludmusic.ui.home.homepage.HomeViewModel
 import com.fr1014.mymvvm.base.BaseFragment
 import java.util.*
 

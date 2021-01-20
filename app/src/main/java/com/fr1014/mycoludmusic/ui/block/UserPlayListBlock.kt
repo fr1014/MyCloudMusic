@@ -22,7 +22,7 @@ import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlist
 import com.fr1014.mycoludmusic.databinding.BlockUserPlaylistBinding
-import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment
+import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
 import io.supercharge.shimmerlayout.ShimmerLayout
 
 class UserPlayListBlock @JvmOverloads constructor(

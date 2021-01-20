@@ -20,10 +20,9 @@ import com.bumptech.glide.request.target.Target
 import com.fr1014.frecyclerviewadapter.BaseAdapter
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListResult
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist
 import com.fr1014.mycoludmusic.databinding.BlockRecommendPlaylistBinding
-import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment
+import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
 import io.supercharge.shimmerlayout.ShimmerLayout
 
 class RecommendPlayListBlock @JvmOverloads constructor(

@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.toplist;
+package com.fr1014.mycoludmusic.ui.home.playlist;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -26,6 +26,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
@@ -138,12 +139,13 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         header.setOnClickListener(v -> {
             List<Music> datas = new ArrayList<>(adapter.getDatas());
             if (datas.size() >= 1) {
-                mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
-                    @Override
-                    public void onChanged(List<Music> musicList) {
-                        AudioPlayer.get().addAndPlay(musicList);
-                    }
-                });
+                AudioPlayer.get().addAndPlay(datas);
+//                mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
+//                    @Override
+//                    public void onChanged(List<Music> musicList) {
+//                        AudioPlayer.get().addAndPlay(musicList);
+//                    }
+//                });
             }
         });
 

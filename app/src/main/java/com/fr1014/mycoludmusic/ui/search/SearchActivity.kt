@@ -18,13 +18,13 @@ import com.fr1014.mycoludmusic.customview.PlayStatusBarView
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
-import com.fr1014.mycoludmusic.ui.search.paging2.PlayListDetailAdapter
+import com.fr1014.mycoludmusic.ui.search.paging2.SearchResultAdapter
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtil
 
 class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
-    private lateinit var viewAdapter: PlayListDetailAdapter
+    private lateinit var viewAdapter: SearchResultAdapter
     private var statusBarView: PlayStatusBarView? = null
     private var source: String? = null
 
@@ -81,7 +81,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     private fun initAdapter() {
-        viewAdapter = PlayListDetailAdapter(mViewModel)
+        viewAdapter = SearchResultAdapter(mViewModel)
         mViewBinding.rvSearch.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewAdapter
