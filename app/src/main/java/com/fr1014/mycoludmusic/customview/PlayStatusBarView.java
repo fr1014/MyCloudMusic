@@ -17,7 +17,7 @@ import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
-import com.fr1014.mycoludmusic.ui.home.playdialog.PlayDialogFragment;
+import com.fr1014.mycoludmusic.ui.home.playlistdialog.PlayDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;

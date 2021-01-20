@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.playdialog;
+package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
 import android.view.View;
 
