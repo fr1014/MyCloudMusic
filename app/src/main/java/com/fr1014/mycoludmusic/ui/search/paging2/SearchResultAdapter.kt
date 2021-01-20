@@ -30,7 +30,7 @@ class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAd
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Music>() {
             override fun areItemsTheSame(oldItem: Music, newItem: Music): Boolean {
-                return oldItem == newItem
+                return oldItem === newItem
             }
 
             override fun areContentsTheSame(oldItem: Music, newItem: Music): Boolean {

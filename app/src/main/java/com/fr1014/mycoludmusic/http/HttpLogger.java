@@ -13,13 +13,13 @@ public class HttpLogger implements HttpLoggingInterceptor.Logger {
         if (message.length() > LENGTH) {
             for (int i = 0; i < message.length(); i += LENGTH) {
                 if (i + LENGTH < message.length()) {
-                    Log.d("---helloHttp",message.substring(i, i + LENGTH));
+                    Log.d("---myHttp",message.substring(i, i + LENGTH));
                 } else {
-                    Log.d("---helloHttp",message.substring(i, message.length()));
+                    Log.d("---myHttp",message.substring(i, message.length()));
                 }
             }
         } else {
-            Log.d("---helloHttp", message);
+            Log.d("---myHttp", message);
         }
     }
 

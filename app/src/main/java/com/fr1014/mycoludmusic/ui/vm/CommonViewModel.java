@@ -28,9 +28,9 @@ import okhttp3.ResponseBody;
 
 public class CommonViewModel extends BaseViewModel<DataRepository> {
 
-    protected BusLiveData<List<Music>> getPlayListDetail;
+    protected BusLiveData<Long[]> getPlayListDetail;
     protected BusLiveData<Boolean> getStartPlayListDetail;
-//    private BusLiveData<Music> getSongUrl;
+    //    private BusLiveData<Music> getSongUrl;
     private BusLiveData<List<Music>> getPlayTrackList;
 
     public CommonViewModel(@NonNull Application application) {
@@ -62,7 +62,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
         return getStartPlayListDetail;
     }
 
-    public LiveData<List<Music>> getPlayListDetail(long id) {
+    public LiveData<Long[]> getPlayListDetail(long id) {
         if (getPlayListDetail == null) {
             getPlayListDetail = new BusLiveData<>();
         }
@@ -70,64 +70,86 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
         return getPlayListDetail;
     }
 
-    //获取歌单详情(网易)
     private void getPlayListDetailEntity(final long id) {
         addSubscribe(model.getPlayListDetail(id)
-                .map(new Function<PlayListDetailEntity, List<Music>>() {
+                .map(new Function<PlayListDetailEntity, Long[]>() {
                     @Override
-                    public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
-                        List<PlayListDetailEntity.PlaylistBean.TrackIdsBean> trackIds = playListDetailEntity.getPlaylist().getTrackIds();
-                        List<PlayListDetailEntity.PlaylistBean.TracksBean> tracks = playListDetailEntity.getPlaylist().getTracks();
-                        if (!CollectionUtils.isEmptyList(trackIds)) {
-                            if (trackIds.size() > tracks.size()){
-                                StringBuilder ids = new StringBuilder();
-                                for (PlayListDetailEntity.PlaylistBean.TrackIdsBean trackIdsBean : trackIds) {
-                                    ids.append(trackIdsBean.getId());
-                                    ids.append(",");
-                                }
-                                getWYSongDetails(ids.substring(0, ids.length() - 1));
-                                return null;
-                            }
+                    public Long[] apply(@io.reactivex.annotations.NonNull PlayListDetailEntity playListDetailEntity) throws Exception {
+                        List<PlayListDetailEntity.PlaylistBean.TrackIdsBean> tracks = playListDetailEntity.getPlaylist().getTrackIds();
+                        Long[] ids = new Long[tracks.size()];
+                        for (int index = 0; index < tracks.size(); index++) {
+                            ids[index] = tracks.get(index).getId();
                         }
-                        List<Music> musics = new ArrayList<>();
-                        for (PlayListDetailEntity.PlaylistBean.TracksBean data : tracks) {
-                            Music music = new Music();
-                            StringBuilder sb = new StringBuilder();
-                            for (int i = 0; i < data.getAr().size(); i++) {
-                                PlayListDetailEntity.PlaylistBean.TracksBean.ArBean ar = data.getAr().get(i);
-                                if (i < data.getAr().size() - 1) {
-                                    sb.append(ar.getName()).append('&');
-                                } else {
-                                    sb.append(ar.getName());
-                                }
-                            }
-                            music.setId(data.getId());
-                            music.setArtist(sb.toString());
-                            music.setTitle(data.getName());
-                            music.setImgUrl(data.getAl().getPicUrl());
-                            music.setDuration(data.getDt());
-                            music.setAlbum(data.getAl().getName());
-                            musics.add(music);
-                        }
-                        return musics;
+                        return ids;
                     }
                 })
                 .compose(RxSchedulers.apply())
-                .doOnSubscribe(new Consumer<Disposable>() {
+                .subscribe(new Consumer<Long[]>() {
                     @Override
-                    public void accept(Disposable disposable) throws Exception {
-                        getStartPlayListDetail.setValue(true);
-//                        showDialog();
-                    }
-                })
-                .subscribe(new Consumer<List<Music>>() {
-                    @Override
-                    public void accept(List<Music> musicList) throws Exception {
-//                        dismissDialog();
-                        getPlayListDetail.postValue(musicList);
+                    public void accept(Long[] longs) throws Exception {
+                        getPlayListDetail.postValue(longs);
                     }
                 }));
     }
+
+    //获取歌单详情(网易)
+//    private void getPlayListDetailEntity(final long id) {
+//        addSubscribe(model.getPlayListDetail(id)
+//                .map(new Function<PlayListDetailEntity, List<Music>>() {
+//                    @Override
+//                    public List<Music> apply(PlayListDetailEntity playListDetailEntity) throws Exception {
+//                        List<PlayListDetailEntity.PlaylistBean.TrackIdsBean> trackIds = playListDetailEntity.getPlaylist().getTrackIds();
+//                        List<PlayListDetailEntity.PlaylistBean.TracksBean> tracks = playListDetailEntity.getPlaylist().getTracks();
+//                        if (!CollectionUtils.isEmptyList(trackIds)) {
+//                            if (trackIds.size() > tracks.size()){
+//                                StringBuilder ids = new StringBuilder();
+//                                for (PlayListDetailEntity.PlaylistBean.TrackIdsBean trackIdsBean : trackIds) {
+//                                    ids.append(trackIdsBean.getId());
+//                                    ids.append(",");
+//                                }
+//                                getWYSongDetails(ids.substring(0, ids.length() - 1));
+//                                return null;
+//                            }
+//                        }
+//                        List<Music> musics = new ArrayList<>();
+//                        for (PlayListDetailEntity.PlaylistBean.TracksBean data : tracks) {
+//                            Music music = new Music();
+//                            StringBuilder sb = new StringBuilder();
+//                            for (int i = 0; i < data.getAr().size(); i++) {
+//                                PlayListDetailEntity.PlaylistBean.TracksBean.ArBean ar = data.getAr().get(i);
+//                                if (i < data.getAr().size() - 1) {
+//                                    sb.append(ar.getName()).append('&');
+//                                } else {
+//                                    sb.append(ar.getName());
+//                                }
+//                            }
+//                            music.setId(data.getId());
+//                            music.setArtist(sb.toString());
+//                            music.setTitle(data.getName());
+//                            music.setImgUrl(data.getAl().getPicUrl());
+//                            music.setDuration(data.getDt());
+//                            music.setAlbum(data.getAl().getName());
+//                            musics.add(music);
+//                        }
+//                        return musics;
+//                    }
+//                })
+//                .compose(RxSchedulers.apply())
+//                .doOnSubscribe(new Consumer<Disposable>() {
+//                    @Override
+//                    public void accept(Disposable disposable) throws Exception {
+//                        getStartPlayListDetail.setValue(true);
+////                        showDialog();
+//                    }
+//                })
+//                .subscribe(new Consumer<List<Music>>() {
+//                    @Override
+//                    public void accept(List<Music> musicList) throws Exception {
+////                        dismissDialog();
+//                        getPlayListDetail.postValue(musicList);
+//                    }
+//                }));
+//    }
 
     public void getWYSongDetails(String ids) {
         addSubscribe(

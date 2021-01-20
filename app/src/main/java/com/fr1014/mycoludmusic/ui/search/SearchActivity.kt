@@ -1,7 +1,6 @@
 package com.fr1014.mycoludmusic.ui.search
 
 import android.content.Context
-import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -90,7 +89,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 //viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
                 //viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 30);
 
-                loadView(true)
                 val searchKey = mViewBinding.etKeywords.text.toString()
                 mViewBinding.includePlayAll.llPlaylist.visibility = View.VISIBLE
                 mViewModel.search(searchKey).observe(this, Observer { it ->
@@ -101,7 +99,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 mViewModel.networkStatus.observe(this, Observer {
                     viewAdapter.updateNetworkStatus(it)
                     if (it == NetworkStatus.COMPLETED) {
-                        loadView(false)
+
                     }
                 })
                 return@OnEditorActionListener true
@@ -112,6 +110,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         mViewBinding.includePlayAll.llPlaylist.setOnClickListener {
             AudioPlayer.get().addAndPlay(viewAdapter.currentList?.toList())
         }
+
     }
 
     override fun onDestroy() {
@@ -122,10 +121,5 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 AudioPlayer.get().removeOnPlayEventListener(listener)
             }
         }
-    }
-
-    private fun loadView(isLoading: Boolean) {
-        mViewBinding.rvSearch.visibility = if (isLoading) View.GONE else View.VISIBLE
-        mViewBinding.loadingView.llLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

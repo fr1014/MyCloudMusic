@@ -8,10 +8,11 @@ import androidx.core.view.ViewCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.transition.TransitionInflater;
 
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -26,17 +27,16 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
-import com.fr1014.mycoludmusic.utils.CollectionUtils;
+import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
+import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
 //歌单详情页面
-public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, TopListViewModel>{
+public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, PlayListViewModel>{
     public static final String KEY_ID = "ID";
     public static final String KEY_NAME = "NAME";
     public static final String KEY_COVER = "COVER";
@@ -56,14 +56,6 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     public PlayListDetailFragment() {
         // Required empty public constructor
     }
-
-//    public static PlayListDetailFragment newInstance(long id) {
-//        PlayListDetailFragment fragment = new PlayListDetailFragment();
-//        Bundle bundle = new Bundle();
-//        bundle.putLong(KEY_ID, id);
-//        fragment.setArguments(bundle);
-//        return fragment;
-//    }
 
     @Override
     public void initParam() {
@@ -88,9 +80,9 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     @Override
-    protected TopListViewModel initViewModel() {
+    protected PlayListViewModel initViewModel() {
         AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        return new ViewModelProvider(getActivity(), factory).get(TopListViewModel.class);
+        return new ViewModelProvider(this, factory).get(PlayListViewModel.class);
     }
 
     @Override
@@ -98,7 +90,6 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         ViewCompat.setTransitionName(mViewBinding.ivCover, name);
         mViewBinding.toolbar.setPadding(0, ScreenUtil.getStatusHeight(MyApplication.getInstance()), 0, 0);
         mViewBinding.name.setText(name);
-        mViewBinding.llLoading.lavLoading.setAnimation(R.raw.loading_music);
 
         postponeEnterTransition();
         Glide.with(this)
@@ -118,9 +109,8 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                     }
                 })
                 .into(mViewBinding.ivCover);
-        mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
+
         initAdapter();
-        mViewBinding.rvPlaylistDetail.setAdapter(adapter);
 
         mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,66 +121,48 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     private void initAdapter() {
-        adapter = new PlayListDetailAdapter();
-        adapter.setDisplayMarginView(true);
-        View header = getLayoutInflater().inflate(R.layout.item_playlist_detail_header, mViewBinding.getRoot(), false);
-        adapter.setHeaderView(header);
+        adapter = new PlayListDetailAdapter(mViewModel);
+        mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
+        mViewBinding.rvPlaylistDetail.setAdapter(adapter);
 
-        header.setOnClickListener(v -> {
-            List<Music> datas = new ArrayList<>(adapter.getDatas());
+        mViewBinding.playAll.getRoot().setOnClickListener(v -> {
+            List<Music> datas = new ArrayList<>(adapter.getCurrentList());
             if (datas.size() >= 1) {
+                // TODO: 2021/1/20 传入id播放全部歌曲
                 AudioPlayer.get().addAndPlay(datas);
-//                mViewModel.getSongListUrl(datas).observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
-//                    @Override
-//                    public void onChanged(List<Music> musicList) {
-//                        AudioPlayer.get().addAndPlay(musicList);
-//                    }
-//                });
             }
-        });
-
-        adapter.setOnItemClickListener((adapter, view, position) -> {
-            Music music = (Music) adapter.getData(position);
-            AudioPlayer.get().addAndPlay(music);
         });
     }
 
     @Override
     public void initViewObservable() {
 
-        mViewModel.getStartPlayListDetail().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        mViewModel.getPlayListDetail(id).observe(getViewLifecycleOwner(), new Observer<Long[]>() {
             @Override
-            public void onChanged(Boolean isStart) {
-                if (isStart){
-                    adapter.getHeaderView().setVisibility(View.INVISIBLE);
-                    mViewBinding.llLoading.llLoading.setVisibility(View.VISIBLE);
-                    mViewBinding.llLoading.lavLoading.playAnimation();
-                    mViewBinding.llLoading.lavLoading.loop(true);
-                }
-            }
-        });
+            public void onChanged(Long[] ids) {
+                initHeaderView(ids.length);
+                mViewModel.getPlayList(ids).observe(getViewLifecycleOwner(), new Observer<PagedList<Music>>() {
+                    @Override
+                    public void onChanged(PagedList<Music> musics) {
+                        adapter.submitList(musics);
+                    }
+                });
 
-        mViewModel.getPlayListDetail(id).observe(PlayListDetailFragment.this, new Observer<List<Music>>() {
-            @Override
-            public void onChanged(List<Music> musics) {
-               if (CollectionUtils.isEmptyList(musics)) return;
-                adapter.getHeaderView().setVisibility(View.VISIBLE);
-                mViewBinding.llLoading.lavLoading.cancelAnimation();
-                mViewBinding.llLoading.llLoading.setVisibility(View.GONE);
-                adapter.setData(musics);
-            }
-        });
+                mViewModel.networkStatus.observe(getViewLifecycleOwner(), new Observer<NetworkStatus>() {
+                    @Override
+                    public void onChanged(NetworkStatus networkStatus) {
+                        adapter.updateNetworkStatus(networkStatus);
+                        if (networkStatus == NetworkStatus.COMPLETED) {
 
-        mViewModel.getPlayTrackList().observe(getViewLifecycleOwner(), new Observer<List<Music>>() {
-            @Override
-            public void onChanged(List<Music> musicList) {
-                if (CollectionUtils.isEmptyList(musicList)) return;
-                adapter.getHeaderView().setVisibility(View.VISIBLE);
-                mViewBinding.llLoading.lavLoading.cancelAnimation();
-                mViewBinding.llLoading.llLoading.setVisibility(View.GONE);
-                adapter.setData(musicList);
+                        }
+                    }
+                });
             }
         });
+    }
+
+    private void initHeaderView(int length) {
+        mViewBinding.playAll.tvCount.setText(length+"");
     }
 
     @Override

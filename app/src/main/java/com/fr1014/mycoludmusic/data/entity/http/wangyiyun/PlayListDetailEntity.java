@@ -526,7 +526,7 @@ public class PlayListDetailEntity {
 
         public static class TracksBean {
             private String name;
-            private int id;
+            private long id;
             private int pst;
             private int t;
             private int pop;
@@ -567,7 +567,7 @@ public class PlayListDetailEntity {
                 return name;
             }
 
-            public int getId() {
+            public long getId() {
                 return id;
             }
 
