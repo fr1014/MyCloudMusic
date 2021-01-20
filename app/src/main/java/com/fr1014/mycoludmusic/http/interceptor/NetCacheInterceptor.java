@@ -29,7 +29,7 @@ public class NetCacheInterceptor implements Interceptor {
         if (filterPaths.contains(path)) {
             return response;
         }
-        int onlineCacheTime = 120;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0(单位：秒)
+        int onlineCacheTime = 60 * 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0(单位：秒)
         return response.newBuilder()
                 .header("Cache-Control", "public, max-age=" + onlineCacheTime)
                 .removeHeader("Pragma")
