@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home;
+package com.fr1014.mycoludmusic.ui.playing;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,7 +18,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.customview.PlayControlBarView;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
-import com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist.PlayListDialogFragment;
+import com.fr1014.mycoludmusic.ui.home.playlistdialog.PlayDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
@@ -109,7 +109,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
             @Override
             public void openMenu() {
-                new PlayListDialogFragment().show(getParentFragmentManager(), "playlist_dialog");
+                new PlayDialogFragment().show(getParentFragmentManager(), "playlist_dialog");
             }
         });
     }

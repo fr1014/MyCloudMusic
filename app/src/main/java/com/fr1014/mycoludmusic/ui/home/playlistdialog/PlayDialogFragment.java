@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
+package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -33,13 +33,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class PlayListDialogFragment extends DialogFragment implements PlayDialogPageFragment.OnDialogListener {
+public class PlayDialogFragment extends DialogFragment implements PlayDialogPageFragment.OnDialogListener {
 
     private FragmentPlayListDialogBinding binding;
     private static final int NUM_PAGES = 2;
     private FragmentStateAdapter pagerAdapter;
 
-    public PlayListDialogFragment() {
+    public PlayDialogFragment() {
         // Required empty public constructor
     }
 
@@ -135,7 +135,7 @@ public class PlayListDialogFragment extends DialogFragment implements PlayDialog
         @Override
         public Fragment createFragment(int position) {
             PlayDialogPageFragment playDialogPageFragment = PlayDialogPageFragment.getInstance(position);
-            playDialogPageFragment.setDialogListener(PlayListDialogFragment.this);
+            playDialogPageFragment.setDialogListener(PlayDialogFragment.this);
             manageFragments(playDialogPageFragment, position);
             return playDialogPageFragment;
         }

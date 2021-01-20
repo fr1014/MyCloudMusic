@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home;
+package com.fr1014.mycoludmusic.ui.home.homepage;
 
 import android.app.Application;
 

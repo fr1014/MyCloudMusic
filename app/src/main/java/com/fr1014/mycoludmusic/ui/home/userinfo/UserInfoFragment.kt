@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -20,7 +19,7 @@ import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlist
 import com.fr1014.mycoludmusic.databinding.FragmentUserInfoBinding
 import com.fr1014.mycoludmusic.musicmanager.Preferences
-import com.fr1014.mycoludmusic.ui.home.toplist.PlayListDetailFragment
+import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtil
 import com.fr1014.mymvvm.base.BaseFragment

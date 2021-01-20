@@ -57,14 +57,6 @@
             android:layout_weight="9.8"
             />
 
-        <include
-            android:id="@+id/loading_view"
-            layout="@layout/loading_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="9.8"
-            android:visibility="gone"/>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />

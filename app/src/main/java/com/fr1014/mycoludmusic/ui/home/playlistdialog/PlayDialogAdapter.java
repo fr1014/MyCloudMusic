@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
+package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
@@ -11,10 +11,10 @@ import com.fr1014.mycoludmusic.musicmanager.Music;
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class PlayListAdapter extends BaseAdapter<Music, BaseViewHolder> {
+public class PlayDialogAdapter extends BaseAdapter<Music, BaseViewHolder> {
     private Music currentMusic = null;
 
-    public PlayListAdapter() {
+    public PlayDialogAdapter() {
         super(R.layout.item_playlist, null);
     }
 

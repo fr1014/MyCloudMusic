@@ -64,22 +64,25 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/ll_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".ui.home.toplist.PlayListDetailFragment">
+        tools:context=".ui.home.playlist.PlayListDetailFragment">
+
+        <include
+            android:id="@+id/play_all"
+            layout="@layout/item_playlist_detail_header" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_playlist_detail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-    </FrameLayout>
-
-    <include
-        android:id="@+id/ll_loading"
-        layout="@layout/loading_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize" />
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

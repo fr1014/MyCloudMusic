@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.ui.home.dialogfragment.playlist;
+package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -46,7 +46,7 @@ public class PlayDialogPageFragment extends Fragment{
     private static final int PAGE_TYPE_CURRENT = 1; //当前播放
     private int pageType;
     private FragmentPlaydialogpageBinding binding;
-    private PlayListAdapter playListAdapter;
+    private PlayDialogAdapter playDialogAdapter;
     private int oldPosition = -1;  //当前播放音乐的位置
     private OnDialogListener dialogListener;
     private OnPlayerEventListener onPlayerEventListener;
@@ -83,7 +83,7 @@ public class PlayDialogPageFragment extends Fragment{
         initHeader();
         initAdapter();
         binding.rvPlaylist.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
-        binding.rvPlaylist.setAdapter(playListAdapter);
+        binding.rvPlaylist.setAdapter(playDialogAdapter);
 
         inPageTypeData();
         return binding.getRoot();
@@ -98,10 +98,10 @@ public class PlayDialogPageFragment extends Fragment{
                     List<Music> musicList = AudioPlayer.get().getMusicList();
                     int position = musicList.indexOf(music);
                     setHeaderCount(musicList.size());
-                    playListAdapter.setData(musicList);
+                    playDialogAdapter.setData(musicList);
                     if (oldPosition != position) {
-                        playListAdapter.setCurrentMusic(music);
-                        playListAdapter.notifyDataSetChanged();
+                        playDialogAdapter.setCurrentMusic(music);
+                        playDialogAdapter.notifyDataSetChanged();
                         oldPosition = position;
                     }
                 }
@@ -134,8 +134,8 @@ public class PlayDialogPageFragment extends Fragment{
                                     @Override
                                     public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
                                         setHeaderCount(musicList.size());
-                                        playListAdapter.setData(musicList);
-                                        playListAdapter.notifyDataSetChanged();
+                                        playDialogAdapter.setData(musicList);
+                                        playDialogAdapter.notifyDataSetChanged();
                                     }
                                 });
                     }
@@ -144,11 +144,11 @@ public class PlayDialogPageFragment extends Fragment{
         } else {
             List<Music> playList = AudioPlayer.get().getMusicList();
             if (playList != null) {
-                playListAdapter.setData(playList);
+                playDialogAdapter.setData(playList);
                 scrollToPosition();
-                playListAdapter.notifyDataSetChanged();
+                playDialogAdapter.notifyDataSetChanged();
             }
-            playListAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
+            playDialogAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
         }
     }
 
@@ -158,8 +158,8 @@ public class PlayDialogPageFragment extends Fragment{
     }
 
     private void initAdapter() {
-        playListAdapter = new PlayListAdapter();
-        playListAdapter.setOnItemClickListener((adapter, view, position) -> {
+        playDialogAdapter = new PlayDialogAdapter();
+        playDialogAdapter.setOnItemClickListener((adapter, view, position) -> {
             switch (view.getId()) {
                 case R.id.ll_playlist:
                     if (pageType == PAGE_TYPE_CURRENT) {
@@ -201,8 +201,8 @@ public class PlayDialogPageFragment extends Fragment{
                         int mPosition = AudioPlayer.get().getMusicList().indexOf(music);
                         AudioPlayer.get().delete(mPosition);
                         initHeader();
-                        playListAdapter.setData(AudioPlayer.get().getMusicList());
-                        playListAdapter.notifyDataSetChanged();
+                        playDialogAdapter.setData(AudioPlayer.get().getMusicList());
+                        playDialogAdapter.notifyDataSetChanged();
                     }
                     break;
             }

@@ -13,6 +13,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
@@ -258,13 +259,17 @@ public class AudioPlayer implements LoadResultListener {
             addDisposable(dataRepository.getWYSongUrl(music.getId())
                     .compose(RxSchedulers.apply())
                     .subscribe(songUrlEntity -> {
-                        if (songUrlEntity.getData().get(0).getFee() != 1){
-                            music.setSongUrl(songUrlEntity.getData().get(0).getUrl());
-                            play(music);
-                        }else {
-                            // TODO: 2021/1/18 从别的音乐源获取歌曲时提示用户
-                            getWYFeeFromKW(music);
+                        SongUrlEntity.DataBean song = songUrlEntity.getData().get(0);
+                        //暂无音乐源或付费
+                        if (!TextUtils.isEmpty(song.getUrl())){
+                            if (song.getFee() != 1){
+                                music.setSongUrl(song.getUrl());
+                                play(music);
+                                return;
+                            }
                         }
+                        // TODO: 2021/1/18 从别的音乐源获取歌曲时提示用户
+                        getWYFeeFromKW(music);
                     }));
         }
     }

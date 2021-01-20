@@ -1,7 +1,6 @@
 package com.fr1014.mycoludmusic.ui.search
 
 import android.content.Context
-import android.text.TextUtils
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -18,13 +17,13 @@ import com.fr1014.mycoludmusic.customview.PlayStatusBarView
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
-import com.fr1014.mycoludmusic.ui.search.paging2.PlayListDetailAdapter
+import com.fr1014.mycoludmusic.ui.search.paging2.SearchResultAdapter
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtil
 
 class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
-    private lateinit var viewAdapter: PlayListDetailAdapter
+    private lateinit var viewAdapter: SearchResultAdapter
     private var statusBarView: PlayStatusBarView? = null
     private var source: String? = null
 
@@ -70,18 +69,8 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         source = SourceHolder.get().source
     }
 
-    override fun initViewObservable() {
-        mViewModel.songUrl.observe(this, { music ->
-            if (!TextUtils.isEmpty(music.songUrl)) {
-                AudioPlayer.get().addAndPlay(music)
-            } else {
-                AudioPlayer.get().playNext()
-            }
-        })
-    }
-
     private fun initAdapter() {
-        viewAdapter = PlayListDetailAdapter(mViewModel)
+        viewAdapter = SearchResultAdapter(mViewModel)
         mViewBinding.rvSearch.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = viewAdapter
@@ -100,7 +89,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 //viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
                 //viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 30);
 
-                loadView(true)
                 val searchKey = mViewBinding.etKeywords.text.toString()
                 mViewBinding.includePlayAll.llPlaylist.visibility = View.VISIBLE
                 mViewModel.search(searchKey).observe(this, Observer { it ->
@@ -111,7 +99,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 mViewModel.networkStatus.observe(this, Observer {
                     viewAdapter.updateNetworkStatus(it)
                     if (it == NetworkStatus.COMPLETED) {
-                        loadView(false)
+
                     }
                 })
                 return@OnEditorActionListener true
@@ -122,6 +110,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         mViewBinding.includePlayAll.llPlaylist.setOnClickListener {
             AudioPlayer.get().addAndPlay(viewAdapter.currentList?.toList())
         }
+
     }
 
     override fun onDestroy() {
@@ -132,10 +121,5 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 AudioPlayer.get().removeOnPlayEventListener(listener)
             }
         }
-    }
-
-    private fun loadView(isLoading: Boolean) {
-        mViewBinding.rvSearch.visibility = if (isLoading) View.GONE else View.VISIBLE
-        mViewBinding.loadingView.llLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

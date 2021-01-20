@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
-import com.fr1014.mycoludmusic.SourceHolder
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.search.SearchViewModel
 import com.fr1014.mycoludmusic.utils.ScreenUtil
@@ -22,7 +22,7 @@ import com.fr1014.mycoludmusic.utils.ScreenUtil
  * Create by fanrui on 2021/1/10
  * Describe:
  */
-class PlayListDetailAdapter(private val mViewModel: SearchViewModel) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
+class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     private var networkStatus: NetworkStatus? = null
     private var hasFooter = false
@@ -30,7 +30,7 @@ class PlayListDetailAdapter(private val mViewModel: SearchViewModel) : PagedList
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Music>() {
             override fun areItemsTheSame(oldItem: Music, newItem: Music): Boolean {
-                return oldItem == newItem
+                return oldItem === newItem
             }
 
             override fun areContentsTheSame(oldItem: Music, newItem: Music): Boolean {
@@ -72,10 +72,7 @@ class PlayListDetailAdapter(private val mViewModel: SearchViewModel) : PagedList
         return when (viewType) {
             R.layout.item_playlist_detail -> PlayListViewHolder.newInstance(parent).also { holder ->
                 holder.itemView.setOnClickListener {
-                    when (SourceHolder.get().source) {
-                        "酷我" -> mViewModel.getKWSongUrl(getItem(holder.adapterPosition) as Music)
-                        "网易" -> mViewModel.getWYYSongUrl(getItem(holder.adapterPosition) as Music)
-                    }
+                    AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition) as Music)
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {
