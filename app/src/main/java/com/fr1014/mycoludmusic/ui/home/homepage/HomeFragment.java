@@ -74,7 +74,6 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
                 List<Block> blocks = homeBlock.getData().component2();
                 for (Block block : blocks) {
                     List<Creative> results = block.component5();
-                    if (results == null) continue;
                     List<CommonPlaylist> commonPlaylists = new ArrayList<>();
                     try {
                         for (int index = 0; index < results.size() - 1; index++) {

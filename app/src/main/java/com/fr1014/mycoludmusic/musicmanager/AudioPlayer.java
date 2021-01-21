@@ -526,9 +526,11 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     private void resetMusicUrl(Music music) {
-        String url = music.getSongUrl();
-        if (url.contains("http")) {
-            music.setSongUrl("");
+        if (music != null){
+            String url = music.getSongUrl();
+            if (TextUtils.isEmpty(url) && url.contains("http")) {
+                music.setSongUrl("");
+            }
         }
     }
 

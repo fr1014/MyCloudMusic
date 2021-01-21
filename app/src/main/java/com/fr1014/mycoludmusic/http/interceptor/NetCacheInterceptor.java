@@ -19,6 +19,7 @@ public class NetCacheInterceptor implements Interceptor {
     static {
         filterPaths.add("/anti.s");
         filterPaths.add("/song/url");
+        filterPaths.add("/user/playlist");
     }
 
     @Override
@@ -26,8 +27,10 @@ public class NetCacheInterceptor implements Interceptor {
         Request request = chain.request();
         String path = request.url().url().getPath();
         Response response = chain.proceed(request);
-        if (filterPaths.contains(path)) {
-            return response;
+        for (String s : filterPaths){
+            if (path.contains(s)){
+                return response;
+            }
         }
         int onlineCacheTime = 60 * 60;//在线的时候的缓存过期时间，如果想要不缓存，直接时间设置为0(单位：秒)
         return response.newBuilder()

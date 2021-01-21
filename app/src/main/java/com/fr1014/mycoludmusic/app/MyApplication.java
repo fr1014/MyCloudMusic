@@ -71,7 +71,7 @@ public class MyApplication extends BaseApplication {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
-    private OkHttpClient createWYYOkHttpClient(){
+    private OkHttpClient createWYYOkHttpClient() {
         try {
             //setup cache
             File httpCacheDirectory = new File(getCacheDir(), "okHttpCache");
@@ -94,25 +94,20 @@ public class MyApplication extends BaseApplication {
         return null;
     }
 
-    private OkHttpClient createKWOkHttpClient(){
-        try {
-            //setup cache
-            File httpCacheDirectory = new File(getCacheDir(), "okHttpCache");
-            int cacheSize = 10 * 1024 * 1024; // 10 MiB
-            Cache cache = new Cache(httpCacheDirectory, cacheSize);
-            return new OkHttpClient.Builder()
-                    .addNetworkInterceptor(new NetCacheInterceptor())
-                    .addInterceptor(new OfflineCacheInterceptor())
-                    .cache(cache)
-                    .sslSocketFactory(SSLUtils.getSSLSocketFactory())
-                    .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-                    .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
-                    .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    private OkHttpClient createKWOkHttpClient() {
+        //setup cache
+        File httpCacheDirectory = new File(getCacheDir(), "okHttpCache");
+        int cacheSize = 10 * 1024 * 1024; // 10 MiB
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        return new OkHttpClient.Builder()
+                .addNetworkInterceptor(new NetCacheInterceptor())
+                .addInterceptor(new OfflineCacheInterceptor())
+                .cache(cache)
+//                    .sslSocketFactory(SSLUtils.getSSLSocketFactory())
+                .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
+                .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())
+                .build();
     }
 
 //    private OkHttpClient createKWOkHttpClient(){
