@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -30,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
@@ -41,12 +44,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListViewModel> implements View.OnClickListener, SwitchDialogFragment.MusicSourceCallback {
+public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainViewModel> implements View.OnClickListener, SwitchDialogFragment.MusicSourceCallback {
     private static final int REQUEST_PERMISSION_CODE = 100;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
     private Toast toast;
-    private ImageView avatar;
     private OnPlayerEventListener playEventListener;
 
     @Override
@@ -79,9 +81,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     }
 
     @Override
-    public TopListViewModel initViewModel() {
+    public MainViewModel initViewModel() {
         AppViewModelFactory factory = AppViewModelFactory.getInstance(MyApplication.getInstance());
-        return new ViewModelProvider(this, factory).get(TopListViewModel.class);
+        return new ViewModelProvider(this, factory).get(MainViewModel.class);
     }
 
     @Override
@@ -96,7 +98,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(mViewBinding.navView, navController);
+//        NavigationUI.setupWithNavController(mViewBinding.navView, navController);
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
@@ -116,8 +118,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
             }
         });
         initToolbar();
-        initNavHeaderView();
+//        initNavHeaderView();
+        initCustomNavView();
         initClickListener();
+    }
+
+    private void initCustomNavView() {
+        initNavHeaderView();
     }
 
     private void initToolbar() {
@@ -125,13 +132,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
     }
 
     private void initNavHeaderView() {
-        avatar = mViewBinding.navView.getHeaderView(0).findViewById(R.id.avatar);
         initNavHeaderViewData(getUserProfile());
     }
 
     private void initClickListener() {
         mViewBinding.appBarMain.ivSwitch.setOnClickListener(this);
         mViewBinding.appBarMain.tvSearch.setOnClickListener(this);
+        mViewBinding.tvLogout.setOnClickListener(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -141,12 +148,25 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
         }
     }
 
+    @Override
+    public void initViewObservable() {
+        mViewModel.getLogoutLive().observe(this, logout -> {
+            if (logout){
+                Preferences.saveUserProfile(null);
+                CommonUtil.toastShort("啊啊啊啊！居然退出登录啦，你怎么敢的啊！");
+                finish();
+            }else {
+                CommonUtil.toastShort("遇到了有意思的事情开小差了，请稍后重试");
+            }
+        });
+    }
+
     private void initNavHeaderViewData(Profile profile) {
         if (profile != null) {
             Glide.with(this)
                     .load(profile.getAvatarUrl())
                     .circleCrop()
-                    .into(avatar);
+                    .into(mViewBinding.includeHeader.avatar);
         }
     }
 
@@ -189,6 +209,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, TopListV
                 break;
             case R.id.tv_search:
                 startActivity(SearchActivity.class);
+                break;
+            case R.id.tv_logout:
+                mViewModel.logout();
                 break;
         }
     }

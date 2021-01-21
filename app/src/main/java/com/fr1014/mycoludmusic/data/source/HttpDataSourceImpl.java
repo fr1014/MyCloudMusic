@@ -7,6 +7,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
@@ -23,6 +24,7 @@ import com.fr1014.mycoludmusic.http.api.KWApiService;
 import com.fr1014.mycoludmusic.http.api.WYApiService;
 
 import io.reactivex.Observable;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class HttpDataSourceImpl implements HttpDataSource {
@@ -49,6 +51,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<ResponseBody> getSongCover(String coverPath) {
         return kwApiService.getSongCover(coverPath);
+    }
+
+    @Override
+    public Observable<Logout> getWYLogout() {
+        return wyApiService.getWYLogout();
     }
 
     @Override

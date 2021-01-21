@@ -233,24 +233,4 @@ public class TopListViewModel extends CommonViewModel {
 //                    }
 //                });
 //    }
-
-    public void delOldInsertNewMusicList(List<Music> musicList){
-        Observable.just("")
-                .compose(RxSchedulers.applyIO())
-                .subscribe(new MyDisposableObserver<String>(){
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull String s) {
-                        List<MusicEntity> allOldCurrentMusic = model.getAllHistoryOrCurrent(false);
-                        for (MusicEntity musicEntity : allOldCurrentMusic){
-                            model.delete(musicEntity);
-                        }
-                        List<MusicEntity> musicEntities = new ArrayList<>();
-                        for (Music music : musicList){
-                            MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID(),music.getDuration(),false);
-                            musicEntities.add(musicEntity);
-                        }
-                        model.insertAll(musicEntities);
-                    }
-                });
-    }
 }

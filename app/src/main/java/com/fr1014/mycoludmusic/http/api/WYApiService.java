@@ -4,6 +4,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
@@ -17,6 +18,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 
 import io.reactivex.Observable;
+import okhttp3.Response;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -28,6 +30,9 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    @GET("logout")
+    Observable<Logout> getWYLogout();
 
     @POST("login/cellphone")
     Observable<UserEntity> getWYUserProfile(@Query("phone") String phone, @Query("password") String password);

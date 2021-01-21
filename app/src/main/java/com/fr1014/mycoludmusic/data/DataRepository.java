@@ -7,6 +7,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
@@ -28,6 +29,7 @@ import com.fr1014.mymvvm.base.BaseModel;
 import java.util.List;
 
 import io.reactivex.Observable;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
@@ -60,6 +62,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<ResponseBody> getSongCover(String coverPath) {
         return httpDataSource.getSongCover(coverPath);
+    }
+
+    @Override
+    public Observable<Logout> getWYLogout() {
+        return httpDataSource.getWYLogout();
     }
 
     @Override
