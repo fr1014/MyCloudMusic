@@ -5,21 +5,23 @@ import androidx.lifecycle.LiveData;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.NetizensPlaylist;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.UserEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLevelInfo;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.LocalDataSource;
@@ -63,6 +65,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
+    public Observable<Logout> getWYLogout() {
+        return httpDataSource.getWYLogout();
+    }
+
+    @Override
     public Observable<UserEntity> getWYUserProfile(String phone, String password) {
         return httpDataSource.getWYUserProfile(phone,password);
     }
@@ -103,11 +110,6 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<PlayListDetailEntity> getTopList(long id) {
-        return httpDataSource.getTopList(id);
-    }
-
-    @Override
     public Observable<PlayListDetailEntity> getPlayListDetail(long id) {
         return httpDataSource.getPlayListDetail(id);
     }
@@ -119,10 +121,6 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
 
     public Observable<SongUrlEntity> getWYSongUrl(String ids) {
         return httpDataSource.getWYSongUrl(ids);
-    }
-
-    public Observable<SongUrlEntity> getWYSongUrl(long id) {
-        return httpDataSource.getWYSongUrl(id);
     }
 
     @Override
@@ -143,6 +141,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<RecommendPlayList> getWYRecommendPlayList(int limit) {
         return httpDataSource.getWYRecommendPlayList(limit);
+    }
+
+    @Override
+    public Observable<HomeBlock> getWYHomeBlock() {
+        return httpDataSource.getWYHomeBlock();
     }
 
 //    @Override

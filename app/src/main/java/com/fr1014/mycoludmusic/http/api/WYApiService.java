@@ -1,24 +1,26 @@
 package com.fr1014.mycoludmusic.http.api;
 
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.NetizensPlaylist;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.UserEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLevelInfo;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 
 import io.reactivex.Observable;
+import okhttp3.Response;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -29,6 +31,9 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    @GET("logout")
+    Observable<Logout> getWYLogout();
 
     @POST("login/cellphone")
     Observable<UserEntity> getWYUserProfile(@Query("phone") String phone, @Query("password") String password);
@@ -78,9 +83,6 @@ public interface WYApiService {
     @GET("toplist/detail")
     Observable<TopListDetailEntity> getTopListDetail();
 
-    @GET("top/list")
-    Observable<PlayListDetailEntity> getTopList(@Query("id") long id);
-
     @GET("playlist/detail")
     Observable<PlayListDetailEntity> getPlayListDetail(@Query("id") long id);
 
@@ -93,9 +95,6 @@ public interface WYApiService {
      */
     @GET("song/url")
     Observable<SongUrlEntity> getWYSongUrl(@Query("id") String ids);
-
-    @GET("song/url")
-    Observable<SongUrlEntity> getWYSongUrl(@Query("id") long id);
 
     @GET("check/music")
     Observable<CheckEntity> checkMusic(@Query("id") long id);
@@ -120,6 +119,9 @@ public interface WYApiService {
 
     @GET("personalized")
     Observable<RecommendPlayList> getWYRecommendPlayList(@Query("limit") int limit);
+
+    @GET("homepage/block/page")
+    Observable<HomeBlock> getWYHomeBlock();
 
 //    /**
 //     * KW的api 返回的为json

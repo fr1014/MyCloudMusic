@@ -16,7 +16,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlist
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist
 import com.fr1014.mycoludmusic.databinding.FragmentUserInfoBinding
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment

@@ -1,30 +1,24 @@
 package com.fr1014.mycoludmusic.ui.vm;
 
 import android.app.Application;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.TrackIds;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
-import com.fr1014.mycoludmusic.utils.CollectionUtils;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
 import com.fr1014.mymvvm.base.BaseViewModel;
 import com.fr1014.mymvvm.base.BusLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import okhttp3.ResponseBody;
 
 public class CommonViewModel extends BaseViewModel<DataRepository> {
 
@@ -75,7 +69,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                 .map(new Function<PlayListDetailEntity, Long[]>() {
                     @Override
                     public Long[] apply(@io.reactivex.annotations.NonNull PlayListDetailEntity playListDetailEntity) throws Exception {
-                        List<PlayListDetailEntity.PlaylistBean.TrackIdsBean> tracks = playListDetailEntity.getPlaylist().getTrackIds();
+                        List<TrackIds> tracks = playListDetailEntity.playlist.getTrackIds();
                         Long[] ids = new Long[tracks.size()];
                         for (int index = 0; index < tracks.size(); index++) {
                             ids[index] = tracks.get(index).getId();

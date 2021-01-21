@@ -1,10 +1,9 @@
 package com.fr1014.mycoludmusic.ui.home.playlist.paging2
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.WYApiService
 import com.fr1014.mycoludmusic.musicmanager.Music
@@ -24,7 +23,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
     }
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(ids, 0, 99)
+        val idsRange = ids.getRangeIds(0, 99)
         mWYYService.getWYSongDetail(idsRange)
                 .compose(RxSchedulers.apply())
                 .map {
@@ -73,7 +72,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(ids, params.key, 99)
+        val idsRange = ids.getRangeIds(params.key, 99)
         mWYYService.getWYSongDetail(idsRange)
                 .compose(RxSchedulers.apply())
                 .map {
@@ -111,7 +110,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                 }, onExecuteOnceError = {
                     if (it.toString() == "java.lang.NullPointerException: it.songs must not be null") {
                         _networkStatus.postValue(NetworkStatus.COMPLETED)
-                    }else{
+                    } else {
                         retry = { loadAfter(params, callback) }
                         _networkStatus.postValue(NetworkStatus.FAILED)
                     }
@@ -123,22 +122,22 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
     }
 }
 
-var mLoadSizeSum = 0
-var mLoadRange = 0
-fun Array<Long>.getRangeIds(ids: Array<Long>, start: Int, loadRange: Int): String {
-    if (ids.isNotEmpty()) {
+fun Array<Long>.getRangeIds(start: Int, loadRange: Int): String {
+    var mLoadRange: Int
+    if (isNotEmpty()) {
         mLoadRange = loadRange
-        mLoadSizeSum += mLoadRange
-        if (start >= ids.size){
+        if (start >= size) {
             return ""
         }
-        if (mLoadSizeSum >= ids.size) {
-            mLoadRange = ids.size - start - 1
-            mLoadSizeSum = 0
+        if ((start + loadRange) >= size) {
+            mLoadRange = size - start - 1
         }
         val idsRange = StringBuilder()
         for (position in start..(start + mLoadRange)) {
-            idsRange.append(ids[position])
+            if (position == size) {
+                break
+            }
+            idsRange.append(this[position])
             idsRange.append(",")
         }
         return idsRange.substring(0, idsRange.length - 1)

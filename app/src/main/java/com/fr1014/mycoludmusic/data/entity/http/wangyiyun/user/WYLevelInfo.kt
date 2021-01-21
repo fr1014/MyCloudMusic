@@ -1,9 +1,9 @@
-package com.fr1014.mycoludmusic.data.entity.http.wangyiyun
+package com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user
 
 data class WYLevelInfo(
-    val code: Int,
-    val data: LevelData,
-    val full: Boolean
+        val code: Int,
+        val data: LevelData,
+        val full: Boolean
 )
 
 data class LevelData(

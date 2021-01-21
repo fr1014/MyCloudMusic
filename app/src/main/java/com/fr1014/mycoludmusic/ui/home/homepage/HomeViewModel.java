@@ -7,12 +7,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.NetizensPlaylist;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListResult;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlists;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListResult;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
@@ -28,9 +29,17 @@ public class HomeViewModel extends CommonViewModel {
     private MutableLiveData<List<CommonPlaylist>> recommendListLiveData;
     private MutableLiveData<List<CommonPlaylist>> netizensPlaylistLiveData;
     private MutableLiveData<PlayListDetailEntity> playListDetailLive;
+    private MutableLiveData<HomeBlock> homeBlockLiveData;
 
     public HomeViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
+    }
+
+    public LiveData<HomeBlock> getHomeBlockLiveData() {
+        if (homeBlockLiveData == null){
+            homeBlockLiveData = new MutableLiveData<>();
+        }
+        return homeBlockLiveData;
     }
 
     public LiveData<PlayListDetailEntity> getPlayListDetail() {
@@ -52,6 +61,17 @@ public class HomeViewModel extends CommonViewModel {
             recommendListLiveData = new MutableLiveData<>();
         }
         return recommendListLiveData;
+    }
+
+    public void getWYHomePage(){
+        addSubscribe(model.getWYHomeBlock()
+        .compose(RxSchedulers.apply())
+        .subscribe(new Consumer<HomeBlock>() {
+            @Override
+            public void accept(HomeBlock homeBlock) throws Exception {
+                homeBlockLiveData.postValue(homeBlock);
+            }
+        }));
     }
 
     //获取歌单详情(网易)
@@ -97,9 +117,9 @@ public class HomeViewModel extends CommonViewModel {
                         .map(new Function<NetizensPlaylist, List<CommonPlaylist>>() {
                             @Override
                             public List<CommonPlaylist> apply(@io.reactivex.annotations.NonNull NetizensPlaylist netizensPlaylist) throws Exception {
-                                List<Playlists> playlists = netizensPlaylist.component4();
+                                List<Playlist> playlists = netizensPlaylist.component4();
                                 List<CommonPlaylist> commonPlaylists = new ArrayList<>();
-                                for (Playlists playlist : playlists) {
+                                for (Playlist playlist : playlists) {
                                     commonPlaylists.add(new CommonPlaylist(playlist.getId(), playlist.getName(), playlist.getCoverImgUrl()));
                                 }
                                 return commonPlaylists;

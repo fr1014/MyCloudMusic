@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
@@ -233,24 +233,4 @@ public class TopListViewModel extends CommonViewModel {
 //                    }
 //                });
 //    }
-
-    public void delOldInsertNewMusicList(List<Music> musicList){
-        Observable.just("")
-                .compose(RxSchedulers.applyIO())
-                .subscribe(new MyDisposableObserver<String>(){
-                    @Override
-                    public void onNext(@io.reactivex.annotations.NonNull String s) {
-                        List<MusicEntity> allOldCurrentMusic = model.getAllHistoryOrCurrent(false);
-                        for (MusicEntity musicEntity : allOldCurrentMusic){
-                            model.delete(musicEntity);
-                        }
-                        List<MusicEntity> musicEntities = new ArrayList<>();
-                        for (Music music : musicList){
-                            MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID(),music.getDuration(),false);
-                            musicEntities.add(musicEntity);
-                        }
-                        model.insertAll(musicEntities);
-                    }
-                });
-    }
 }

@@ -13,7 +13,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
@@ -256,7 +256,7 @@ public class AudioPlayer implements LoadResultListener {
                         play(music);
                     }));
         } else if (music.getId() != 0) {//网易的歌
-            addDisposable(dataRepository.getWYSongUrl(music.getId())
+            addDisposable(dataRepository.getWYSongUrl(music.getId()+"")
                     .compose(RxSchedulers.apply())
                     .subscribe(songUrlEntity -> {
                         SongUrlEntity.DataBean song = songUrlEntity.getData().get(0);
