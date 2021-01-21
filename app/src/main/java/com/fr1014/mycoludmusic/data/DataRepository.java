@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
@@ -29,7 +30,6 @@ import com.fr1014.mymvvm.base.BaseModel;
 import java.util.List;
 
 import io.reactivex.Observable;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 /**
@@ -141,6 +141,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<RecommendPlayList> getWYRecommendPlayList(int limit) {
         return httpDataSource.getWYRecommendPlayList(limit);
+    }
+
+    @Override
+    public Observable<HomeBlock> getWYHomeBlock() {
+        return httpDataSource.getWYHomeBlock();
     }
 
 //    @Override

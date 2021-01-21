@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.http.api;
 
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
@@ -118,6 +119,9 @@ public interface WYApiService {
 
     @GET("personalized")
     Observable<RecommendPlayList> getWYRecommendPlayList(@Query("limit") int limit);
+
+    @GET("homepage/block/page")
+    Observable<HomeBlock> getWYHomeBlock();
 
 //    /**
 //     * KW的api 返回的为json

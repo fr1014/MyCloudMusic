@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data.source;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
@@ -24,7 +25,6 @@ import com.fr1014.mycoludmusic.http.api.KWApiService;
 import com.fr1014.mycoludmusic.http.api.WYApiService;
 
 import io.reactivex.Observable;
-import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class HttpDataSourceImpl implements HttpDataSource {
@@ -131,6 +131,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<RecommendPlayList> getWYRecommendPlayList(int limit) {
         return wyApiService.getWYRecommendPlayList(limit);
+    }
+
+    @Override
+    public Observable<HomeBlock> getWYHomeBlock() {
+        return wyApiService.getWYHomeBlock();
     }
 
 //    @Override

@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data.source.http;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
@@ -69,6 +70,8 @@ public interface HttpDataSource {
     Observable<WYSongLrcEntity> getWYSongLrcEntity(long id);
 
     Observable<RecommendPlayList> getWYRecommendPlayList(int limit);
+
+    Observable<HomeBlock> getWYHomeBlock();
 
     /*
     ===============================酷我========================================

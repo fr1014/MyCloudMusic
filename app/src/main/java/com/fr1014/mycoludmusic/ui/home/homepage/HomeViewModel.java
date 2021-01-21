@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListResult;
@@ -28,9 +29,17 @@ public class HomeViewModel extends CommonViewModel {
     private MutableLiveData<List<CommonPlaylist>> recommendListLiveData;
     private MutableLiveData<List<CommonPlaylist>> netizensPlaylistLiveData;
     private MutableLiveData<PlayListDetailEntity> playListDetailLive;
+    private MutableLiveData<HomeBlock> homeBlockLiveData;
 
     public HomeViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
+    }
+
+    public LiveData<HomeBlock> getHomeBlockLiveData() {
+        if (homeBlockLiveData == null){
+            homeBlockLiveData = new MutableLiveData<>();
+        }
+        return homeBlockLiveData;
     }
 
     public LiveData<PlayListDetailEntity> getPlayListDetail() {
@@ -52,6 +61,17 @@ public class HomeViewModel extends CommonViewModel {
             recommendListLiveData = new MutableLiveData<>();
         }
         return recommendListLiveData;
+    }
+
+    public void getWYHomePage(){
+        addSubscribe(model.getWYHomeBlock()
+        .compose(RxSchedulers.apply())
+        .subscribe(new Consumer<HomeBlock>() {
+            @Override
+            public void accept(HomeBlock homeBlock) throws Exception {
+                homeBlockLiveData.postValue(homeBlock);
+            }
+        }));
     }
 
     //获取歌单详情(网易)
