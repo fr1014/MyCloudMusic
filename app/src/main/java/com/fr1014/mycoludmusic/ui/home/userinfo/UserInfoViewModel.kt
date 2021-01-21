@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fr1014.mycoludmusic.data.DataRepository
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.LevelData
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.LevelData
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.rx.RxSchedulers

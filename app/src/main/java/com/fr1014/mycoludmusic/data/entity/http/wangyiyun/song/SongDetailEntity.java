@@ -1,4 +1,6 @@
-package com.fr1014.mycoludmusic.data.entity.http.wangyiyun;
+package com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song;
+
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Privileges;
 
 import java.util.List;
 
@@ -10,7 +12,7 @@ import java.util.List;
 public class SongDetailEntity {
     private int code;
     private List<SongsBean> songs;
-    private List<PrivilegesBean> privileges;
+    public List<Privileges> privileges;
 
     public int getCode() {
         return code;
@@ -18,10 +20,6 @@ public class SongDetailEntity {
 
     public List<SongsBean> getSongs() {
         return songs;
-    }
-
-    public List<PrivilegesBean> getPrivileges() {
-        return privileges;
     }
 
     public static class SongsBean {
@@ -286,122 +284,6 @@ public class SongDetailEntity {
 
             public List<?> getAlias() {
                 return alias;
-            }
-        }
-    }
-
-    public static class PrivilegesBean {
-        private int id;
-        private int fee;
-        private int payed;
-        private int st;
-        private int pl;
-        private int dl;
-        private int sp;
-        private int cp;
-        private int subp;
-        private boolean cs;
-        private int maxbr;
-        private int fl;
-        private boolean toast;
-        private int flag;
-        private boolean preSell;
-        private int playMaxbr;
-        private int downloadMaxbr;
-        private List<ChargeInfoListBean> chargeInfoList;
-
-        public int getId() {
-            return id;
-        }
-
-        public int getFee() {
-            return fee;
-        }
-
-        public int getPayed() {
-            return payed;
-        }
-
-        public int getSt() {
-            return st;
-        }
-
-        public int getPl() {
-            return pl;
-        }
-
-        public int getDl() {
-            return dl;
-        }
-
-        public int getSp() {
-            return sp;
-        }
-
-        public int getCp() {
-            return cp;
-        }
-
-        public int getSubp() {
-            return subp;
-        }
-
-        public boolean isCs() {
-            return cs;
-        }
-
-        public int getMaxbr() {
-            return maxbr;
-        }
-
-        public int getFl() {
-            return fl;
-        }
-
-        public boolean isToast() {
-            return toast;
-        }
-
-        public int getFlag() {
-            return flag;
-        }
-
-        public boolean isPreSell() {
-            return preSell;
-        }
-
-        public int getPlayMaxbr() {
-            return playMaxbr;
-        }
-
-        public int getDownloadMaxbr() {
-            return downloadMaxbr;
-        }
-
-        public List<ChargeInfoListBean> getChargeInfoList() {
-            return chargeInfoList;
-        }
-
-        public static class ChargeInfoListBean {
-            private int rate;
-            private Object chargeUrl;
-            private Object chargeMessage;
-            private int chargeType;
-
-            public int getRate() {
-                return rate;
-            }
-
-            public Object getChargeUrl() {
-                return chargeUrl;
-            }
-
-            public Object getChargeMessage() {
-                return chargeMessage;
-            }
-
-            public int getChargeType() {
-                return chargeType;
             }
         }
     }

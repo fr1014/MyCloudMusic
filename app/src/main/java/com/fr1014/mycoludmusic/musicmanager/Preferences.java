@@ -6,7 +6,7 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.Nullable;
 
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Profile;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;

@@ -7,11 +7,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.NetizensPlaylist;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListResult;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlists;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListResult;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
@@ -97,9 +97,9 @@ public class HomeViewModel extends CommonViewModel {
                         .map(new Function<NetizensPlaylist, List<CommonPlaylist>>() {
                             @Override
                             public List<CommonPlaylist> apply(@io.reactivex.annotations.NonNull NetizensPlaylist netizensPlaylist) throws Exception {
-                                List<Playlists> playlists = netizensPlaylist.component4();
+                                List<Playlist> playlists = netizensPlaylist.component4();
                                 List<CommonPlaylist> commonPlaylists = new ArrayList<>();
-                                for (Playlists playlist : playlists) {
+                                for (Playlist playlist : playlists) {
                                     commonPlaylists.add(new CommonPlaylist(playlist.getId(), playlist.getName(), playlist.getCoverImgUrl()));
                                 }
                                 return commonPlaylists;

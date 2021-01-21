@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
