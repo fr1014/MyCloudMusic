@@ -13,7 +13,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
@@ -103,11 +103,6 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<PlayListDetailEntity> getTopList(long id) {
-        return httpDataSource.getTopList(id);
-    }
-
-    @Override
     public Observable<PlayListDetailEntity> getPlayListDetail(long id) {
         return httpDataSource.getPlayListDetail(id);
     }
@@ -119,10 +114,6 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
 
     public Observable<SongUrlEntity> getWYSongUrl(String ids) {
         return httpDataSource.getWYSongUrl(ids);
-    }
-
-    public Observable<SongUrlEntity> getWYSongUrl(long id) {
-        return httpDataSource.getWYSongUrl(id);
     }
 
     @Override

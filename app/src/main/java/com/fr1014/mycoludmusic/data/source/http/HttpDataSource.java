@@ -1,7 +1,6 @@
 package com.fr1014.mycoludmusic.data.source.http;
 
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
-import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.CheckEntity;
@@ -13,18 +12,15 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLevelInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -56,8 +52,6 @@ public interface HttpDataSource {
 
     Observable<TopListDetailEntity> getTopListDetail();
 
-    Observable<PlayListDetailEntity> getTopList(long id);
-
     Observable<PlayListDetailEntity> getPlayListDetail(long id);
 
     Observable<SongDetailEntity> getWYSongDetail(String ids);
@@ -65,8 +59,6 @@ public interface HttpDataSource {
     Observable<CheckEntity> checkMusic(long id);
 
     Observable<SongUrlEntity> getWYSongUrl(String id);
-
-    Observable<SongUrlEntity> getWYSongUrl(long id);
 
     Observable<WYSearchDetail> getWYSearch(String keywords, int offset);
 

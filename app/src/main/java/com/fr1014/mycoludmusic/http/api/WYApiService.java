@@ -14,11 +14,10 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSongLrcEntity;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -78,9 +77,6 @@ public interface WYApiService {
     @GET("toplist/detail")
     Observable<TopListDetailEntity> getTopListDetail();
 
-    @GET("top/list")
-    Observable<PlayListDetailEntity> getTopList(@Query("id") long id);
-
     @GET("playlist/detail")
     Observable<PlayListDetailEntity> getPlayListDetail(@Query("id") long id);
 
@@ -93,9 +89,6 @@ public interface WYApiService {
      */
     @GET("song/url")
     Observable<SongUrlEntity> getWYSongUrl(@Query("id") String ids);
-
-    @GET("song/url")
-    Observable<SongUrlEntity> getWYSongUrl(@Query("id") long id);
 
     @GET("check/music")
     Observable<CheckEntity> checkMusic(@Query("id") long id);

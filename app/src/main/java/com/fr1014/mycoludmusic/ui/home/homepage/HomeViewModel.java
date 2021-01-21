@@ -12,7 +12,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.PlayListResult;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.Playlists;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.RecommendPlayList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;

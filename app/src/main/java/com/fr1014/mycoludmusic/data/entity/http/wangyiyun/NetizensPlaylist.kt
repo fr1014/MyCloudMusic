@@ -1,5 +1,7 @@
 package com.fr1014.mycoludmusic.data.entity.http.wangyiyun
 
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Creator
+
 /**
  * Create by fanrui on 2021/1/15
  * Describe:网易精选碟
@@ -13,39 +15,39 @@ data class NetizensPlaylist(
 )
 
 data class Playlists(
-    val adType: Int,
-    val anonimous: Boolean,
-    val cloudTrackCount: Int,
-    val commentCount: Int,
-    val commentThreadId: String,
-    val coverImgId: Long,
-    val coverImgUrl: String,
-    val coverStatus: Int,
-    val createTime: Long,
-    val creator: Creator,
-    val description: Any,
-    val highQuality: Boolean,
-    val id: Long,
-    val name: String,
-    val newImported: Boolean,
-    val ordered: Boolean,
-    val playCount: Int,
-    val privacy: Int,
-    val recommendInfo: Any,
-    val shareCount: Int,
-    val specialType: Int,
-    val status: Int,
-    val subscribed: Boolean,
-    val subscribedCount: Int,
-    val subscribers: List<Subscriber>,
-    val tags: List<String>,
-    val totalDuration: Int,
-    val trackCount: Int,
-    val trackNumberUpdateTime: Long,
-    val trackUpdateTime: Long,
-    val tracks: Any,
-    val updateTime: Long,
-    val userId: Int
+        val adType: Int,
+        val anonimous: Boolean,
+        val cloudTrackCount: Int,
+        val commentCount: Int,
+        val commentThreadId: String,
+        val coverImgId: Long,
+        val coverImgUrl: String,
+        val coverStatus: Int,
+        val createTime: Long,
+        val creator: Creator,
+        val description: Any,
+        val highQuality: Boolean,
+        val id: Long,
+        val name: String,
+        val newImported: Boolean,
+        val ordered: Boolean,
+        val playCount: Int,
+        val privacy: Int,
+        val recommendInfo: Any,
+        val shareCount: Int,
+        val specialType: Int,
+        val status: Int,
+        val subscribed: Boolean,
+        val subscribedCount: Int,
+        val subscribers: List<Subscriber>,
+        val tags: List<String>,
+        val totalDuration: Int,
+        val trackCount: Int,
+        val trackNumberUpdateTime: Long,
+        val trackUpdateTime: Long,
+        val tracks: Any,
+        val updateTime: Long,
+        val userId: Int
 )
 
 data class Subscriber(

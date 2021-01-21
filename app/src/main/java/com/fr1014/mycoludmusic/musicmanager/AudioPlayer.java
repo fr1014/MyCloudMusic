@@ -256,7 +256,7 @@ public class AudioPlayer implements LoadResultListener {
                         play(music);
                     }));
         } else if (music.getId() != 0) {//网易的歌
-            addDisposable(dataRepository.getWYSongUrl(music.getId())
+            addDisposable(dataRepository.getWYSongUrl(music.getId()+"")
                     .compose(RxSchedulers.apply())
                     .subscribe(songUrlEntity -> {
                         SongUrlEntity.DataBean song = songUrlEntity.getData().get(0);
