@@ -5,17 +5,20 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
-import com.bumptech.glide.Glide
+import androidx.navigation.Navigation
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
 import com.fr1014.mycoludmusic.databinding.BlockTopListBinding
+import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
+import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 class TopListBlock @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private lateinit var mViewBinding: BlockTopListBinding;
+    private var playListDetailEntity: PlayListDetailEntity? = null
 
     init {
         initView()
@@ -39,15 +42,20 @@ class TopListBlock @JvmOverloads constructor(
 
                 loadImg(it.tracks[2].al.picUrl, ivCover3)
                 tvSongInfo3.text = it.tracks[2].name
+
+                mViewBinding.tvTopName.setOnClickListener { view ->
+                    Navigation.findNavController(view).navigate(R.id.playListDetailFragment,
+                            PlayListDetailFragment.createBundle(it.id, it.name, it.coverImgUrl)
+                    )
+                }
             }
         }
     }
 
     private fun loadImg(url: String, view: ImageView) {
-        val options = RequestOptions().centerCrop().transform(RoundedCorners(20))
-        Glide.with(context)
+        val options = RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(RoundedCorners(20))
+        GlideApp.with(context)
                 .load(url)
-                .placeholder(R.drawable.ic_placeholder)
                 .apply(options)
                 .into(view)
     }

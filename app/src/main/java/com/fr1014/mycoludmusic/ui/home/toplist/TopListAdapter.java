@@ -12,12 +12,14 @@ import androidx.navigation.fragment.FragmentNavigator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment;
+import com.fr1014.mycoludmusic.utils.glide.GlideApp;
 
 import java.util.List;
 
@@ -75,8 +77,9 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
             holder.setText(R.id.tv_title, data.getName());
         }
         ImageView sharedElementView = (ImageView) holder.getView(R.id.iv_coverImg);
-        Glide.with(holder.itemView)
+        GlideApp.with(holder.itemView)
                 .load(data.getCoverImgUrl())
+                .apply(new RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(new RoundedCorners(30)))
                 .into(sharedElementView);
         // 把每个图片视图设置不同的Transition名称, 防止在一个视图内有多个相同的名称, 在变换的时候造成混乱
         ViewCompat.setTransitionName(sharedElementView, data.getName());

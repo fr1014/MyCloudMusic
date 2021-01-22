@@ -23,7 +23,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
     }
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(0, 99)
+        val idsRange = ids.getRangeIds(0, 299)
         mWYYService.getWYSongDetail(idsRange)
                 .compose(RxSchedulers.apply())
                 .map {
@@ -57,7 +57,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                     _networkStatus.postValue(NetworkStatus.LOADING)
                 }
                 .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
-                    callback.onResult(it, null, 100)
+                    callback.onResult(it, null, 300)
                 }, onExecuteOnceError = {
                     retry = { loadInitial(params, callback) }
                     _networkStatus.postValue(NetworkStatus.FAILED)
@@ -72,7 +72,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(params.key, 99)
+        val idsRange = ids.getRangeIds(params.key, 299)
         mWYYService.getWYSongDetail(idsRange)
                 .compose(RxSchedulers.apply())
                 .map {
@@ -106,7 +106,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                     _networkStatus.postValue(NetworkStatus.LOADING)
                 }
                 .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
-                    callback.onResult(it, params.key.plus(100))
+                    callback.onResult(it, params.key.plus(300))
                 }, onExecuteOnceError = {
                     if (it.toString() == "java.lang.NullPointerException: it.songs must not be null") {
                         _networkStatus.postValue(NetworkStatus.COMPLETED)

@@ -5,20 +5,24 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.animation.LinearInterpolator;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.fr1014.mycoludmusic.databinding.AlubmCoverviewBinding;
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 
 /**
  * Create by fanrui on 2020/12/11
  * Describe:
  */
-public class AlbumCoverView extends RelativeLayout {
+public class AlbumCoverView extends RelativeLayout implements LifecycleObserver {
     private ObjectAnimator rotationAnimator;
 
     private AlubmCoverviewBinding mViewBinding;
@@ -87,5 +91,27 @@ public class AlbumCoverView extends RelativeLayout {
 
     public void songImgSetBitmap(Bitmap resource) {
         mViewBinding.civSongImg.setImageBitmap(resource);
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    void onResume(){
+        Log.d("hello", "onResume: ");
+        if (AudioPlayer.get().isPlaying()) {
+            resumeAnimator();
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    void onPause(){
+        Log.d("hello", "onPause: ");
+        pauseAnimator();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    void onDestroy(){
+        Log.d("hello", "onDestroy: ");
+        if (mViewBinding != null){
+            endAnimator();
+        }
     }
 }

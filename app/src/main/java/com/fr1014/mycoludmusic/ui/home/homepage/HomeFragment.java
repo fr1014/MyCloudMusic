@@ -17,10 +17,10 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlay
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.Block;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.Creative;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListResult;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
 import com.fr1014.mycoludmusic.ui.home.HomeTopListPagerAdapter;
 import com.fr1014.mycoludmusic.ui.login.LoginActivity;
+import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtil;
 import com.fr1014.mymvvm.base.BaseFragment;
 
@@ -76,6 +76,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
                     List<Creative> results = block.component5();
                     List<CommonPlaylist> commonPlaylists = new ArrayList<>();
                     try {
+                        if (CollectionUtils.isEmptyList(results)) return;
                         for (int index = 0; index < results.size() - 1; index++) {
                             Creative creative = results.get(index);
                             if (creative != null) {

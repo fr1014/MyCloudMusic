@@ -4,9 +4,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     protected void initView() {
+        getLifecycle().addObserver(mViewBinding.albumCoverView);
+
         StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
         initSystemBar();
         initListener();
@@ -204,7 +208,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void onTap(LrcView view, float x, float y) {
                 mViewBinding.albumCoverView.setVisibility(View.VISIBLE);
-                mViewBinding.albumCoverView.resumeAnimator();
+                if (AudioPlayer.get().isPlaying()){
+                    mViewBinding.albumCoverView.resumeAnimator();
+                }
                 mViewBinding.llLrc.setVisibility(View.GONE);
             }
         });
@@ -278,15 +284,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (hidden) {
-//            AudioPlayer.get().removeOnPlayEventListener(this);
-//            CoverLoadUtils.get().removeLoadListener(this);
-
             StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
             mViewBinding.albumCoverView.endAnimator();
         } else {
-//            AudioPlayer.get().addOnPlayEventListener(this);
-//            CoverLoadUtils.get().registerLoadListener(this);
-
             initViewData(AudioPlayer.get().getPlayMusic());
             if (AudioPlayer.get().isPlaying()) {
                 StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
@@ -325,20 +325,6 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (AudioPlayer.get().isPlaying()) {
-            mViewBinding.albumCoverView.resumeAnimator();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mViewBinding.albumCoverView.pauseAnimator();
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         AudioPlayer.get().removeOnPlayEventListener(this);
@@ -346,9 +332,6 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onDestroy() {
-        if (mViewBinding != null){
-            mViewBinding.albumCoverView.endAnimator();
-        }
         CoverLoadUtils.get().removeLoadListener(this);
         super.onDestroy();
     }

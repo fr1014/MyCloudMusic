@@ -23,6 +23,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist
 import com.fr1014.mycoludmusic.databinding.BlockRecommendPlaylistBinding
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
+import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 import io.supercharge.shimmerlayout.ShimmerLayout
 
@@ -70,11 +71,10 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, B
             setShimmerAngle(0)
             startShimmerAnimation()
         }
-        val options = RequestOptions().centerCrop().transform(RoundedCorners(30))
-        Glide.with(holder.itemView)
+        val options = RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(RoundedCorners(30))
+        GlideApp.with(holder.itemView)
                 .load(data.coverImgUrl)
                 .apply(options)
-                .placeholder(R.drawable.ic_placeholder)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                         return false
