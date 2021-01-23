@@ -49,11 +49,11 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
     }
 
     private void initListener() {
-        mViewBinding.llState.setOnClickListener(this);
-        mViewBinding.llMenu.setOnClickListener(this);
-        mViewBinding.llMode.setOnClickListener(this);
-        mViewBinding.llPre.setOnClickListener(this);
-        mViewBinding.llNext.setOnClickListener(this);
+        mViewBinding.ivState.setOnClickListener(this);
+        mViewBinding.ivMusicMenu.setOnClickListener(this);
+        mViewBinding.ivMode.setOnClickListener(this);
+        mViewBinding.ivPre.setOnClickListener(this);
+        mViewBinding.ivNext.setOnClickListener(this);
     }
 
     public void setPlayControlBarClick(OnPlayControlBarClick playControlBarClick) {
@@ -63,19 +63,19 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ll_mode:
+            case R.id.iv_mode:
                 switchPlayMode();
                 break;
-            case R.id.ll_pre:
+            case R.id.iv_pre:
                 playControlBarClick.pre(playPreMusic());
                 break;
-            case R.id.ll_next:
+            case R.id.iv_next:
                 playControlBarClick.next(playNextMusic());
                 break;
-            case R.id.ll_state:
+            case R.id.iv_state:
                 AudioPlayer.get().playPause();
                 break;
-            case R.id.ll_menu:
+            case R.id.iv_music_menu:
                 playControlBarClick.openMenu();
                 break;
         }
@@ -113,13 +113,13 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
     private void setImageMode(int mode) {
         switch (mode) {
             case 0:
-                mViewBinding.ivMode.setImageResource(R.drawable.ic_loop_white);
+                mViewBinding.ivMode.setImageResource(R.drawable.selector_loop);
                 break;
             case 1:
-                mViewBinding.ivMode.setImageResource(R.drawable.ic_random_white);
+                mViewBinding.ivMode.setImageResource(R.drawable.selector_random);
                 break;
             case 2:
-                mViewBinding.ivMode.setImageResource(R.drawable.ic_cycle_white);
+                mViewBinding.ivMode.setImageResource(R.drawable.selector_cycle);
                 break;
         }
     }

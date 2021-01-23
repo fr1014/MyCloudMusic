@@ -71,9 +71,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
         if (AudioPlayer.get().isPlaying()) {
             mViewBinding.albumCoverView.startAnimator();
-            mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
+            mViewBinding.playControlBar.setStateImage(R.drawable.selector_stop_state);
         } else {
-            mViewBinding.playControlBar.setStateImage(R.drawable.ic_play_white);
+            mViewBinding.playControlBar.setStateImage(R.drawable.selector_play_state);
         }
         mViewBinding.playControlBar.initPlayMode();
     }
@@ -244,14 +244,14 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onPlayerStart() {
 //        initSeekBarData(AudioPlayer.get().getPlayMusic());
-        mViewBinding.playControlBar.setStateImage(R.drawable.ic_stop_white);
+        mViewBinding.playControlBar.setStateImage(R.drawable.selector_stop_state);
         mViewBinding.albumCoverView.resumeOrStartAnimator();
     }
 
     @Override
     public void onPlayerPause() {
         mViewBinding.albumCoverView.pauseAnimator();
-        mViewBinding.playControlBar.setStateImage(R.drawable.ic_play_white);
+        mViewBinding.playControlBar.setStateImage(R.drawable.selector_play_state);
     }
 
     @Override
