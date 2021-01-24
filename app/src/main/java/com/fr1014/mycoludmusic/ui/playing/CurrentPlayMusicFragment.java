@@ -4,11 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +19,6 @@ import com.fr1014.mycoludmusic.customview.PlayControlBarView;
 import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.ui.home.playlistdialog.PlayDialogFragment;
-import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
@@ -35,7 +32,7 @@ import com.fr1014.mymvvm.base.BaseFragment;
 
 import java.io.File;
 
-public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, TopListViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener, LoadResultListener {
+public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, CurrentPlayMusicViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener, LoadResultListener {
     private MediaPlayer player;
     private Music oldMusic;
 
@@ -49,8 +46,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     @Override
-    protected TopListViewModel initViewModel() {
-        return new ViewModelProvider(getActivity(), AppViewModelFactory.getInstance(MyApplication.getInstance())).get(TopListViewModel.class);
+    protected CurrentPlayMusicViewModel initViewModel() {
+        return new ViewModelProvider(getActivity(), AppViewModelFactory.getInstance(MyApplication.getInstance())).get(CurrentPlayMusicViewModel.class);
     }
 
     @Override
@@ -66,6 +63,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         player = AudioPlayer.get().getMediaPlayer();
         oldMusic = AudioPlayer.get().getPlayMusic();
         if (oldMusic == null) return;
+
+        mViewBinding.userControlBar.initUserControlBar(mViewModel, this);
         setMusicInfo(oldMusic);
         initViewData(oldMusic);
 
@@ -118,14 +117,6 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         });
     }
 
-    private void changeMusicPlay(Music music){
-        AudioPlayer.get().stopPlayer();
-        mViewBinding.albumCoverView.endAnimator();
-        resetSeekBarData();
-        setMusicInfo(music);
-        oldMusic = music;
-    }
-
     /**
      * 沉浸式状态栏
      */
@@ -142,7 +133,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                 mViewBinding.lrcView.setLabel("该歌曲暂无歌词");
                 if (!lrcPath.equals("")) {
                     mViewBinding.lrcView.loadLrc(new File(lrcPath));
-                }else {
+                } else {
                     mViewBinding.lrcView.loadLrc("[00:00.000]该歌曲暂无歌词");
                 }
 
@@ -173,12 +164,12 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         setMusicImage(music);
     }
 
-    private void setMusicInfo(Music music){
+    private void setMusicInfo(Music music) {
         mViewBinding.tvTitle.setText(music.getTitle());
         mViewBinding.tvArtist.setText(music.getArtist());
     }
 
-    private void setMusicImage(Music music){
+    private void setMusicImage(Music music) {
         if (TextUtils.isEmpty(music.getImgUrl())) {
             mViewBinding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
             return;
@@ -196,7 +187,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewBinding.tvDuration.setText(CommonUtil.formatTime(duration));
     }
 
-    private void resetSeekBarData(){
+    private void resetSeekBarData() {
         mViewBinding.tvNowTime.setText(R.string.start_seekbar);
         mViewBinding.sbProgress.setSecondaryProgress(0);
     }
@@ -208,7 +199,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void onTap(LrcView view, float x, float y) {
                 mViewBinding.albumCoverView.setVisibility(View.VISIBLE);
-                if (AudioPlayer.get().isPlaying()){
+                if (AudioPlayer.get().isPlaying()) {
                     mViewBinding.albumCoverView.resumeAnimator();
                 }
                 mViewBinding.llLrc.setVisibility(View.GONE);
@@ -226,14 +217,23 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onChange(Music music) {
         initViewData(music);
+        if (oldMusic != music){
+            changeMusicPlay(music);
+        }
+    }
+
+    private void changeMusicPlay(Music music) {
+        if (AudioPlayer.get().getPlayMusic() != music) {
+            AudioPlayer.get().stopPlayer();
+        }
         if (mViewBinding.llLrc.getVisibility() == View.VISIBLE) {
             getSongLrc(music); //切换歌时，请求歌词
         }
-        if (oldMusic != music){
-            setMusicInfo(music);
-            resetSeekBarData();
-            oldMusic = music;
-        }
+        mViewBinding.albumCoverView.endAnimator();
+        resetSeekBarData();
+        setMusicInfo(music);
+        mViewBinding.userControlBar.initLikeIcon(music);
+        oldMusic = music;
     }
 
     @Override
@@ -280,21 +280,6 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         }
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden) {
-            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
-            mViewBinding.albumCoverView.endAnimator();
-        } else {
-            initViewData(AudioPlayer.get().getPlayMusic());
-            if (AudioPlayer.get().isPlaying()) {
-                StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
-                mViewBinding.albumCoverView.startAnimator();
-            }
-        }
-    }
-
     //点击歌词
     @Override
     public boolean onPlayClick(LrcView view, long time) {
@@ -325,13 +310,11 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        AudioPlayer.get().removeOnPlayEventListener(this);
-    }
-
-    @Override
     public void onDestroy() {
+        if (getActivity() != null) {
+            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
+        }
+        AudioPlayer.get().removeOnPlayEventListener(this);
         CoverLoadUtils.get().removeLoadListener(this);
         super.onDestroy();
     }

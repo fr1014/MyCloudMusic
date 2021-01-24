@@ -41,17 +41,9 @@ public class TopListViewModel extends CommonViewModel {
 
     private MutableLiveData<TopListDetailEntity> getTopListDetail;
     private BusLiveData<List<Music>> getSongListUrl;
-    private BusLiveData<String> getSongLrcPath;
 
     public TopListViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
-    }
-
-    public BusLiveData<String> getSongLrcPath() {
-        if (getSongLrcPath == null) {
-            getSongLrcPath = new BusLiveData<>();
-        }
-        return getSongLrcPath;
     }
 
     public BusLiveData<List<Music>> getSongListUrl(List<Music> musicList) {
@@ -130,85 +122,6 @@ public class TopListViewModel extends CommonViewModel {
                         getTopListDetail.postValue(topListDetailEntity);
                     }
                 }));
-    }
-
-    public void getSongLrc(Music music) {
-        String filePath = FileUtils.getLrcDir() + FileUtils.getLrcFileName(music.getArtist(), music.getTitle());
-        if (!FileUtils.isFileEmpty(filePath)) {
-            getSongLrcPath().setValue(filePath);
-            return;
-        }
-        if (!TextUtils.isEmpty(music.getMUSICRID())) {
-            String mid = music.getMUSICRID().replace("MUSIC_", "");
-            addSubscribe(model.getKWSongInfoAndLrc(mid)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .map(new Function<KWSongInfoAndLrcEntity, String>() {
-                        @Override
-                        public String apply(@io.reactivex.annotations.NonNull KWSongInfoAndLrcEntity kwSongInfoAndLrcEntity) throws Exception {
-                            List<KWSongInfoAndLrcEntity.DataBean.LrclistBean> lrcList = kwSongInfoAndLrcEntity.getData().getLrclist();
-                            StringBuilder content = new StringBuilder();
-                            //正则格式化KW服务器返回的歌词时间
-                            String rgex = "\\d+\\.\\d{1,3}";
-                            Pattern pattern = Pattern.compile(rgex);
-                            for (KWSongInfoAndLrcEntity.DataBean.LrclistBean lrcListBean : lrcList) {
-                                content.append("[");
-                                String time = lrcListBean.getTime();
-                                Matcher m = pattern.matcher(time);
-                                if (m.matches()) {
-                                    content.append(CommonUtil.strFormatTime(m.group()));
-                                } else {   //如果正则匹配失败，取.前和.后2位的字符
-                                    int index = time.indexOf(".");
-                                    int endIndex = index + 2;
-                                    content.append(CommonUtil.strFormatTime(time.substring(0, endIndex)));
-                                }
-                                content.append("]");
-                                content.append(lrcListBean.getLineLyric().trim());
-                                content.append("\n");
-                            }
-                            FileUtils.saveLrcFile(filePath, content.toString());
-                            return filePath;
-                        }
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(String filePath) throws Exception {
-                            getSongLrcPath().setValue(filePath);
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            getSongLrcPath().setValue("");
-                        }
-                    })
-            );
-        } else {
-            addSubscribe(model.getWYSongLrcEntity(music.getId())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .map(new Function<WYSongLrcEntity, String>() {
-                        @Override
-                        public String apply(@io.reactivex.annotations.NonNull WYSongLrcEntity wySongLrcEntity) throws Exception {
-                            String lyric = wySongLrcEntity.getLrc().getLyric();
-                            FileUtils.saveLrcFile(filePath, lyric);
-                            return filePath;
-                        }
-                    })
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) throws Exception {
-                            getSongLrcPath().setValue(filePath);
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            getSongLrcPath().setValue("");
-                        }
-                    })
-            );
-        }
     }
 
 //    public void insertMusicList(List<Music> musicList){

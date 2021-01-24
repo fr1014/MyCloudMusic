@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,8 +16,11 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile;
+import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
+import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent;
+import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
@@ -43,6 +47,9 @@ import androidx.navigation.ui.NavigationUI;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainViewModel> implements View.OnClickListener, SwitchDialogFragment.MusicSourceCallback {
     private static final int REQUEST_PERMISSION_CODE = 100;
@@ -73,6 +80,10 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
+//        Profile profile = Preferences.getUserProfile();
+//        if (profile != null) {
+//            mViewModel.getLikeIdList(profile.getUserId());
+//        }
     }
 
     @Override
@@ -108,7 +119,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                     mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
                     mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
                     mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
-                }else if(destination.getId() == R.id.userInfoFragment){
+                } else if (destination.getId() == R.id.userInfoFragment) {
                     mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
                 } else {
                     mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -144,18 +155,19 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStringEvent(LoginStatusEvent event) {
         if (event.isLogin) {
-            initNavHeaderViewData(getUserProfile());
+            Profile profile = getUserProfile();
+            initNavHeaderViewData(profile);
         }
     }
 
     @Override
     public void initViewObservable() {
         mViewModel.getLogoutLive().observe(this, logout -> {
-            if (logout){
+            if (logout) {
                 Preferences.saveUserProfile(null);
                 CommonUtil.toastShort("啊啊啊啊！居然退出登录啦，你怎么敢的啊！");
                 finish();
-            }else {
+            } else {
                 CommonUtil.toastShort("遇到了有意思的事情开小差了，请稍后重试");
             }
         });
@@ -177,16 +189,35 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     //首次绑定Service时该方法被调用
     @Override
     protected void onServiceBound() {
-        statusBar = new PlayStatusBarView(this, getSupportFragmentManager());
-        playEventListener = statusBar.getOnPlayEventListener();
-        if (playEventListener != null){
-            AudioPlayer.get().addOnPlayEventListener(playEventListener);
-        }
-        CoverLoadUtils.get().registerLoadListener(statusBar);
-        mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
-        if (CollectionUtils.isEmptyList(AudioPlayer.get().getMusicList())){
-            statusBar.setVisibility(View.INVISIBLE);
-        }
+        DBManager.get().getLocalMusicList(false).observe(this, new Observer<List<MusicEntity>>() {
+            @Override
+            public void onChanged(List<MusicEntity> musicEntities) {
+                if (statusBar == null) {
+                    if (!CollectionUtils.isEmptyList(musicEntities)) {
+                        List<Music> musicList = new ArrayList<>();
+                        for (MusicEntity musicEntity : musicEntities) {
+                            long id = 0L;
+                            if (musicEntity.getId() != null) {
+                                id = musicEntity.getId();
+                            }
+                            musicList.add(new Music(id, musicEntity.getArtist(), musicEntity.getTitle(), "", musicEntity.getImgUrl(), musicEntity.getMusicRid(), musicEntity.getDuration()));
+                        }
+                        AudioPlayer.get().addMusicList(musicList);
+                    }
+                    statusBar = new PlayStatusBarView(MainActivity.this, getSupportFragmentManager());
+                    playEventListener = statusBar.getOnPlayEventListener();
+                    if (playEventListener != null) {
+                        AudioPlayer.get().addOnPlayEventListener(playEventListener);
+                    }
+                    CoverLoadUtils.get().registerLoadListener(statusBar);
+                    mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
+                }
+
+                if (statusBar.getVisibility() != View.VISIBLE && !CollectionUtils.isEmptyList(musicEntities)) {
+                    statusBar.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     @Override
@@ -219,8 +250,8 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     @Override
     protected void onStop() {
         super.onStop();
-        //维护当前播放列表
-        mViewModel.delOldInsertNewMusicList(AudioPlayer.get().getMusicList());
+//        //维护当前播放列表
+//        mViewModel.delOldInsertNewMusicList(AudioPlayer.get().getMusicList());
     }
 
     @Override
@@ -230,7 +261,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         if (statusBar != null) {
             CoverLoadUtils.get().removeLoadListener(statusBar);
         }
-        if (playEventListener != null){
+        if (playEventListener != null) {
             AudioPlayer.get().removeOnPlayEventListener(playEventListener);
         }
     }

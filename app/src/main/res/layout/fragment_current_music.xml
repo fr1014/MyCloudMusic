@@ -115,6 +115,7 @@
         </FrameLayout>
 
         <com.fr1014.mycoludmusic.ui.block.UserControlBarBlock
+            android:id="@+id/userControlBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -70,6 +71,40 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
     protected void onServiceBound() {
     }
 
+//    public void showPlayingFragment() {
+//        if (isPlayFragmentShow) {
+//            return;
+//        }
+//
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        ft.setCustomAnimations(R.anim.fragment_slide_up, 0);
+//        if (mPlayFragment == null) {
+//            mPlayFragment = new CurrentPlayMusicFragment();
+//            ft.replace(android.R.id.content, mPlayFragment);
+//        } else {
+//            ft.show(mPlayFragment);
+//        }
+//        ft.commitAllowingStateLoss();
+//        isPlayFragmentShow = true;
+//    }
+//
+//    public void hidePlayingFragment() {
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        ft.setCustomAnimations(0, R.anim.fragment_slide_down);
+//        ft.hide(mPlayFragment);
+//        ft.commitAllowingStateLoss();
+//        isPlayFragmentShow = false;
+//    }
+//
+//    @Override
+//    public void onBackPressed() {
+//        if (mPlayFragment != null && isPlayFragmentShow) {
+//            hidePlayingFragment();
+//            return;
+//        }
+//        super.onBackPressed();
+//    }
+
     public void showPlayingFragment() {
         if (isPlayFragmentShow) {
             return;
@@ -80,8 +115,6 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
         if (mPlayFragment == null) {
             mPlayFragment = new CurrentPlayMusicFragment();
             ft.replace(android.R.id.content, mPlayFragment);
-        } else {
-            ft.show(mPlayFragment);
         }
         ft.commitAllowingStateLoss();
         isPlayFragmentShow = true;
@@ -90,7 +123,8 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
     public void hidePlayingFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(0, R.anim.fragment_slide_down);
-        ft.hide(mPlayFragment);
+        ft.remove(mPlayFragment);
+        mPlayFragment = null;
         ft.commitAllowingStateLoss();
         isPlayFragmentShow = false;
     }

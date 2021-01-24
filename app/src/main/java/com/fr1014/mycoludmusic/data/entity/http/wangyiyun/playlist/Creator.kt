@@ -33,7 +33,7 @@ data class Creator(
         val province: Int,
         val remarkName: Any,
         val signature: String,
-        val userId: Int,
+        val userId: Long,
         val userType: Int,
         val vipType: Int
 )

@@ -11,11 +11,13 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlay
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeIdList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
@@ -25,6 +27,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.LocalDataSource;
+import com.fr1014.mycoludmusic.data.source.local.room.MusicLike;
 import com.fr1014.mymvvm.base.BaseModel;
 
 import java.util.List;
@@ -75,6 +78,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
+    public Observable<WYLikeIdList> getWYLikeIdList(Long uid) {
+        return httpDataSource.getWYLikeIdList(uid);
+    }
+
+    @Override
     public Observable<WYLikeMusic> likeMusicWY(long id, boolean like) {
         return httpDataSource.likeMusicWY(id,like);
     }
@@ -82,6 +90,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<WYLikeList> getWYLikeList(long uid) {
         return httpDataSource.getWYLikeList(uid);
+    }
+
+    @Override
+    public Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks,String timestamp) {
+        return httpDataSource.getWYManagePlayList(op,pid,tracks,timestamp);
     }
 
     @Override
@@ -220,5 +233,45 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public void delete(MusicEntity musicEntity) {
         localDataSource.delete(musicEntity);
+    }
+
+    @Override
+    public void deleteAllMusicEntity() {
+        localDataSource.deleteAllMusicEntity();
+    }
+
+    @Override
+    public LiveData<List<MusicLike>> getLikeIdsLive() {
+        return localDataSource.getLikeIdsLive();
+    }
+
+    @Override
+    public List<MusicLike> getLikeIds() {
+        return localDataSource.getLikeIds();
+    }
+
+    @Override
+    public MusicLike getItemLive(Long id) {
+        return localDataSource.getItemLive(id);
+    }
+
+    @Override
+    public void insert(MusicLike musicLike) {
+        localDataSource.insert(musicLike);
+    }
+
+    @Override
+    public void delete(MusicLike musicLike) {
+        localDataSource.delete(musicLike);
+    }
+
+    @Override
+    public void insertAllLikeIds(List<MusicLike> musicLikes) {
+        localDataSource.insertAllLikeIds(musicLikes);
+    }
+
+    @Override
+    public void deleteAllLikeIds() {
+        localDataSource.deleteAllLikeIds();
     }
 }

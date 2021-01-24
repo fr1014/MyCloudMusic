@@ -8,6 +8,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlay
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeIdList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
@@ -17,9 +18,9 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 
 import io.reactivex.Observable;
-import okhttp3.Response;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -38,6 +39,9 @@ public interface WYApiService {
     @POST("login/cellphone")
     Observable<UserEntity> getWYUserProfile(@Query("phone") String phone, @Query("password") String password);
 
+    @GET("likelist")
+    Observable<WYLikeIdList> getWYLikeIdList(@Query("uid") Long uid);
+
     /*
     说明 : 调用此接口 , 传入音乐 id, 可喜欢该音乐
     必选参数 : id: 歌曲 id
@@ -46,27 +50,38 @@ public interface WYApiService {
     @GET("like")
     Observable<WYLikeMusic> likeMusicWY(@Query("id") long id, @Query("like") boolean like);
 
+    /*
+      说明 : 调用此接口 , 可以添加歌曲到歌单或者从歌单删除某首歌曲 ( 需要登录 )
+      必选参数 :
+      op: 从歌单增加单曲为 add, 删除为 del
+      pid: 歌单 id tracks: 歌曲 id,可多个,用逗号隔开
+      时间戳： &timestamp=1503019930000
+     */
+    @GET("playlist/tracks")
+    Observable<WYManagePlayList> getWYManagePlayList(@Query("op") String op, @Query("pid") Long pid, @Query("tracks") String tracks, @Query("timestamp") String timestamp);
+
     //喜欢音乐列表
     @GET("likelist")
     Observable<WYLikeList> getWYLikeList(@Query("uid") long uid);
 
     @GET("user/playlist")
-    Observable<WYUserPlayList> getWYUserPlayList(@Query("uid")long uid);
+    Observable<WYUserPlayList> getWYUserPlayList(@Query("uid") long uid);
 
     /**
      * 说明 : 调用此接口 , 可获取网友精选碟歌单
-     *
+     * <p>
      * 可选参数 : order: 可选值为 'new' 和 'hot', 分别对应最新和最热 , 默认为 'hot'
-     *
+     * <p>
      * cat:cat: tag, 比如 " 华语 "、" 古风 " 、" 欧美 "、" 流行 ", 默认为 "全部",可从歌单分类接口获取(/playlist/catlist)
-     *
+     * <p>
      * limit: 取出歌单数量 , 默认为 50
-     *
+     * <p>
      * offset: 偏移数量 , 用于分页 , 如 :( 评论页数 -1)*50, 其中 50 为 limit 的值
-     *
+     * <p>
      * 接口地址 : /top/playlist
-     *
+     * <p>
      * 调用例子 : /top/playlist?limit=10&order=new
+     *
      * @return
      */
     @GET("top/playlist")

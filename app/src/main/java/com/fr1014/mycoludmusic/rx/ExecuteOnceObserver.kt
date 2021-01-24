@@ -7,7 +7,7 @@ import io.reactivex.disposables.Disposable
  * Create by fanrui on 2021/1/10
  * Describe:
  */
-class ExecuteOnceObserver<T>(val onExecuteOnceNext: (T) -> Unit = {},
+open class ExecuteOnceObserver<T>(val onExecuteOnceNext: (T) -> Unit = {},
                              val onExecuteOnceComplete: () -> Unit = {},
                              val onExecuteOnceError: (Throwable) -> Unit = {}) : Observer<T> {
     private var mDisposable: Disposable? = null

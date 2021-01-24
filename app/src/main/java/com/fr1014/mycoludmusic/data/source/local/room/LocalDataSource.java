@@ -11,17 +11,33 @@ public interface LocalDataSource {
 
     LiveData<List<MusicEntity>> getAllHistoryOrCurrentLive(boolean history);
 
-    LiveData<MusicEntity> getItemLive(String title,String artist);
+    LiveData<MusicEntity> getItemLive(String title, String artist);
 
-   List<MusicEntity> getAll();
+    List<MusicEntity> getAll();
 
-   List<MusicEntity> getAllHistoryOrCurrent(boolean history);
+    List<MusicEntity> getAllHistoryOrCurrent(boolean history);
 
-    MusicEntity getItem(String title,String artist,boolean isHistory);
+    MusicEntity getItem(String title, String artist, boolean isHistory);
 
     void insertAll(List<MusicEntity> musicEntities);
 
     void insert(MusicEntity musicEntity);
 
     void delete(MusicEntity musicEntity);
+
+    void deleteAllMusicEntity();
+
+    LiveData<List<MusicLike>> getLikeIdsLive();
+
+    List<MusicLike> getLikeIds();
+
+    MusicLike getItemLive(Long id);
+
+    void insert(MusicLike musicLike);
+
+    void delete(MusicLike musicLike);
+
+    void insertAllLikeIds(List<MusicLike> musicLikes);
+
+    void deleteAllLikeIds();
 }

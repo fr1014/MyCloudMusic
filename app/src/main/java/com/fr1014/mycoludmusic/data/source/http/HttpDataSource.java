@@ -11,6 +11,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlay
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeIdList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
@@ -20,10 +21,12 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 
 import io.reactivex.Observable;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -43,9 +46,13 @@ public interface HttpDataSource {
 
     Observable<UserEntity> getWYUserProfile(String phone, String password);
 
-    Observable<WYLikeMusic> likeMusicWY(long id,boolean like);
+    Observable<WYLikeIdList> getWYLikeIdList(Long uid);
+
+    Observable<WYLikeMusic> likeMusicWY(long id, boolean like);
 
     Observable<WYLikeList> getWYLikeList(long uid);
+
+    Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks,String timestamp);
 
     Observable<WYUserPlayList> getWYUserPlayList(long uid);
 

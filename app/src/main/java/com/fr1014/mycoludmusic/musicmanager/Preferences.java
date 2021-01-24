@@ -63,6 +63,14 @@ public class Preferences {
         saveString(USER_PROFILE,json);
     }
 
+    public static long getUserLikePid(String userId){
+        return getLong(userId,0);
+    }
+
+    public static void saveUserLikePid(String userId,long pid){
+        saveLong(userId,pid);
+    }
+
     public static int getPlayPosition() {
         return getInt(PLAY_POSITION, 0);
     }

@@ -107,28 +107,29 @@ public class FileUtils {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
-            Bitmap result = null;
-            int height = bitmap.getHeight() / 1000;
-            int inSampleSize = 2;
-            switch (height) {
-                case 6:
-                case 5:
-                    inSampleSize = 26;
-                    break;
-                case 4:
-                case 3:
-                    inSampleSize = 6;
-                    break;
-                case 2:
-                    inSampleSize = 4;
-                    break;
-                case 1:
-                case 0:
-                    inSampleSize = 2;
-                    break;
-            }
-            result = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / inSampleSize, bitmap.getHeight() / inSampleSize, true);
-            result.compress(Bitmap.CompressFormat.PNG, 90, out);
+//            Bitmap result = null;
+//            int height = bitmap.getHeight() / 1000;
+//            int inSampleSize = 2;
+//            switch (height) {
+//                case 6:
+//                case 5:
+//                    inSampleSize = 26;
+//                    break;
+//                case 4:
+//                case 3:
+//                    inSampleSize = 6;
+//                    break;
+//                case 2:
+//                    inSampleSize = 4;
+//                    break;
+//                case 1:
+//                case 0:
+//                    inSampleSize = 2;
+//                    break;
+//            }
+//            result = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / inSampleSize, bitmap.getHeight() / inSampleSize, true);
+//            result.compress(Bitmap.CompressFormat.PNG, 90, out);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             for (LoadResultListener loadResultListener : loadResultListeners) {
                 loadResultListener.coverLoadSuccess(bitmap);
@@ -158,8 +159,8 @@ public class FileUtils {
             FileInputStream fis = new FileInputStream(path);
             BitmapFactory.Options options = new BitmapFactory.Options();
             bitmap = BitmapFactory.decodeFileDescriptor(fis.getFD(), null, options);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
+
         }
         return bitmap;
     }

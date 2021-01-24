@@ -11,6 +11,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlay
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeIdList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
@@ -20,6 +21,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 import com.fr1014.mycoludmusic.data.source.http.HttpDataSource;
 import com.fr1014.mycoludmusic.http.api.KWApiService;
 import com.fr1014.mycoludmusic.http.api.WYApiService;
@@ -32,18 +34,18 @@ public class HttpDataSourceImpl implements HttpDataSource {
     private WYApiService wyApiService;
     private KWApiService kwApiService;
 
-    public static HttpDataSourceImpl getInstance(WYApiService wyApiService,KWApiService kwApiService) {
-        if (instance == null){
-            synchronized (HttpDataSourceImpl.class){
-                if (instance == null){
-                    instance = new HttpDataSourceImpl(wyApiService,kwApiService);
+    public static HttpDataSourceImpl getInstance(WYApiService wyApiService, KWApiService kwApiService) {
+        if (instance == null) {
+            synchronized (HttpDataSourceImpl.class) {
+                if (instance == null) {
+                    instance = new HttpDataSourceImpl(wyApiService, kwApiService);
                 }
             }
         }
         return instance;
     }
 
-    private HttpDataSourceImpl(WYApiService wyApiService,KWApiService kwApiService){
+    private HttpDataSourceImpl(WYApiService wyApiService, KWApiService kwApiService) {
         this.wyApiService = wyApiService;
         this.kwApiService = kwApiService;
     }
@@ -64,13 +66,23 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
+    public Observable<WYLikeIdList> getWYLikeIdList(Long uid) {
+        return wyApiService.getWYLikeIdList(uid);
+    }
+
+    @Override
     public Observable<WYLikeMusic> likeMusicWY(long id, boolean like) {
-        return wyApiService.likeMusicWY(id,like);
+        return wyApiService.likeMusicWY(id, like);
     }
 
     @Override
     public Observable<WYLikeList> getWYLikeList(long uid) {
         return wyApiService.getWYLikeList(uid);
+    }
+
+    @Override
+    public Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks, String timestamp) {
+        return wyApiService.getWYManagePlayList(op, pid, tracks, timestamp);
     }
 
     @Override

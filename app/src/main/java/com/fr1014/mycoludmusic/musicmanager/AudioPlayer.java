@@ -94,7 +94,6 @@ public class AudioPlayer implements LoadResultListener {
     public void init(Context context) {
         this.context = context.getApplicationContext();
         CoverLoadUtils.get().registerLoadListener(this);
-        musicList = DBManager.get().getMusicCurrent();
         audioFocusManager = new AudioFocusManager(context);
         mediaPlayer = new MediaPlayer();
         handler = new Handler(Looper.getMainLooper());
@@ -152,8 +151,8 @@ public class AudioPlayer implements LoadResultListener {
         int position = indexOf(music);
         if (position < 0) {
             musicList.add(music);
-//            DBManager.get().insert(music,false);
             position = musicList.size() - 1;
+            DBManager.get().insert(music,false);
         }
         play(position);
     }
@@ -163,11 +162,17 @@ public class AudioPlayer implements LoadResultListener {
         if (!CollectionUtils.isEmptyList(musicList)) {
             musicList.clear();
         }
-        musicList = musics;
+        musicList.addAll(musics);
         play(0);
-//        for (Music music : musics){
-//            DBManager.get().insert(music,false);
-//        }
+        DBManager.get().delOldInsertNewMusicList(musics,false);
+    }
+
+    public void addMusicList(List<Music> musics) {
+        if (CollectionUtils.isEmptyList(musics)) return;
+        if (!CollectionUtils.isEmptyList(musicList)) {
+            musicList.clear();
+        }
+        musicList.addAll(musics);
     }
 
     public void play(int position) {
@@ -284,7 +289,7 @@ public class AudioPlayer implements LoadResultListener {
                             public void accept(KWNewSearchEntity kwNewSearchEntity) throws Exception {
                                 List<KWNewSearchEntity.AbslistBean> abslist = kwNewSearchEntity.getAbslist();
                                 if (!CollectionUtils.isEmptyList(abslist)) {
-                                    music.setId(0);
+//                                    music.setId(0);
                                     music.setMUSICRID(abslist.get(0).getMUSICRID());
                                     getSongUrl(music);
                                 } else {

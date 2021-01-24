@@ -59,6 +59,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private void initView() {
         mViewBinding = CustomviewPlaystatusbarBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
+        setVisibility(INVISIBLE);
         initListener();
         listDialogFragment = new PlayDialogFragment();
         musicDialogFragment = new CurrentPlayMusicFragment();
@@ -124,7 +125,6 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     public void initViewData(Music music) {
         setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
         if (music != null) {
-            setVisibility(VISIBLE);
             setText(music);
 //            CoverLoadUtils.get().loadRemoteCover(mContext, music);
         }

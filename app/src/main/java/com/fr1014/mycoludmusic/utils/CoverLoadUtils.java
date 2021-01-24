@@ -74,7 +74,7 @@ public class CoverLoadUtils {
 ////                        }
 //                    }
 //                });
-        AudioPlayer.get().addDisposable(dataRepository.getSongCover(music.getImgUrl())
+        AudioPlayer.get().addDisposable(dataRepository.getSongCover(music.getImgUrl() + "?param=400y400")
                 .compose(RxSchedulers.apply())
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override

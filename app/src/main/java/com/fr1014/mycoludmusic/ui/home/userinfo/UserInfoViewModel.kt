@@ -15,9 +15,6 @@ import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
  * Describe:
  */
 class UserInfoViewModel(application: Application, model: DataRepository) : CommonViewModel(application, model) {
-    private val playlistWYLive: MutableLiveData<List<Playlist>> by lazy {
-        MutableLiveData()
-    }
 
     private val levelInfoLive: MutableLiveData<LevelData> by lazy {
         MutableLiveData()
@@ -25,22 +22,6 @@ class UserInfoViewModel(application: Application, model: DataRepository) : Commo
 
     fun getLevelInfo(): LiveData<LevelData> {
         return levelInfoLive
-    }
-
-    fun getWYPlayList(): LiveData<List<Playlist>> {
-        return playlistWYLive
-    }
-
-    fun getWYUserPlayList() {
-        addSubscribe(
-                Preferences.getUserProfile()?.userId?.toLong()?.let { it ->
-                    model.getWYUserPlayList(it)
-                            .compose(RxSchedulers.apply())
-                            .subscribe {
-                                playlistWYLive.postValue(it.playlist)
-                            }
-                }
-        )
     }
 
     fun getWYLevelInfo() {

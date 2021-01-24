@@ -36,4 +36,7 @@ interface MusicDao {
 
     @Delete
     fun delete(musicEntity: MusicEntity)
+
+    @Query("DELETE FROM musicentity")
+    fun deleteAll();
 }

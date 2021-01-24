@@ -8,12 +8,12 @@ import com.fr1014.mycoludmusic.data.entity.room.MusicEntity
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver
 import com.fr1014.mycoludmusic.rx.RxSchedulers
-import com.fr1014.mymvvm.base.BaseViewModel
+import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
 import io.reactivex.Observable
 import io.reactivex.functions.Consumer
 import java.util.*
 
-class MainViewModel(application: Application, model: DataRepository) : BaseViewModel<DataRepository>(application, model) {
+class MainViewModel(application: Application, model: DataRepository) : CommonViewModel(application, model) {
     private val logoutLive: MutableLiveData<Boolean> by lazy {
         MutableLiveData()
     }
@@ -32,29 +32,6 @@ class MainViewModel(application: Application, model: DataRepository) : BaseViewM
                 })
         )
     }
-
-    //    public void insertMusicList(List<Music> musicList){
-    //        List<MusicEntity> musicEntities = new ArrayList<>();
-    //        for (Music music : musicList){
-    //            MusicEntity musicEntity = new MusicEntity(music.getTitle(),music.getArtist(),music.getImgUrl(),music.getId(),music.getMUSICRID(),music.getDuration(),false);
-    //            musicEntities.add(musicEntity);
-    //        }
-    //        model.insertAll(musicEntities);
-    //    }
-    //
-    //    public void deleteOldMusicList(){
-    //        Observable.just("")
-    //                .compose(RxSchedulers.applyIO())
-    //                .subscribe(new MyDisposableObserver<String>(){
-    //                    @Override
-    //                    public void onNext(@io.reactivex.annotations.NonNull String s) {
-    //                        List<MusicEntity> allOldCurrentMusic = model.getAllHistoryOrCurrent(false);
-    //                        for (MusicEntity musicEntity : allOldCurrentMusic){
-    //                            model.delete(musicEntity);
-    //                        }
-    //                    }
-    //                });
-    //    }
 
     fun delOldInsertNewMusicList(musicList: List<Music>) {
         Observable.just("")

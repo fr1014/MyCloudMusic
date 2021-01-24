@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
@@ -95,7 +94,6 @@ public class AlbumCoverView extends RelativeLayout implements LifecycleObserver 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     void onResume(){
-        Log.d("hello", "onResume: ");
         if (AudioPlayer.get().isPlaying()) {
             resumeAnimator();
         }
@@ -103,13 +101,11 @@ public class AlbumCoverView extends RelativeLayout implements LifecycleObserver 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     void onPause(){
-        Log.d("hello", "onPause: ");
         pauseAnimator();
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     void onDestroy(){
-        Log.d("hello", "onDestroy: ");
         if (mViewBinding != null){
             endAnimator();
         }

@@ -7,20 +7,22 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.AppDatabase;
 import com.fr1014.mycoludmusic.data.source.local.room.LocalDataSource;
+import com.fr1014.mycoludmusic.data.source.local.room.MusicLike;
+
 import java.util.List;
 
 public class LocalDataSourceImpl implements LocalDataSource {
     private volatile static LocalDataSourceImpl instance;
     private AppDatabase db;
 
-    private LocalDataSourceImpl(){
+    private LocalDataSourceImpl() {
         db = AppDatabase.Companion.getInstance();
     }
 
     public static LocalDataSourceImpl getInstance() {
-        if (instance == null){
-            synchronized (LocalDataSourceImpl.class){
-                if (instance == null){
+        if (instance == null) {
+            synchronized (LocalDataSourceImpl.class) {
+                if (instance == null) {
                     instance = new LocalDataSourceImpl();
                 }
             }
@@ -40,7 +42,7 @@ public class LocalDataSourceImpl implements LocalDataSource {
 
     @Override
     public LiveData<MusicEntity> getItemLive(String title, String artist) {
-        return db.musicDao().getItemLive(title,artist);
+        return db.musicDao().getItemLive(title, artist);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class LocalDataSourceImpl implements LocalDataSource {
 
     @Override
     public MusicEntity getItem(String title, String artist, boolean isHistory) {
-        return db.musicDao().getItem(title,artist,isHistory);
+        return db.musicDao().getItem(title, artist, isHistory);
     }
 
     @Override
@@ -71,5 +73,45 @@ public class LocalDataSourceImpl implements LocalDataSource {
     @Override
     public void delete(MusicEntity musicEntity) {
         db.musicDao().delete(musicEntity);
+    }
+
+    @Override
+    public void deleteAllMusicEntity() {
+        db.musicDao().deleteAll();
+    }
+
+    @Override
+    public LiveData<List<MusicLike>> getLikeIdsLive() {
+        return db.musicLikeDao().getAllLive();
+    }
+
+    @Override
+    public List<MusicLike> getLikeIds() {
+        return db.musicLikeDao().getAllMusicLikes();
+    }
+
+    @Override
+    public MusicLike getItemLive(Long id) {
+        return db.musicLikeDao().getItemLive(id);
+    }
+
+    @Override
+    public void insert(MusicLike musicLike) {
+        db.musicLikeDao().insert(musicLike);
+    }
+
+    @Override
+    public void delete(MusicLike musicLike) {
+        db.musicLikeDao().delete(musicLike);
+    }
+
+    @Override
+    public void insertAllLikeIds(List<MusicLike> musicLikes) {
+        db.musicLikeDao().insertAll(musicLikes);
+    }
+
+    @Override
+    public void deleteAllLikeIds() {
+        db.musicLikeDao().deleteAll();
     }
 }
