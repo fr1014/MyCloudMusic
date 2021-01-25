@@ -80,10 +80,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-//        Profile profile = Preferences.getUserProfile();
-//        if (profile != null) {
-//            mViewModel.getLikeIdList(profile.getUserId());
-//        }
     }
 
     @Override
@@ -157,6 +153,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         if (event.isLogin) {
             Profile profile = getUserProfile();
             initNavHeaderViewData(profile);
+            if (profile != null) {
+                mViewModel.getLikeIdList(profile.getUserId());
+            }
         }
     }
 
