@@ -14,6 +14,7 @@ import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.base.BasePlayActivity
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView
+import com.fr1014.mycoludmusic.data.source.local.room.DBManager
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
@@ -54,15 +55,23 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     override fun onServiceBound() {
-        statusBarView = PlayStatusBarView(this, supportFragmentManager)
-        statusBarView?.onPlayEventListener?.let {
-            AudioPlayer.get().addOnPlayEventListener(it)
-        }
-        CoverLoadUtils.get().registerLoadListener(statusBarView)
-        mViewBinding.flPlaystatus.addView(statusBarView)
-        if (CollectionUtils.isEmptyList(AudioPlayer.get().musicList)) {
-            statusBarView?.visibility = View.INVISIBLE
-        }
+        DBManager.get().getLocalMusicList(false).observe(this, Observer {
+            if (!CollectionUtils.isEmptyList(it)) {
+                if (statusBarView == null) {
+                    statusBarView = PlayStatusBarView(this, supportFragmentManager)
+                    statusBarView?.let { view ->
+                        view.onPlayEventListener?.let { listener ->
+                            AudioPlayer.get().addOnPlayEventListener(listener)
+                        }
+                        CoverLoadUtils.get().registerLoadListener(view)
+                        mViewBinding.flPlaystatus.addView(statusBarView)
+                        if (view.visibility != View.VISIBLE) {
+                            view.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        })
     }
 
     override fun initData() {
