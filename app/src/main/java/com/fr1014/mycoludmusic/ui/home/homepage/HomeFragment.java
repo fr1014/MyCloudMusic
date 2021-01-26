@@ -117,14 +117,6 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
     }
 
     private void initListener() {
-        mViewBinding.btToplist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), TopListActivity.class);
-//                startActivity(intent);
-                Navigation.findNavController(v).navigate(R.id.topListFragment);
-            }
-        });
 
         mViewBinding.btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,10 +127,6 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
 //                    Log.d("hello", "onClick: "+userProfile.toString());
 //                }
             }
-        });
-
-        mViewBinding.btLikeList.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.userInfoFragment);
         });
     }
 
