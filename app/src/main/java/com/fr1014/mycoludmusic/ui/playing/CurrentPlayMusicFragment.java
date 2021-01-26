@@ -34,11 +34,7 @@ import java.io.File;
 
 public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, CurrentPlayMusicViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener, LoadResultListener {
     private MediaPlayer player;
-    private Music oldMusic;
-
-    public CurrentPlayMusicFragment() {
-        // Required empty public constructor
-    }
+    private SeekBar sbProgress;
 
     @Override
     protected FragmentCurrentMusicBinding getViewBinding(ViewGroup container) {
@@ -52,22 +48,19 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     protected void initView() {
-        getLifecycle().addObserver(mViewBinding.albumCoverView);
-
-        StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
         initSystemBar();
+        sbProgress = mViewBinding.sbProgress;
+        getLifecycle().addObserver(mViewBinding.albumCoverView);
+        mViewBinding.userControlBar.initUserControlBar(mViewModel, this);
+
         initListener();
         initCoverLrc();
         AudioPlayer.get().addOnPlayEventListener(this);
         CoverLoadUtils.get().registerLoadListener(this);
         player = AudioPlayer.get().getMediaPlayer();
-        oldMusic = AudioPlayer.get().getPlayMusic();
-        if (oldMusic == null) return;
-
-        mViewBinding.userControlBar.initUserControlBar(mViewModel, this);
-        setMusicInfo(oldMusic);
-        initViewData(oldMusic);
-
+        Music music = AudioPlayer.get().getPlayMusic();
+        if (music == null) return;
+        onChange(music);
         if (AudioPlayer.get().isPlaying()) {
             mViewBinding.albumCoverView.startAnimator();
             mViewBinding.playControlBar.setStateImage(R.drawable.selector_stop_state);
@@ -81,7 +74,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewBinding.icBack.setOnClickListener(this);
         mViewBinding.albumCoverView.setOnClickListener(this);
 
-        mViewBinding.sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        sbProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //拖动进度条
@@ -95,7 +88,12 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                AudioPlayer.get().seekTo(seekBar.getProgress());
+                if (AudioPlayer.get().isPlaying() || AudioPlayer.get().isPausing()) {
+                    int progress = seekBar.getProgress();
+                    AudioPlayer.get().seekTo(progress);
+                } else {
+                    seekBar.setProgress(0);
+                }
             }
         });
 
@@ -118,9 +116,11 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     /**
+     * 修改状态栏字颜色为黑色
      * 沉浸式状态栏
      */
     private void initSystemBar() {
+        StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
         int top = ScreenUtils.getStatusBarHeight();
         mViewBinding.llContent.setPadding(0, top, 0, 0);
     }
@@ -182,14 +182,14 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         if (duration == 0) {
             duration = player.getDuration();
         }
-        mViewBinding.sbProgress.setMax((int) duration);
-        mViewBinding.sbProgress.setSecondaryProgress(0);
+        sbProgress.setMax((int) Math.abs(duration));
+//        sbProgress.setSecondaryProgress(0);
         mViewBinding.tvDuration.setText(CommonUtils.formatTime(duration));
     }
 
     private void resetSeekBarData() {
         mViewBinding.tvNowTime.setText(R.string.start_seekbar);
-        mViewBinding.sbProgress.setSecondaryProgress(0);
+        sbProgress.setSecondaryProgress(0);
     }
 
     //音乐旋转图、歌词
@@ -217,9 +217,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onChange(Music music) {
         initViewData(music);
-        if (oldMusic != music){
-            changeMusicPlay(music);
-        }
+        changeMusicPlay(music);
     }
 
     private void changeMusicPlay(Music music) {
@@ -233,7 +231,6 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         resetSeekBarData();
         setMusicInfo(music);
         mViewBinding.userControlBar.initLikeIcon(music);
-        oldMusic = music;
     }
 
     @Override
@@ -257,7 +254,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     @Override
     public void onPublish(int progress) {
         mViewBinding.tvNowTime.setText(CommonUtils.formatTime(player.getCurrentPosition()));
-        mViewBinding.sbProgress.setProgress((int) progress);
+        sbProgress.setProgress(progress);
 
         if (isVisible() && (mViewBinding.llLrc.getVisibility() == View.VISIBLE) && mViewBinding.lrcView.hasLrc()) {
             mViewBinding.lrcView.updateTime(progress);
@@ -266,7 +263,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onBufferingUpdate(int percent) {
-        mViewBinding.sbProgress.setSecondaryProgress(mViewBinding.sbProgress.getMax() * 100 / percent);
+        sbProgress.setSecondaryProgress(sbProgress.getMax() * 100 / percent);
     }
 
     private void getSongLrc(Music music) {

@@ -8,7 +8,6 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -39,16 +38,23 @@ public class CommonUtils {
         return dateFormat.format(data);
     }
 
+    /**
+     * 修复kw中歌曲
+     * @param str 时长
+     * @return 时长为str，需要转化为毫秒的数字时长duration
+     * @throws ParseException
+     */
     public static long stringToDuration(String str) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
-        Date date = (Date) formatter.parse(str);
-        return date.getTime();
+        Date date = formatter.parse(str);
+        long duration = date.getMinutes() * 60000 + date.getSeconds() * 1000;
+        return duration;
     }
 
     public static String strFormatTime(String str) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("ss.SSS");
         SimpleDateFormat f = new SimpleDateFormat("mm:ss.SSS");
-        Date date = (Date) formatter.parse(str);
+        Date date = formatter.parse(str);
         return f.format(date);
     }
 
