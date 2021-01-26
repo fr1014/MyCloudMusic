@@ -171,7 +171,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     private void setMusicImage(Music music) {
         if (TextUtils.isEmpty(music.getImgUrl())) {
-            mViewBinding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play));
+            mViewBinding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
             return;
         }
         setBitmap(FileUtils.getCoverLocal(music));

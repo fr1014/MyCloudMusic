@@ -48,14 +48,14 @@ public class BlurImageView extends AppCompatImageView {
     public void setBlurImageUrl(String url){
         setScaleType(ScaleType.CENTER_CROP);
         if (TextUtils.isEmpty(url)){
-            setImageDrawable(getForegroundDrawable(BitmapFactory.decodeResource(getResources(), R.drawable.bg_play)));
+            setImageDrawable(getForegroundDrawable(BitmapFactory.decodeResource(getResources(), R.drawable.ic_placeholder)));
             return;
         }
         Glide.with(getContext())
                 .asBitmap()
                 .load(url)
-                .placeholder(R.drawable.bg_play)
-                .error(R.drawable.bg_play)
+                .placeholder(R.drawable.film)
+                .error(R.drawable.film)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {

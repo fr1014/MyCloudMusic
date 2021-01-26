@@ -72,7 +72,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     @Override
     protected FragmentPlaylistDetailBinding getViewBinding(ViewGroup container) {
-        return FragmentPlaylistDetailBinding.inflate(getLayoutInflater(), container, false);
+        return FragmentPlaylistDetailBinding.inflate(getLayoutInflater(), container,false);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         postponeEnterTransition();
         Glide.with(this)
                 .load(cover)
-                .error(R.drawable.bg_play)
+                .error(R.drawable.ic_placeholder)
                 .addListener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

@@ -36,7 +36,7 @@ class TopListBlock @JvmOverloads constructor(
         mViewBinding.apply {
             playListDetailEntity?.playlist?.let {
                 tvTopName.apply {
-                    text = "${it.name} >"
+                    text = it.name
                     setOnClickListener { view ->
                         Navigation.findNavController(view).navigate(R.id.playListDetailFragment,
                                 PlayListDetailFragment.createBundle(it.id, it.name, it.coverImgUrl)
