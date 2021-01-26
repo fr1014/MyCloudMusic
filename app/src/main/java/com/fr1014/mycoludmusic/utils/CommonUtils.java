@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.utils;
 
+import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import com.fr1014.mycoludmusic.app.MyApplication;
@@ -8,13 +9,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 创建时间:2020/9/10
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class CommonUtil {
+public class CommonUtils {
 
     public static Toast toastShort(String message) {
         Toast toast = Toast.makeText(MyApplication.getInstance(), null, Toast.LENGTH_SHORT);
@@ -48,5 +50,13 @@ public class CommonUtil {
         SimpleDateFormat f = new SimpleDateFormat("mm:ss.SSS");
         Date date = (Date) formatter.parse(str);
         return f.format(date);
+    }
+
+    public static String formatTime(String pattern, long milli) {
+        int m = (int) (milli / DateUtils.MINUTE_IN_MILLIS);
+        int s = (int) ((milli / DateUtils.SECOND_IN_MILLIS) % 60);
+        String mm = String.format(Locale.getDefault(), "%02d", m);
+        String ss = String.format(Locale.getDefault(), "%02d", s);
+        return pattern.replace("mm", mm).replace("ss", ss);
     }
 }

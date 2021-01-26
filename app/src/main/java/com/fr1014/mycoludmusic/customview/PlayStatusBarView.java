@@ -21,7 +21,7 @@ import com.fr1014.mycoludmusic.ui.home.playlistdialog.PlayDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -149,7 +149,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                         listDialogFragment.show(fragmentManager, "playlist_dialog");
                     }
                 } else {
-                    CommonUtil.toastShort("当前播放列表为空！！！");
+                    CommonUtils.toastShort("当前播放列表为空！！！");
                 }
                 break;
             case R.id.cl_bottom_bar:

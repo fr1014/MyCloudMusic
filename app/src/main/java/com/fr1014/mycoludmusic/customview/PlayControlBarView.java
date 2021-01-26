@@ -16,7 +16,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
 
 /**
  * Create by fanrui on 2020/12/26
@@ -89,15 +89,15 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
         PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
         switch (mode) {
             case SINGLE:
-                toast = CommonUtil.toastShort("循环播放");
+                toast = CommonUtils.toastShort("循环播放");
                 mode = PlayModeEnum.LOOP;
                 break;
             case LOOP:
-                toast = CommonUtil.toastShort("随机播放");
+                toast = CommonUtils.toastShort("随机播放");
                 mode = PlayModeEnum.SHUFFLE;
                 break;
             case SHUFFLE:
-                toast = CommonUtil.toastShort("单曲循环");
+                toast = CommonUtils.toastShort("单曲循环");
                 mode = PlayModeEnum.SINGLE;
                 break;
         }

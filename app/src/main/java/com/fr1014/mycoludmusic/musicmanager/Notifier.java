@@ -134,6 +134,13 @@ public class Notifier {
         remoteViews.setImageViewResource(R.id.iv_next, R.drawable.ic_song_next_black);
         remoteViews.setOnClickPendingIntent(R.id.iv_next, nextPendingIntent);
 
+        Intent quitIntent = new Intent(context, StatusBarReceiver.class);
+        quitIntent.setAction(StatusBarReceiver.ACTION_STATUS_BAR);
+        quitIntent.putExtra(StatusBarReceiver.EXTRA, StatusBarReceiver.EXTRA_QUIT);
+        PendingIntent quitPendingIntent = PendingIntent.getBroadcast(context, 3, quitIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setImageViewResource(R.id.iv_quit, R.drawable.ic_del);
+        remoteViews.setOnClickPendingIntent(R.id.iv_quit, quitPendingIntent);
+
         return remoteViews;
     }
 }

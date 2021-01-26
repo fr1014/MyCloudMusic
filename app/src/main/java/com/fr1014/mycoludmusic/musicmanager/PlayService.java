@@ -6,18 +6,12 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
-import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
-
-import io.reactivex.disposables.CompositeDisposable;
 
 public class PlayService extends Service {
-    private static final String TAG = "Service";
-    private CompositeDisposable mCompositeDisposable;
 
     public class PlayBinder extends Binder {
         public PlayService getService() {
@@ -28,7 +22,6 @@ public class PlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(TAG, "hello_world" + getClass().getSimpleName());
         AudioPlayer.get().init(this);
         MediaSessionManager.get().init(this);
         Notifier.get().init(this);

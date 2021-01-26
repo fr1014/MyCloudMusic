@@ -21,7 +21,7 @@ import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.ui.search.paging2.SearchResultAdapter
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
-import com.fr1014.mycoludmusic.utils.ScreenUtil
+import com.fr1014.mycoludmusic.utils.ScreenUtils
 
 class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
     private lateinit var viewAdapter: SearchResultAdapter
@@ -36,7 +36,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
      * 沉浸式状态栏
      */
     private fun initSystemBar() {
-        val top = ScreenUtil.getStatusHeight(MyApplication.getInstance())
+        val top = ScreenUtils.getStatusBarHeight()
         mViewBinding.llSearch.setPadding(0, top, 0, 0)
     }
 

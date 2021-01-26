@@ -2,7 +2,6 @@ package com.fr1014.mycoludmusic.ui.playing
 
 import android.app.Application
 import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fr1014.mycoludmusic.data.DataRepository
@@ -11,11 +10,10 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.rx.ExecuteOnceObserver
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
-import com.fr1014.mycoludmusic.utils.CommonUtil
+import com.fr1014.mycoludmusic.utils.CommonUtils
 import com.fr1014.mycoludmusic.utils.FileUtils
 import com.fr1014.mymvvm.base.BusLiveData
 import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import java.util.regex.Pattern
@@ -49,9 +47,9 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
                     likeSongResultLive.postValue(like)
                 }, {
                     if (like) {
-                        CommonUtil.toastShort("添加收藏失败")
+                        CommonUtils.toastShort("添加收藏失败")
                     } else {
-                        CommonUtil.toastShort("取消收藏失败")
+                        CommonUtils.toastShort("取消收藏失败")
                     }
                 }));
     }
@@ -92,11 +90,11 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
                             val time = lrcListBean.time
                             val m = pattern.matcher(time)
                             if (m.matches()) {
-                                content.append(CommonUtil.strFormatTime(m.group()))
+                                content.append(CommonUtils.strFormatTime(m.group()))
                             } else {   //如果正则匹配失败，取.前和.后2位的字符
                                 val index = time.indexOf(".")
                                 val endIndex = index + 2
-                                content.append(CommonUtil.strFormatTime(time.substring(0, endIndex)))
+                                content.append(CommonUtils.strFormatTime(time.substring(0, endIndex)))
                             }
                             content.apply {
                                 append("]")

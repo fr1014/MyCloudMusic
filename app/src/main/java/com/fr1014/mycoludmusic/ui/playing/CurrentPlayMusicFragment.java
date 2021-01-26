@@ -23,10 +23,10 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
-import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseFragment;
 
@@ -85,7 +85,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //拖动进度条
-                mViewBinding.tvNowTime.setText(CommonUtil.formatTime(progress));
+                mViewBinding.tvNowTime.setText(CommonUtils.formatTime(progress));
             }
 
             @Override
@@ -121,7 +121,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
      * 沉浸式状态栏
      */
     private void initSystemBar() {
-        int top = ScreenUtil.getStatusHeight(MyApplication.getInstance());
+        int top = ScreenUtils.getStatusBarHeight();
         mViewBinding.llContent.setPadding(0, top, 0, 0);
     }
 
@@ -184,7 +184,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         }
         mViewBinding.sbProgress.setMax((int) duration);
         mViewBinding.sbProgress.setSecondaryProgress(0);
-        mViewBinding.tvDuration.setText(CommonUtil.formatTime(duration));
+        mViewBinding.tvDuration.setText(CommonUtils.formatTime(duration));
     }
 
     private void resetSeekBarData() {
@@ -256,7 +256,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onPublish(int progress) {
-        mViewBinding.tvNowTime.setText(CommonUtil.formatTime(player.getCurrentPosition()));
+        mViewBinding.tvNowTime.setText(CommonUtils.formatTime(player.getCurrentPosition()));
         mViewBinding.sbProgress.setProgress((int) progress);
 
         if (isVisible() && (mViewBinding.llLrc.getVisibility() == View.VISIBLE) && mViewBinding.lrcView.hasLrc()) {

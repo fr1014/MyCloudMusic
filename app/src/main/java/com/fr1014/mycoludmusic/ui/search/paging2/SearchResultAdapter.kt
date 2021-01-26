@@ -16,7 +16,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.search.SearchViewModel
-import com.fr1014.mycoludmusic.utils.ScreenUtil
+import com.fr1014.mycoludmusic.utils.ScreenUtils
 
 /**
  * Create by fanrui on 2021/1/10
@@ -135,7 +135,7 @@ class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAd
 
         private fun setAuthorLeftMargin(dp: Int) {
             val layoutParams = getView<View>(R.id.tv_author).layoutParams as LinearLayout.LayoutParams
-            layoutParams.leftMargin = ScreenUtil.dp2px(itemView.context, dp.toFloat())
+            layoutParams.leftMargin = ScreenUtils.dp2px(dp.toFloat())
             getView<View>(R.id.tv_author).layoutParams = layoutParams
         }
 

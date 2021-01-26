@@ -13,6 +13,7 @@ public class StatusBarReceiver extends BroadcastReceiver {
     public static final String EXTRA = "extra";
     public static final String EXTRA_BACK = "back";
     public static final String EXTRA_NEXT = "next";
+    public static final String EXTRA_QUIT = "quit";
     public static final String EXTRA_PLAY_PAUSE = "play_pause";
 
     @Override
@@ -27,6 +28,8 @@ public class StatusBarReceiver extends BroadcastReceiver {
             AudioPlayer.get().playNext();
         } else if (TextUtils.equals(extra, EXTRA_PLAY_PAUSE)) {
             AudioPlayer.get().playPause();
+        }else if (TextUtils.equals(extra,EXTRA_QUIT)){
+            AudioPlayer.get().quit();
         }
     }
 }

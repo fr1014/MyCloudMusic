@@ -21,7 +21,7 @@ import com.fr1014.mycoludmusic.databinding.FragmentUserInfoBinding
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
 import com.fr1014.mycoludmusic.utils.CollectionUtils
-import com.fr1014.mycoludmusic.utils.ScreenUtil
+import com.fr1014.mycoludmusic.utils.ScreenUtils
 import com.fr1014.mymvvm.base.BaseFragment
 
 /**
@@ -82,7 +82,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mViewBinding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                if (scrollY > ScreenUtil.dp2px(context, 64F)) {
+                if (scrollY > ScreenUtils.dp2px(64F)) {
                     userTitleVisibility(View.VISIBLE)
                     context?.let {
                         mViewBinding.toolbar.root.setBackgroundColor(it.getColor(R.color.white))
@@ -100,7 +100,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
     }
 
     private fun changeToolBarAlpha(scrollY: Int) {
-        val alpha: Float = scrollY.div(ScreenUtil.dp2px(context, 64F).toFloat())
+        val alpha: Float = scrollY.div(ScreenUtils.dp2px(64F).toFloat())
         mViewBinding.toolbar.clToolbar.background.alpha = (alpha * 255).toInt()
     }
 

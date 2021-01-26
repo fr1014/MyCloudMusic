@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.format.DateUtils;
 
+import com.fr1014.mycoludmusic.app.AppCache;
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
 
 public class QuitTimer {
@@ -57,7 +58,7 @@ public class QuitTimer {
         handler.removeCallbacks(mQuitRunnable);
     }
 
-    private Runnable mQuitRunnable = new Runnable() {
+    private final Runnable mQuitRunnable = new Runnable() {
         @Override
         public void run() {
             timerRemain -= DateUtils.SECOND_IN_MILLIS;
@@ -67,7 +68,7 @@ public class QuitTimer {
                 }
                 handler.postDelayed(this, DateUtils.SECOND_IN_MILLIS);
             } else {
-//                AppCache.get().clearStack();
+                AppCache.get().clearStack();
                 PlayService.startCommand(context, Actions.ACTION_STOP);
             }
         }

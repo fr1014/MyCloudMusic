@@ -27,7 +27,7 @@ import android.view.WindowManager;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
-import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.ScreenUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -104,8 +104,8 @@ public class PlayDialogFragment extends DialogFragment implements PlayDialogPage
             Window window = dialog.getWindow();
             if (window != null) {
                 WindowManager.LayoutParams lp = window.getAttributes();
-                lp.height = (2 * ScreenUtil.getScreenHeight(MyApplication.getInstance()) / 3);//获取屏幕的宽度，定义自己的宽度
-                lp.width = (ScreenUtil.getScreenWidth(MyApplication.getInstance()));
+                lp.height = (2 * ScreenUtils.getScreenHeight() / 3);//获取屏幕的宽度，定义自己的宽度
+                lp.width = ScreenUtils.getScreenWidth();
                 lp.y = 0;
                 lp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                 window.setLayout(lp.width, lp.height);

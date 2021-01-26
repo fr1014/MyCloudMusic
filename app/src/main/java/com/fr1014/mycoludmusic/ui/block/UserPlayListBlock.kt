@@ -66,7 +66,7 @@ class UserPlayListAdapter(layoutResId:Int) : BaseAdapter<Playlist,BaseViewHolder
         holder.getView<TextView>(R.id.tv_count).text = "${data.trackCount}首,by ${data.creator.nickname}"
         val options = RequestOptions().centerCrop().transform(RoundedCorners(30))
         Glide.with(holder.itemView)
-                .load(data.coverImgUrl)
+                .load(data.coverImgUrl + "?param=300y300")
                 .apply(options)
                 .placeholder(R.drawable.ic_placeholder)
                 .listener(object : RequestListener<Drawable> {

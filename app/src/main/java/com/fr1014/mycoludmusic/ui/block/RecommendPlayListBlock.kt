@@ -73,7 +73,7 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, B
         }
         val options = RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(RoundedCorners(30))
         GlideApp.with(holder.itemView)
-                .load(data.coverImgUrl)
+                .load(data.coverImgUrl + "?param=300y300")
                 .apply(options)
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {

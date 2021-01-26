@@ -3,14 +3,9 @@ package com.fr1014.mycoludmusic;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
@@ -22,15 +17,15 @@ import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
+import com.fr1014.mycoludmusic.musicmanager.QuitTimer;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
-import com.fr1014.mycoludmusic.ui.home.toplist.TopListViewModel;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.ui.search.SearchActivity;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
-import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.ScreenUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,7 +59,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
             toast.cancel();
         }
         String source = SwitchDialogFragment.array[position];
-        toast = CommonUtil.toastShort("音乐源已切换为: " + source);
+        toast = CommonUtils.toastShort("音乐源已切换为: " + source);
         mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + source);
         switch (position) {
             case 0:  //酷我
@@ -96,7 +91,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     @Override
     protected void initView() {
         setSupportActionBar(mViewBinding.appBarMain.toolbar);
-        mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtil.getStatusHeight(this), 0, 0);
+        mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -125,27 +120,26 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
             }
         });
         initToolbar();
-//        initNavHeaderView();
         initCustomNavView();
         initClickListener();
     }
 
     private void initCustomNavView() {
-        initNavHeaderView();
+        mViewBinding.navView.setViewModel(mViewModel,this);
+        initNavHeaderViewData(getUserProfile());
+    }
+
+    private void initNavHeaderViewData(Profile profile) {
+        mViewBinding.navView.initNavHeaderViewData(profile);
     }
 
     private void initToolbar() {
         mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + SourceHolder.get().getSource());
     }
 
-    private void initNavHeaderView() {
-        initNavHeaderViewData(getUserProfile());
-    }
-
     private void initClickListener() {
         mViewBinding.appBarMain.ivSwitch.setOnClickListener(this);
         mViewBinding.appBarMain.tvSearch.setOnClickListener(this);
-        mViewBinding.tvLogout.setOnClickListener(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -159,28 +153,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         }
     }
 
-    @Override
-    public void initViewObservable() {
-        mViewModel.getLogoutLive().observe(this, logout -> {
-            if (logout) {
-                Preferences.saveUserProfile(null);
-                CommonUtil.toastShort("啊啊啊啊！居然退出登录啦，你怎么敢的啊！");
-                finish();
-            } else {
-                CommonUtil.toastShort("遇到了有意思的事情开小差了，请稍后重试");
-            }
-        });
-    }
-
-    private void initNavHeaderViewData(Profile profile) {
-        if (profile != null) {
-            Glide.with(this)
-                    .load(profile.getAvatarUrl())
-                    .circleCrop()
-                    .into(mViewBinding.includeHeader.avatar);
-        }
-    }
-
     private Profile getUserProfile() {
         return Preferences.getUserProfile();
     }
@@ -188,6 +160,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     //首次绑定Service时该方法被调用
     @Override
     protected void onServiceBound() {
+        QuitTimer.get().setOnTimerListener(mViewBinding.navView);
         DBManager.get().getLocalMusicList(false).observe(this, new Observer<List<MusicEntity>>() {
             @Override
             public void onChanged(List<MusicEntity> musicEntities) {
@@ -239,9 +212,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                 break;
             case R.id.tv_search:
                 startActivity(SearchActivity.class);
-                break;
-            case R.id.tv_logout:
-                mViewModel.logout();
                 break;
         }
     }

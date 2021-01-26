@@ -78,7 +78,7 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
         }
         ImageView sharedElementView = (ImageView) holder.getView(R.id.iv_coverImg);
         GlideApp.with(holder.itemView)
-                .load(data.getCoverImgUrl())
+                .load(data.getCoverImgUrl() + "?param=300y300")
                 .apply(new RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(new RoundedCorners(30)))
                 .into(sharedElementView);
         // 把每个图片视图设置不同的Transition名称, 防止在一个视图内有多个相同的名称, 在变换的时候造成混乱

@@ -19,7 +19,7 @@ import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.http.WYYServiceProvider;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
 import com.fr1014.mycoludmusic.rx.RxJavaError;
-import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mymvvm.base.BaseApplication;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -31,7 +31,6 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import static com.fr1014.mycoludmusic.http.WYYServiceProvider.DEFAULT_TIMEOUT;
 
@@ -45,16 +44,13 @@ public class MyApplication extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();
-        CrashReport.initCrashReport(getApplicationContext(), "11c03b3b54", false);
-        Preferences.init(this); //SharePreferences
+        AppCache.get().init(this);
         Intent intent = new Intent(this, PlayService.class);
         startService(intent);
 
         WYYServiceProvider.init(createWYYRetrofitBuilder());
         KWServiceProvider.init(createKWRetrofitBuilder());
         RxJavaError.setRxJavaErrorHandler();
-
-        ScreenUtil.getInstance(this);
     }
 
     private Retrofit.Builder createWYYRetrofitBuilder() {

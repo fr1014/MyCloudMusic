@@ -12,7 +12,6 @@ import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.transition.TransitionInflater;
 
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,7 +28,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus;
-import com.fr1014.mycoludmusic.utils.ScreenUtil;
+import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 //歌单详情页面
@@ -85,7 +84,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     @Override
     protected void initView() {
         ViewCompat.setTransitionName(mViewBinding.ivCover, name);
-        mViewBinding.toolbar.setPadding(0, ScreenUtil.getStatusHeight(MyApplication.getInstance()), 0, 0);
+        mViewBinding.toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
         mViewBinding.name.setText(name);
 
         postponeEnterTransition();

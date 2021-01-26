@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.fr1014.mycoludmusic.app.AppCache;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
@@ -16,11 +17,12 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
+import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
-import com.fr1014.mycoludmusic.utils.CommonUtil;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -226,7 +228,7 @@ public class AudioPlayer implements LoadResultListener {
                             @Override
                             public void accept(KWSongDetailEntity kwSongDetailEntity) throws Exception {
                                 music.setImgUrl(kwSongDetailEntity.getData().getAlbumpic());
-                                music.setDuration(CommonUtil.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
+                                music.setDuration(CommonUtils.stringToDuration(kwSongDetailEntity.getData().getSongTimeMinutes()));
                                 CoverLoadUtils.get().loadRemoteCover(music);
                             }
                         }));
@@ -293,7 +295,7 @@ public class AudioPlayer implements LoadResultListener {
                                     music.setMUSICRID(abslist.get(0).getMUSICRID());
                                     getSongUrl(music);
                                 } else {
-                                    CommonUtil.toastShort(music.getTitle() + ": 暂时无法播放!!!\n已为您播放了其它歌曲");
+                                    CommonUtils.toastShort(music.getTitle() + ": 暂时无法播放!!!\n已为您播放了其它歌曲");
                                     playNext();
                                 }
                             }
@@ -548,5 +550,10 @@ public class AudioPlayer implements LoadResultListener {
             }
         }
         return -1;
+    }
+
+    public void quit(){
+        AppCache.get().clearStack();
+        PlayService.startCommand(context, Actions.ACTION_STOP);
     }
 }

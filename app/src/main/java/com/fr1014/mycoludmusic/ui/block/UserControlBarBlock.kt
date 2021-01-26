@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.AnimationSet
 import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
@@ -21,7 +20,7 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicViewModel
 import com.fr1014.mycoludmusic.utils.CollectionUtils
-import com.fr1014.mycoludmusic.utils.CommonUtil
+import com.fr1014.mycoludmusic.utils.CommonUtils
 
 class UserControlBarBlock @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -89,14 +88,14 @@ class UserControlBarBlock @JvmOverloads constructor(
                 startLikeAnimator()
                 val playMusic = AudioPlayer.get().playMusic
                 if (userLikePid == 0L) {
-                    CommonUtil.toastShort("尚未登录")
+                    CommonUtils.toastShort("尚未登录")
                     return
                 }
                 if (playMusic.id != 0L) {
                     val isLikeMusic = playMusic.isLikeMusic(musicLikes)
                     mViewModel?.getLikeSong(!isLikeMusic, userLikePid!!, playMusic.id.toString(), System.currentTimeMillis().toString())
                 } else {
-                    CommonUtil.toastLong("该歌曲源不是网易，暂时无法收藏")
+                    CommonUtils.toastLong("该歌曲源不是网易，暂时无法收藏")
                 }
             }
         }
