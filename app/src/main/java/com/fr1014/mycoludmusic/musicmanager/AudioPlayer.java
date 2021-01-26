@@ -8,7 +8,6 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.fr1014.mycoludmusic.app.AppCache;
 import com.fr1014.mycoludmusic.app.MyApplication;

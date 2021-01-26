@@ -39,7 +39,6 @@ public class CommonUtils {
     }
 
     /**
-     * 修复kw中歌曲
      * @param str 时长
      * @return 时长为str，需要转化为毫秒的数字时长duration
      * @throws ParseException
