@@ -94,11 +94,14 @@ class MyNavigationView @JvmOverloads constructor(
     }
 
     fun initNavHeaderViewData(profile: Profile?) {
-        profile?.let {
-            Glide.with(this)
-                    .load(profile.avatarUrl)
-                    .circleCrop()
-                    .into(mViewBinding.includeHeader.avatar)
+        mViewBinding.includeHeader.apply {
+            profile?.let {
+                Glide.with(avatar)
+                        .load(profile.avatarUrl)
+                        .circleCrop()
+                        .into(avatar)
+                userNike.text = it.nickname
+            }
         }
     }
 
@@ -106,6 +109,4 @@ class MyNavigationView @JvmOverloads constructor(
         val title: String = context.getString(R.string.menu_timer)
         mViewBinding.includeTiming.tvItem.text = if (remain == 0L) title else CommonUtils.formatTime("$title(mm:ss)", remain)
     }
-
-
 }
