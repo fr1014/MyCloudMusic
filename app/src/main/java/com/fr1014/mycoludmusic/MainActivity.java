@@ -74,6 +74,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setBackgroundDrawable(null);
         EventBus.getDefault().register(this);
     }
 
