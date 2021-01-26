@@ -55,6 +55,10 @@ class RecommendPlayListBlock @JvmOverloads constructor(
     fun setTitle(title: String) {
         mViewBinding.tvTitle.text = title
     }
+
+    fun setTvButton(button : String){
+        mViewBinding.tvMore.text = button
+    }
 }
 
 class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {

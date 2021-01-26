@@ -32,5 +32,6 @@
     <string name="top_list">排行榜</string>
     <string name="logout">退出登录</string>
     <string name="timing_close">定时关闭</string>
+    <string name="more">更多</string>
     <!--LrcView-->
 </resources>

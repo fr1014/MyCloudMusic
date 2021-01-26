@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.ui.home.homepage;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -88,17 +89,20 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
                     }
                     if (TextUtils.equals(block.getBlockCode(), "HOMEPAGE_BLOCK_PLAYLIST_RCMD")) { //推荐歌单
                         mViewBinding.blockRecommend.setTitle(block.getUiElement().getSubTitle().getTitle());
+//                        mViewBinding.blockRecommend.setTvButton(block.getUiElement().getButton().getText());
                         mViewBinding.blockRecommend.bindData(commonPlaylists);
                     } else if (TextUtils.equals(block.getBlockCode(), "HOMEPAGE_BLOCK_OFFICIAL_PLAYLIST")) { //专属场景歌单
                         mViewBinding.blockNetizensPlaylist.setTitle(block.getUiElement().getSubTitle().getTitle());
+//                        mViewBinding.blockNetizensPlaylist.setTitle(block.getUiElement().getButton().getText());
                         mViewBinding.blockNetizensPlaylist.bindData(commonPlaylists);
-                    }else if (TextUtils.equals(block.getBlockCode(),"HOMEPAGE_VOICELIST_RCMD")){ //播客合集
-                        mViewBinding.blockVoiceList.setTitle(block.getUiElement().getSubTitle().getTitle());
-                        mViewBinding.blockVoiceList.bindData(commonPlaylists);
-                    }else if(TextUtils.equals(block.getBlockCode(),"HOMEPAGE_BLOCK_VIDEO_PLAYLIST")){ //视频合集
-                        mViewBinding.blockVideoList.setTitle(block.getUiElement().getSubTitle().getTitle());
-                        mViewBinding.blockVideoList.bindData(commonPlaylists);
                     }
+//                    else if (TextUtils.equals(block.getBlockCode(),"HOMEPAGE_VOICELIST_RCMD")){ //播客合集
+//                        mViewBinding.blockVoiceList.setTitle(block.getUiElement().getSubTitle().getTitle());
+//                        mViewBinding.blockVoiceList.bindData(commonPlaylists);
+//                    }else if(TextUtils.equals(block.getBlockCode(),"HOMEPAGE_BLOCK_VIDEO_PLAYLIST")){ //视频合集
+//                        mViewBinding.blockVideoList.setTitle(block.getUiElement().getSubTitle().getTitle());
+//                        mViewBinding.blockVideoList.bindData(commonPlaylists);
+//                    }
                 }
             }
         });
@@ -118,16 +122,11 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
 
     private void initListener() {
 
-        mViewBinding.btLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(LoginActivity.class);
-//                Profile userProfile = Preferences.getUserProfile();
-//                if (userProfile != null){
-//                    Log.d("hello", "onClick: "+userProfile.toString());
-//                }
-            }
+        mViewBinding.tvBtMore.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.topListFragment);
         });
+
+        mViewBinding.btLogin.setOnClickListener(v -> startActivity(LoginActivity.class));
     }
 
 }

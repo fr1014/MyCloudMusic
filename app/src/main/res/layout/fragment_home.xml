@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/app_gray">
 
     <LinearLayout
@@ -22,19 +22,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_white_cornertlr_8"
-            android:padding="8dp"
-            android:elevation="1dp"/>
+            android:elevation="1dp"
+            android:padding="8dp" />
 
         <com.fr1014.mycoludmusic.ui.block.RecommendPlayListBlock
             android:id="@+id/block_recommend"
             android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:background="@drawable/bg_white_cornerblr_8"/>
+            android:background="@drawable/bg_white_cornerblr_8" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:background="@drawable/bg_white_corner_8">
 
             <TextView
@@ -50,14 +50,16 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_more"
+                android:id="@+id/tv_bt_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:background="@drawable/bg_tvbt_stroke_corner"
-                android:text="更多>"
+                android:text="@string/more"
                 android:textColor="@color/tv_bt_black"
+                android:textSize="13sp"
+                app:drawableEndCompat="@drawable/ic_arrow"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -79,17 +81,17 @@
             android:layout_height="220dp"
             android:layout_marginTop="8dp" />
 
-        <com.fr1014.mycoludmusic.ui.block.RecommendPlayListBlock
-            android:id="@+id/block_voice_list"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="8dp" />
+<!--        <com.fr1014.mycoludmusic.ui.block.RecommendPlayListBlock-->
+<!--            android:id="@+id/block_voice_list"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="220dp"-->
+<!--            android:layout_marginTop="8dp" />-->
 
-        <com.fr1014.mycoludmusic.ui.block.RecommendPlayListBlock
-            android:id="@+id/block_video_list"
-            android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="8dp" />
+<!--        <com.fr1014.mycoludmusic.ui.block.RecommendPlayListBlock-->
+<!--            android:id="@+id/block_video_list"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="220dp"-->
+<!--            android:layout_marginTop="8dp" />-->
 
         <View
             android:layout_width="match_parent"

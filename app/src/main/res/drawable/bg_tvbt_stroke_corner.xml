@@ -10,6 +10,6 @@
     <padding
         android:bottom="3dp"
         android:left="9dp"
-        android:right="9dp"
+        android:right="2dp"
         android:top="3dp" />
 </shape>
