@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.marginRight
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +25,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist
 import com.fr1014.mycoludmusic.databinding.BlockRecommendPlaylistBinding
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
+import com.fr1014.mycoludmusic.utils.ScreenUtils
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 import io.supercharge.shimmerlayout.ShimmerLayout
@@ -87,6 +90,9 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, B
                 })
                 .into(holder.getView(R.id.iv_cover))
         holder.addOnClickListener(R.id.item)
+        if (holder.layoutPosition == (itemCount - 1)){
+            holder.getView<View>(R.id.view_blank).visibility = View.VISIBLE
+        }
     }
 
     override fun onItemClick(adapter: BaseAdapter<*, *>, view: View, position: Int) {
