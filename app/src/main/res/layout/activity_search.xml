@@ -16,46 +16,48 @@
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:layout_weight="0.2"
+            android:gravity="center_vertical"
             android:background="@color/colorPrimaryDark"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/iv_back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_marginStart="16dp"
+                android:layout_weight="0.5"
                 android:src="@drawable/ic_back" />
 
-            <com.fr1014.mycoludmusic.customview.SearchView
-                android:id="@+id/et_keywords"
-                style="@style/Widget.AppCompat.EditText"
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/serach_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_weight="9"
                 android:background="@drawable/bg_white_corner"
-                android:hint="@string/search"
-                android:imeOptions="actionSearch"
                 android:maxLines="1"
-                android:padding="8dp"
-                android:singleLine="true"
-                android:textColor="@android:color/holo_orange_dark"
-                app:closeIcon="@drawable/ic_clear_24" />
+                app:searchIcon="@null"
+                app:queryBackground="@null"/>
+
+            <ImageView
+                android:id="@+id/iv_switch"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="0.5"
+                android:src="@drawable/ic_switch" />
         </LinearLayout>
 
         <include
             android:id="@+id/include_play_all"
-            layout="@layout/item_playlist_detail_header"
-            />
+            layout="@layout/item_playlist_detail_header" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="9.8"
-            />
+            android:layout_weight="9.8" />
 
         <View
             android:layout_width="match_parent"

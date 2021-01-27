@@ -1,14 +1,16 @@
 package com.fr1014.mycoludmusic.ui.search
 
-import android.content.Context
+import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
+import android.widget.EditText
+import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.SourceHolder
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
@@ -22,6 +24,7 @@ import com.fr1014.mycoludmusic.ui.search.paging2.SearchResultAdapter
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
+import java.lang.reflect.Field
 
 class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
     private lateinit var viewAdapter: SearchResultAdapter
@@ -46,12 +49,42 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     override fun initView() {
+        initSearchView()
         initAdapter()
         initSystemBar()
         //避免自动弹出输入框
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         mViewBinding.includePlayAll.llPlaylist.visibility = View.GONE
         initListener()
+    }
+
+    private fun initSearchView() {
+
+        mViewBinding.serachView.apply {
+            //是否一直显示clearIcon
+            setIconifiedByDefault(false)
+            //设置搜索框展开时是否显示提交按钮，false不显示
+            isSubmitButtonEnabled = false
+            //让键盘的回车键设置成搜索
+            imeOptions = EditorInfo.IME_ACTION_SEARCH
+            //搜索框是否展开，false表示展开
+            isIconified = false
+            //获取焦点
+            isFocusable = true
+            requestFocusFromTouch()
+            //设置提示词
+            queryHint = "请输入关键字"
+
+            //设置输入框文字颜色
+            //设置输入框文字颜色
+            //设置输入框文字size
+            val editText = findViewById<EditText>(R.id.search_src_text)
+            editText.apply {
+                setHintTextColor(ContextCompat.getColor(context, R.color.app_gray))
+                setTextColor(ContextCompat.getColor(context, R.color.tv_bt_black))
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14F) //14sp
+            }
+        }
     }
 
     override fun onServiceBound() {
@@ -88,38 +121,47 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     private fun initListener() {
         mViewBinding.ivBack.setOnClickListener { finish() }
-        mViewBinding.etKeywords.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                // 当按了搜索之后关闭软键盘
-                (mViewBinding.etKeywords.context.getSystemService(
-                        Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-                        this@SearchActivity.currentFocus!!.windowToken,
-                        InputMethodManager.HIDE_NOT_ALWAYS)
-                //viewModel.getSearchEntityWYY(binding.etKeywords.getText().toString(), 0);
-                //viewModel.getSearchEntityKW(mViewBinding.etKeywords.getText().toString(), 30);
 
-                val searchKey = mViewBinding.etKeywords.text.toString()
-                mViewBinding.includePlayAll.llPlaylist.visibility = View.VISIBLE
-                mViewModel.search(searchKey).observe(this, Observer { it ->
-                    //paging2
-                    viewAdapter.submitList(it)
-                })
+        // 设置搜索文本监听
+        mViewBinding.apply {
+            serachView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                //当点击搜索按钮时触发该方法
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    query?.let {
+                        mViewBinding.serachView.clearFocus()
+                        includePlayAll.llPlaylist.visibility = View.VISIBLE
+                        mViewModel.search(it).observe(getLifecycleOwner(), Observer { pagedList ->
+                            //paging2
+                            viewAdapter.submitList(pagedList)
+                        })
 
-                mViewModel.networkStatus.observe(this, Observer {
-                    viewAdapter.updateNetworkStatus(it)
-                    if (it == NetworkStatus.COMPLETED) {
+                        mViewModel.networkStatus.observe(getLifecycleOwner(), Observer { netStatus ->
+                            viewAdapter.updateNetworkStatus(netStatus)
+                            if (netStatus == NetworkStatus.COMPLETED) {
 
+                            }
+                        })
                     }
-                })
-                return@OnEditorActionListener true
-            }
-            false
-        })
+                    return false
+                }
+
+                //当搜索内容改变时触发该方法
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+
+            })
+        }
 
         mViewBinding.includePlayAll.llPlaylist.setOnClickListener {
             AudioPlayer.get().addAndPlay(viewAdapter.currentList?.toList())
         }
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mViewBinding.serachView.clearFocus()
     }
 
     override fun onDestroy() {
@@ -131,4 +173,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             }
         }
     }
+
+    private fun getLifecycleOwner() = this
 }
