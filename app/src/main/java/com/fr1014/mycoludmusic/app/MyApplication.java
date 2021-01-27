@@ -79,7 +79,7 @@ public class MyApplication extends BaseApplication {
                     .addInterceptor(new AddCookiesInterceptor()) //添加Cookie
                     .addInterceptor(new ReceivedCookiesInterceptor()) //拦截Cookie
                     .cache(cache)
-                    .sslSocketFactory(SSLUtils.getSSLSocketFactory())
+//                    .sslSocketFactory(SSLUtils.getSSLSocketFactory())
                     .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                     .writeTimeout(DEFAULT_TIMEOUT, TimeUnit.SECONDS)
                     .addNetworkInterceptor(HttpLogger.getHttpLoggingInterceptor())
