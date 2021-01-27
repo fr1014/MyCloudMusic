@@ -16,6 +16,7 @@ import com.fr1014.mymvvm.base.BusLiveData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.lang.NumberFormatException
 import java.util.regex.Pattern
 
 /**
@@ -44,7 +45,11 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
         addSubscribe(model.getWYManagePlayList(op, pid, tracks, timestamp)
                 .compose(RxSchedulers.apply())
                 .subscribe({
-                    likeSongResultLive.postValue(like)
+                    try {
+                        likeSongResultLive.postValue(like)
+                        saveLikeMusicId(tracks.toLong(), like)
+                    } catch (e: Exception) {
+                    }
                 }, {
                     if (like) {
                         CommonUtils.toastShort("添加收藏失败")
@@ -54,15 +59,15 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
                 }));
     }
 
-    fun saveLikeMusicId(music: Music, isLikeMusic: Boolean) {
-        Observable.just(music)
+    private fun saveLikeMusicId(ids: Long, isLikeMusic: Boolean) {
+        Observable.just(ids)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
                 .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
                     if (isLikeMusic) {
-                        model.insert(MusicLike(music.id))
+                        model.insert(MusicLike(ids))
                     } else {
-                        val musicLike = model.getItemLive(music.id)
+                        val musicLike = model.getItemLive(ids)
                         model.delete(musicLike)
                     }
                 }))
