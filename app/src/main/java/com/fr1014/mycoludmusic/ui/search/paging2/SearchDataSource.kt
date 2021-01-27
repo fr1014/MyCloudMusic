@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.fr1014.mycoludmusic.SourceHolder
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.WYSearchDetail
 import com.fr1014.mycoludmusic.http.KWServiceProvider
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.KWApiService

@@ -14,7 +14,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeIdList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.WYSearchDetail;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.WYSearchDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.WYSongLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
