@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_search"
+    app:startDestination="@id/search_recommend">
+
+    <fragment
+        android:id="@+id/search_recommend"
+        android:name="com.fr1014.mycoludmusic.ui.search.SearchRecommendFragment"
+        android:label="热搜排行"
+        tools:layout="@layout/fragment_search_recommend">
+        <action
+            android:id="@+id/action_search_recommend_to_search_result"
+            app:destination="@id/search_result" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/search_result"
+        android:name="com.fr1014.mycoludmusic.ui.search.SearchResultFragment"
+        android:label="搜索结果"
+        tools:layout="@layout/fragment_search_recommend">
+        <action
+            android:id="@+id/action_search_result_to_search_recommend"
+            app:destination="@id/search_recommend" />
+    </fragment>
+</navigation>

@@ -50,33 +50,14 @@
                 android:src="@drawable/ic_switch" />
         </LinearLayout>
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_container"
+        <fragment
+            android:id="@+id/nav_search_host"
+            android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="9.8" />
-
-        <com.fr1014.mycoludmusic.ui.block.SearchRecommendBlock
-            android:id="@+id/block_search_recommend"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="32dp"/>
-
-        <include
-            android:id="@+id/include_play_all"
-            layout="@layout/item_playlist_detail_header"
-            android:visibility="gone" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_search"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:layout_weight="9.8"
-            android:visibility="gone" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize" />
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_search" />
     </LinearLayout>
 
     <FrameLayout

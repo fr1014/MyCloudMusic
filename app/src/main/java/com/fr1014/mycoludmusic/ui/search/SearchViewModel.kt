@@ -21,11 +21,18 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
     private lateinit var factory: SearchDataSourceFactory
     lateinit var pageListLiveData: LiveData<PagedList<Music>>
     lateinit var networkStatus: LiveData<NetworkStatus>
+
     private val searchHotDetailLive : MutableLiveData<SearchHotDetail> by lazy {
         MutableLiveData()
     }
 
+    private val searchKeyLive : MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+
     fun getSearchHotDetail() : LiveData<SearchHotDetail> = searchHotDetailLive
+
+    fun getSearchKey() : MutableLiveData<String> = searchKeyLive
 
     fun searchHotDetail() {
         addSubscribe(model.searchHotDetail

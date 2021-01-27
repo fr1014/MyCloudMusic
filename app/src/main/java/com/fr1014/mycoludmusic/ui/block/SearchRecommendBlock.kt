@@ -1,17 +1,26 @@
 package com.fr1014.mycoludmusic.ui.block
 
 import android.content.Context
+import android.graphics.Typeface
+import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.fr1014.frecyclerviewadapter.BaseAdapter
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotBean
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail
 import com.fr1014.mycoludmusic.databinding.BlockSearchRecommendBinding
+import com.fr1014.mycoludmusic.ui.search.SearchResultFragment
+import com.fr1014.mycoludmusic.ui.search.SearchViewModel
+import com.fr1014.mycoludmusic.utils.ScreenUtils
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 class SearchRecommendBlock @JvmOverloads constructor(
@@ -27,15 +36,26 @@ class SearchRecommendBlock @JvmOverloads constructor(
     private fun initView() {
         mViewBinding = BlockSearchRecommendBinding.inflate(LayoutInflater.from(context), this, false)
         addView(mViewBinding?.root)
-        mAdapter = SearchHotDetailAdapter(R.layout.item_search_hot)
+    }
+
+    fun setViewModel(viewModel: SearchViewModel) {
+        mAdapter = SearchHotDetailAdapter(viewModel, R.layout.item_search_hot)
         mViewBinding?.rvSearchHot?.apply {
             layoutManager = GridLayoutManager(context, 2)
             adapter = mAdapter
         }
     }
 
-    fun loadingViewVisible(visibility: Int) {
-        mViewBinding?.loadingView?.llLoading?.visibility = visibility
+    fun loading(isLoading: Boolean) {
+        mViewBinding?.apply {
+            if (!isLoading) {
+                loadingView.llLoading.visibility = View.GONE
+                tvHotTitle.visibility = View.VISIBLE
+            } else {
+                loadingView.llLoading.visibility = View.VISIBLE
+                tvHotTitle.visibility = View.GONE
+            }
+        }
     }
 
     fun setData(searchHotDetail: SearchHotDetail) {
@@ -43,15 +63,48 @@ class SearchRecommendBlock @JvmOverloads constructor(
     }
 }
 
-class SearchHotDetailAdapter(layoutResId: Int) : BaseAdapter<SearchHotBean, BaseViewHolder>(layoutResId) {
+class SearchHotDetailAdapter(private val mViewModel: SearchViewModel, layoutResId: Int) : BaseAdapter<SearchHotBean, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
+
+    init {
+        onItemClickListener = this
+    }
+
     override fun convert(holder: BaseViewHolder, data: SearchHotBean) {
         holder.apply {
-            setText(R.id.tv_seq, (holder.adapterPosition + 1).toString())
-            setText(R.id.tv_searchWord,data.searchWord)
+            val adapterPosition = holder.adapterPosition
+            //android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            //android:textStyle="bold"
+            getView<TextView>(R.id.tv_seq).apply {
+                text = adapterPosition.plus(1).toString()
+                if (adapterPosition < 3) {
+                    setTextColor(context.resources.getColor(R.color.red))
+                    typeface = Typeface.DEFAULT_BOLD
+                } else {
+                    setTextColor(context.resources.getColor(R.color.gray))
+                }
+            }
+            getView<TextView>(R.id.tv_searchWord).apply {
+                text = data.searchWord
+                if (adapterPosition < 3) {
+                    typeface = Typeface.DEFAULT_BOLD
+                }
+            }
+
             GlideApp.with(holder.itemView)
                     .load(data.iconUrl)
-                    .fitCenter()
                     .into(holder.getView(R.id.iv_icon))
+        }
+
+        holder.addOnClickListener(R.id.item_searchWord)
+    }
+
+    override fun onItemClick(adapter: BaseAdapter<*, *>, view: View, position: Int) {
+        when (view.id) {
+            R.id.item_searchWord -> {
+                val data = getData(position)
+                mViewModel.getSearchKey().postValue(data.searchWord)
+                Navigation.findNavController(view).navigate(R.id.search_result, SearchResultFragment.createBundle(data.searchWord))
+            }
         }
     }
 

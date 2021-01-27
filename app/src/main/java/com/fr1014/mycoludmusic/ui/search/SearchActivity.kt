@@ -1,5 +1,8 @@
 package com.fr1014.mycoludmusic.ui.search
 
+import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
@@ -9,7 +12,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
+import androidx.navigation.Navigation
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.SourceHolder
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
@@ -19,16 +24,14 @@ import com.fr1014.mycoludmusic.customview.PlayStatusBarView
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
-import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
-import com.fr1014.mycoludmusic.ui.search.paging2.SearchResultAdapter
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 
 class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
-    private lateinit var viewAdapter: SearchResultAdapter
     private var statusBarView: PlayStatusBarView? = null
     private var source: String? = null
+    private lateinit var navController: NavController
 
     override fun getViewBinding(): ActivitySearchBinding {
         return ActivitySearchBinding.inflate(layoutInflater).also { mViewBinding = it }
@@ -49,16 +52,14 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun initView() {
         initSearchView()
-        initAdapter()
         initSystemBar()
         //避免自动弹出输入框
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        mViewBinding.includePlayAll.llPlaylist.visibility = View.GONE
+        navController = Navigation.findNavController(this, R.id.nav_search_host)
         initListener()
     }
 
     private fun initSearchView() {
-
         mViewBinding.serachView.apply {
             //是否一直显示clearIcon
             setIconifiedByDefault(false)
@@ -108,27 +109,17 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun initData() {
         source = SourceHolder.get().source
-        mViewModel.searchHotDetail()
-    }
-
-    override fun initViewObservable() {
-        mViewModel.getSearchHotDetail().observe(this, Observer {
-            mViewBinding.blockSearchRecommend.apply {
-                loadingViewVisible(View.GONE)
-                setData(it)
-            }
-        })
-    }
-
-    private fun initAdapter() {
-        viewAdapter = SearchResultAdapter(mViewModel)
-        mViewBinding.rvSearch.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = viewAdapter
-        }
     }
 
     private fun initListener() {
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            if (destination.id == R.id.search_result) {
+                mViewBinding.serachView.clearFocus()
+            } else if (destination.id == R.id.search_recommend) {
+                mViewBinding.serachView.setQuery("",false)
+            }
+        }
+
         mViewBinding.ivBack.setOnClickListener { finish() }
 
         // 设置搜索文本监听
@@ -137,19 +128,10 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 //当点击搜索按钮时触发该方法
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     query?.let {
-                        mViewBinding.serachView.clearFocus()
-                        includePlayAll.llPlaylist.visibility = View.VISIBLE
-                        mViewModel.search(it).observe(getLifecycleOwner(), Observer { pagedList ->
-                            //paging2
-                            viewAdapter.submitList(pagedList)
-                        })
-
-                        mViewModel.networkStatus.observe(getLifecycleOwner(), Observer { netStatus ->
-                            viewAdapter.updateNetworkStatus(netStatus)
-                            if (netStatus == NetworkStatus.COMPLETED) {
-
-                            }
-                        })
+                        mViewBinding.serachView.apply {
+                            clearFocus()
+                            navigation(it)
+                        }
                     }
                     return false
                 }
@@ -161,11 +143,28 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
             })
         }
+    }
 
-        mViewBinding.includePlayAll.llPlaylist.setOnClickListener {
-            AudioPlayer.get().addAndPlay(viewAdapter.currentList?.toList())
+    override fun initViewObservable() {
+        mViewModel.getSearchKey().observe(this, Observer {
+            changeSearchViewText(it)
+        })
+    }
+
+    private fun changeSearchViewText(text: String) {
+        val editText = findViewById<EditText>(R.id.search_src_text)
+        editText.setText(text)
+    }
+
+    private fun navigation(searchWord: String) {
+        navController.navigate(R.id.search_result, SearchResultFragment.createBundle(searchWord))
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (TextUtils.equals(navController.currentDestination?.label, "搜索结果")) {
+            navController.popBackStack(R.id.search_recommend, true)
         }
-
     }
 
     override fun onPause() {
@@ -182,6 +181,4 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             }
         }
     }
-
-    private fun getLifecycleOwner() = this
 }
