@@ -57,12 +57,6 @@ class UserControlBarBlock @JvmOverloads constructor(
                 initLikeIcon(playMusic)
             })
 
-//            mViewModel?.getLikeSongResult()?.observe(owner, Observer { isLikeMusic ->
-//                val playMusic = AudioPlayer.get().playMusic
-//                Log.d("hello", "我收藏${playMusic.title}了")
-//                mViewModel?.saveLikeMusicId(playMusic, isLikeMusic)
-//            })
-
             mViewModel?.playlistWYLive?.observe(owner, Observer {
                 if (!CollectionUtils.isEmptyList(it)) {
                     userLikePid = it[0].id
