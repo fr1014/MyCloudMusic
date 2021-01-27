@@ -120,7 +120,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             }
         }
 
-        mViewBinding.ivBack.setOnClickListener { finish() }
+        mViewBinding.ivBack.setOnClickListener { onBackPressed() }
 
         // 设置搜索文本监听
         mViewBinding.apply {
