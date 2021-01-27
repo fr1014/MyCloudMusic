@@ -24,7 +24,6 @@ import com.fr1014.mycoludmusic.ui.search.paging2.SearchResultAdapter
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
-import java.lang.reflect.Field
 
 class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
     private lateinit var viewAdapter: SearchResultAdapter
@@ -109,6 +108,16 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun initData() {
         source = SourceHolder.get().source
+        mViewModel.searchHotDetail()
+    }
+
+    override fun initViewObservable() {
+        mViewModel.getSearchHotDetail().observe(this, Observer {
+            mViewBinding.blockSearchRecommend.apply {
+                loadingViewVisible(View.GONE)
+                setData(it)
+            }
+        })
     }
 
     private fun initAdapter() {
