@@ -45,7 +45,7 @@ public interface HttpDataSource {
 
     Observable<UserEntity> getWYUserProfile(String phone, String password);
 
-    Observable<WYLikeIdList> getWYLikeIdList(Long uid);
+    Observable<WYLikeIdList> getWYLikeIdList(Long uid,String timestamp);
 
     Observable<WYLikeMusic> likeMusicWY(long id, boolean like);
 

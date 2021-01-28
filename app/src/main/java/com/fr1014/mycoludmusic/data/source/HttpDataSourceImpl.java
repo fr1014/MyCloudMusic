@@ -67,8 +67,8 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<WYLikeIdList> getWYLikeIdList(Long uid) {
-        return wyApiService.getWYLikeIdList(uid);
+    public Observable<WYLikeIdList> getWYLikeIdList(Long uid,String timestamp) {
+        return wyApiService.getWYLikeIdList(uid,timestamp);
     }
 
     @Override

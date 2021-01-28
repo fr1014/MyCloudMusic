@@ -97,7 +97,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
     }
 
     public void getLikeIdList(Long uid) {
-        addSubscribe(model.getWYLikeIdList(uid)
+        addSubscribe(model.getWYLikeIdList(uid,String.valueOf(System.currentTimeMillis()))
                 .compose(RxSchedulers.applyIO())
                 .subscribe(new Consumer<WYLikeIdList>() {
                     @Override

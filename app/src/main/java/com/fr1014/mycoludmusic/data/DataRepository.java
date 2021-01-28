@@ -79,8 +79,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<WYLikeIdList> getWYLikeIdList(Long uid) {
-        return httpDataSource.getWYLikeIdList(uid);
+    public Observable<WYLikeIdList> getWYLikeIdList(Long uid,String timestamp) {
+        return httpDataSource.getWYLikeIdList(uid,timestamp);
     }
 
     @Override

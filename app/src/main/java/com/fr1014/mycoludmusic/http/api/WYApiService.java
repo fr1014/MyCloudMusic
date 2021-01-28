@@ -41,7 +41,7 @@ public interface WYApiService {
     Observable<UserEntity> getWYUserProfile(@Query("phone") String phone, @Query("password") String password);
 
     @GET("likelist")
-    Observable<WYLikeIdList> getWYLikeIdList(@Query("uid") Long uid);
+    Observable<WYLikeIdList> getWYLikeIdList(@Query("uid") Long uid, @Query("timestamp") String timestamp);
 
     /*
     说明 : 调用此接口 , 传入音乐 id, 可喜欢该音乐
@@ -110,7 +110,7 @@ public interface WYApiService {
      * eg: /song/url?id=33894312  /song/url?id=405998841,33894312
      */
     @GET("song/url")
-    Observable<SongUrlEntity> getWYSongUrl(@Query("id") String ids,@Query("timestamp") String timestamp);
+    Observable<SongUrlEntity> getWYSongUrl(@Query("id") String ids, @Query("timestamp") String timestamp);
 
     @GET("check/music")
     Observable<CheckEntity> checkMusic(@Query("id") long id);

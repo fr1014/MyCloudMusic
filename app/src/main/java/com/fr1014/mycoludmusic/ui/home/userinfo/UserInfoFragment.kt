@@ -50,6 +50,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
 
     private fun initUserInfo() {
         mViewBinding.apply {
+            userLike.tvTitle.text = "我喜欢的音乐"
             Preferences.getUserProfile()?.let {
                 it.avatarUrl.let { url ->
                     Glide.with(userInfo.ivHead)

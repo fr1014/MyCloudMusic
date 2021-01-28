@@ -1,8 +1,6 @@
 package com.fr1014.mycoludmusic.ui.search
 
-import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
@@ -13,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.SourceHolder

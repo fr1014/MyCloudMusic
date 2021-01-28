@@ -76,6 +76,10 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawable(null);
         EventBus.getDefault().register(this);
+        Profile profile = getUserProfile();
+        if (profile != null) {
+            mViewModel.getLikeIdList(profile.getUserId());
+        }
     }
 
     @Override
