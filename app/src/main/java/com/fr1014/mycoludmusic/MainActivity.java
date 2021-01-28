@@ -231,7 +231,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         animator2.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                view.setText(searchDefault.getData().getRealkeyword());
+                view.setText(searchDefault.getData().getShowKeyword());
             }
 
             @Override
@@ -269,7 +269,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
             case R.id.tv_search:
                 if (mSearchDefault != null){
                     SearChDefaultBean data = mSearchDefault.getData();
-                    SearchActivity.Companion.startSearchActivity(this,data.getRealkeyword(), data.getSearchType());
+                    SearchActivity.Companion.startSearchActivity(this,data.getShowKeyword(),data.getRealkeyword(), data.getSearchType());
                 }else {
                     startActivity(SearchActivity.class);
                 }

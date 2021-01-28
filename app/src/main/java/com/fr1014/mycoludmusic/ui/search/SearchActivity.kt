@@ -32,6 +32,7 @@ import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 
 const val SEARCH_WORD_KEY = "SEARCH_WORD_KEY"
+const val SEARCH_SHOW_WORD_KEY = "SEARCH_SHOW_WORD_KEY"
 const val SEARCH_TYPE_KEY = "SEARCH_TYPE_KEY"
 const val SEARCH_BUNDLE = "SEARCH_BUNDLE"
 
@@ -40,13 +41,15 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     private var source: String? = null
     private lateinit var navController: NavController
     private var searchWord: String? = null
+    private var searchShowWord: String? = null
     private var searchType: Int? = null
 
     companion object {
-        fun startSearchActivity(context: Context, searchWord: String, searchType: Int) {
+        fun startSearchActivity(context: Context, searchShowWord: String, searchWord: String, searchType: Int) {
             val intent = Intent(context, SearchActivity::class.java)
             Bundle().apply {
                 putString(SEARCH_WORD_KEY, searchWord)
+                putString(SEARCH_SHOW_WORD_KEY, searchShowWord)
                 putInt(SEARCH_TYPE_KEY, searchType)
                 intent.putExtra(SEARCH_BUNDLE, this)
             }
@@ -57,6 +60,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     override fun initParam() {
         intent.getBundleExtra(SEARCH_BUNDLE)?.let {
             searchWord = it.getString(SEARCH_WORD_KEY)
+            searchShowWord = it.getString(SEARCH_SHOW_WORD_KEY)
             searchType = it.getInt(SEARCH_TYPE_KEY)
         }
     }
@@ -99,7 +103,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             isFocusable = true
             requestFocusFromTouch()
             //设置提示词
-            queryHint = if (searchWord == null) "请输入关键字" else searchWord
+            queryHint = if (searchShowWord== null) "请输入关键字" else searchShowWord
 
             //设置输入框文字颜色
             //设置输入框文字颜色
