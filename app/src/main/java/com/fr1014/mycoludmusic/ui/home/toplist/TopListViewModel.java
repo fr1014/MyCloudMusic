@@ -61,7 +61,7 @@ public class TopListViewModel extends CommonViewModel {
                 ids.append(",");
             }
         }
-        addSubscribe(model.getWYSongUrl(ids.toString())
+        addSubscribe(model.getWYSongUrl(ids.toString(),String.valueOf(System.currentTimeMillis()))
                 .compose(RxSchedulers.apply())
                 .map(new Function<SongUrlEntity, List<Music>>() {
                     @Override

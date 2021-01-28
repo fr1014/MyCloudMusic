@@ -110,7 +110,7 @@ public interface WYApiService {
      * eg: /song/url?id=33894312  /song/url?id=405998841,33894312
      */
     @GET("song/url")
-    Observable<SongUrlEntity> getWYSongUrl(@Query("id") String ids);
+    Observable<SongUrlEntity> getWYSongUrl(@Query("id") String ids,@Query("timestamp") String timestamp);
 
     @GET("check/music")
     Observable<CheckEntity> checkMusic(@Query("id") long id);

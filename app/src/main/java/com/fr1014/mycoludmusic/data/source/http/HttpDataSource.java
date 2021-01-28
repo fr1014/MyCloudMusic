@@ -51,7 +51,7 @@ public interface HttpDataSource {
 
     Observable<WYLikeList> getWYLikeList(long uid);
 
-    Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks,String timestamp);
+    Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks, String timestamp);
 
     Observable<WYUserPlayList> getWYUserPlayList(long uid);
 
@@ -69,7 +69,7 @@ public interface HttpDataSource {
 
     Observable<CheckEntity> checkMusic(long id);
 
-    Observable<SongUrlEntity> getWYSongUrl(String id);
+    Observable<SongUrlEntity> getWYSongUrl(String id, String timestamp);
 
     Observable<SearchHotDetail> getSearchHotDetail();
 

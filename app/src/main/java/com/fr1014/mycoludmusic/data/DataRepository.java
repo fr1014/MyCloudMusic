@@ -75,7 +75,7 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
 
     @Override
     public Observable<UserEntity> getWYUserProfile(String phone, String password) {
-        return httpDataSource.getWYUserProfile(phone,password);
+        return httpDataSource.getWYUserProfile(phone, password);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
 
     @Override
     public Observable<WYLikeMusic> likeMusicWY(long id, boolean like) {
-        return httpDataSource.likeMusicWY(id,like);
+        return httpDataSource.likeMusicWY(id, like);
     }
 
     @Override
@@ -94,8 +94,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks,String timestamp) {
-        return httpDataSource.getWYManagePlayList(op,pid,tracks,timestamp);
+    public Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks, String timestamp) {
+        return httpDataSource.getWYManagePlayList(op, pid, tracks, timestamp);
     }
 
     @Override
@@ -133,8 +133,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
         return httpDataSource.getWYSongDetail(ids);
     }
 
-    public Observable<SongUrlEntity> getWYSongUrl(String ids) {
-        return httpDataSource.getWYSongUrl(ids);
+    public Observable<SongUrlEntity> getWYSongUrl(String ids, String timestamp) {
+        return httpDataSource.getWYSongUrl(ids, timestamp);
     }
 
     @Override
@@ -222,8 +222,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public MusicEntity getItem(String title, String artist,boolean isHistory) {
-        return localDataSource.getItem(title, artist,isHistory);
+    public MusicEntity getItem(String title, String artist, boolean isHistory) {
+        return localDataSource.getItem(title, artist, isHistory);
     }
 
     @Override
