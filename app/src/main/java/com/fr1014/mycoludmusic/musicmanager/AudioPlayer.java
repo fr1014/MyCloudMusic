@@ -368,7 +368,11 @@ public class AudioPlayer implements LoadResultListener {
         handler.removeCallbacks(mPublishRunnable);
         Notifier.get().showPause(getPlayMusic());
         MediaSessionManager.get().updatePlaybackState();
-        context.unregisterReceiver(noisyReceiver);
+        try {
+            context.unregisterReceiver(noisyReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
         if (abandonAudioFocus) {
             audioFocusManager.abandonAudioFocus();
         }
