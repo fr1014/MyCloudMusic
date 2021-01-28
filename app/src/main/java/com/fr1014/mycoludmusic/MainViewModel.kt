@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fr1014.mycoludmusic.data.DataRepository
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver
@@ -18,9 +19,23 @@ class MainViewModel(application: Application, model: DataRepository) : CommonVie
         MutableLiveData()
     }
 
-    fun getLogoutLive():LiveData<Boolean> = logoutLive
+    private val searchDefaultLive: MutableLiveData<SearchDefault> by lazy {
+        MutableLiveData()
+    }
 
-    fun logout(){
+    fun getSearchDefault(): LiveData<SearchDefault> = searchDefaultLive
+
+    fun getLogoutLive(): LiveData<Boolean> = logoutLive
+
+    fun searchDefault(timestamp:String) {
+        addSubscribe(model.getSearchDefault(timestamp)
+                .compose(RxSchedulers.apply())
+                .subscribe(Consumer {
+                    searchDefaultLive.postValue(it)
+                }))
+    }
+
+    fun logout() {
         addSubscribe(model.wyLogout
                 .compose(RxSchedulers.apply())
                 .subscribe(Consumer {

@@ -1,11 +1,17 @@
 package com.fr1014.mycoludmusic.ui.search
 
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
@@ -25,10 +31,35 @@ import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 
+const val SEARCH_WORD_KEY = "SEARCH_WORD_KEY"
+const val SEARCH_TYPE_KEY = "SEARCH_TYPE_KEY"
+const val SEARCH_BUNDLE = "SEARCH_BUNDLE"
+
 class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>() {
     private var statusBarView: PlayStatusBarView? = null
     private var source: String? = null
     private lateinit var navController: NavController
+    private var searchWord: String? = null
+    private var searchType: Int? = null
+
+    companion object {
+        fun startSearchActivity(context: Context, searchWord: String, searchType: Int) {
+            val intent = Intent(context, SearchActivity::class.java)
+            Bundle().apply {
+                putString(SEARCH_WORD_KEY, searchWord)
+                putInt(SEARCH_TYPE_KEY, searchType)
+                intent.putExtra(SEARCH_BUNDLE, this)
+            }
+            context.startActivity(intent)
+        }
+    }
+
+    override fun initParam() {
+        intent.getBundleExtra(SEARCH_BUNDLE)?.let {
+            searchWord = it.getString(SEARCH_WORD_KEY)
+            searchType = it.getInt(SEARCH_TYPE_KEY)
+        }
+    }
 
     override fun getViewBinding(): ActivitySearchBinding {
         return ActivitySearchBinding.inflate(layoutInflater).also { mViewBinding = it }
@@ -48,10 +79,8 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     override fun initView() {
-        initSearchView()
         initSystemBar()
-        //避免自动弹出输入框
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        initSearchView()
         navController = Navigation.findNavController(this, R.id.nav_search_host)
         initListener()
     }
@@ -70,7 +99,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             isFocusable = true
             requestFocusFromTouch()
             //设置提示词
-            queryHint = "请输入关键字"
+            queryHint = if (searchWord == null) "请输入关键字" else searchWord
 
             //设置输入框文字颜色
             //设置输入框文字颜色
@@ -80,6 +109,27 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 setHintTextColor(ContextCompat.getColor(context, R.color.app_gray))
                 setTextColor(ContextCompat.getColor(context, R.color.tv_bt_black))
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 14F) //14sp
+                setOnEditorActionListener(object : TextView.OnEditorActionListener {
+                    override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+                        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                            if (TextUtils.isEmpty(query)) {
+                                if (searchWord != null) {
+                                    mViewBinding.serachView.apply {
+                                        clearFocus()
+                                        navigation(searchWord!!)
+                                    }
+                                }
+                            } else {
+                                mViewBinding.serachView.apply {
+                                    clearFocus()
+                                    navigation(query.toString())
+                                }
+                            }
+                            return true
+                        }
+                        return false
+                    }
+                })
             }
         }
     }
@@ -113,7 +163,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             if (destination.id == R.id.search_result) {
                 mViewBinding.serachView.clearFocus()
             } else if (destination.id == R.id.search_recommend) {
-                mViewBinding.serachView.setQuery("",false)
+                mViewBinding.serachView.setQuery("", false)
             }
         }
 
@@ -123,13 +173,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         mViewBinding.apply {
             serachView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 //当点击搜索按钮时触发该方法
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    query?.let {
-                        mViewBinding.serachView.apply {
-                            clearFocus()
-                            navigation(it)
-                        }
-                    }
+                override fun onQueryTextSubmit(query: String): Boolean {
                     return false
                 }
 
@@ -161,6 +205,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         super.onBackPressed()
         if (TextUtils.equals(navController.currentDestination?.label, "搜索结果")) {
             navController.popBackStack(R.id.search_recommend, true)
+            mViewBinding.serachView.setQuery("", false)
         }
     }
 

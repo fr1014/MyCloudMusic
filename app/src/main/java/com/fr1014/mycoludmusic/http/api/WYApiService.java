@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.http.api;
 
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
@@ -117,6 +118,9 @@ public interface WYApiService {
 
     @GET("search/hot/detail")
     Observable<SearchHotDetail> getSearchHotDetail();
+
+    @GET("search/default")
+    Observable<SearchDefault> getSearchDefault(@Query("timestamp") String timestamp);
 
     /**
      * 可选参数 :

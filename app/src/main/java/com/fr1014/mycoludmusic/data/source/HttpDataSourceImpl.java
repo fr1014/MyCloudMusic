@@ -4,6 +4,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
@@ -29,6 +30,7 @@ import com.fr1014.mycoludmusic.http.api.WYApiService;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 public class HttpDataSourceImpl implements HttpDataSource {
     private volatile static HttpDataSourceImpl instance = null;
@@ -134,6 +136,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<SearchHotDetail> getSearchHotDetail() {
         return wyApiService.getSearchHotDetail();
+    }
+
+    @Override
+    public Observable<SearchDefault> getSearchDefault(String timestamp) {
+        return wyApiService.getSearchDefault(timestamp);
     }
 
     @Override

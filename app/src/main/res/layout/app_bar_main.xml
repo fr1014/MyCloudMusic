@@ -23,36 +23,50 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat"
             app:theme="@style/ThemeOverlay.AppCompat.Light">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ll_content"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@+id/tv_search"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="9"
+                    android:layout_marginEnd="24dp"
                     android:background="@drawable/bg_white_corner"
-                    android:hint="@string/search"
-                    android:textColor="@color/light_gray"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:padding="8dp"
-                    android:textColorHint="@color/app_gray"
-                    android:textSize="15sp"
-                    app:drawableStartCompat="@drawable/ic_search_small" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/iv_switch"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_search_small" />
+
+                    <TextView
+                        android:id="@+id/tv_search"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/search"
+                        android:textColor="@color/light_gray"
+                        android:textColorHint="@color/app_gray"
+                        android:textSize="15sp" />
+                </LinearLayout>
 
                 <ImageView
                     android:id="@+id/iv_switch"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:layout_gravity="end|center_vertical"
-                    android:src="@drawable/ic_switch" />
-            </LinearLayout>
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/ic_switch"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>

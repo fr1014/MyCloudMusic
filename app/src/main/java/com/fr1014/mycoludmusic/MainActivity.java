@@ -1,15 +1,21 @@
 package com.fr1014.mycoludmusic;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearChDefaultBean;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
@@ -52,15 +58,17 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     private PlayStatusBarView statusBar;
     private Toast toast;
     private OnPlayerEventListener playEventListener;
+    private String source = "";
+    private SearchDefault mSearchDefault = null;
 
     @Override
     public void musicSource(int position) {
         if (toast != null) {
             toast.cancel();
         }
-        String source = SwitchDialogFragment.array[position];
+        source = SwitchDialogFragment.array[position];
         toast = CommonUtils.toastShort("音乐源已切换为: " + source);
-        mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + source);
+//        mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + source);
         switch (position) {
             case 0:  //酷我
                 SourceHolder.get().setSource("酷我");
@@ -130,7 +138,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     }
 
     private void initCustomNavView() {
-        mViewBinding.navView.setViewModel(mViewModel,this);
+        mViewBinding.navView.setViewModel(mViewModel, this);
         initNavHeaderViewData(getUserProfile());
     }
 
@@ -139,7 +147,8 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     }
 
     private void initToolbar() {
-        mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + SourceHolder.get().getSource());
+        source = SourceHolder.get().getSource();
+        mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + source);
     }
 
     private void initClickListener() {
@@ -199,7 +208,49 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
 
     @Override
     public void initData() {
-        requestMyPermissions();
+        mViewModel.searchDefault(String.valueOf(System.currentTimeMillis()));
+//        requestMyPermissions();
+    }
+
+    @Override
+    public void initViewObservable() {
+        mViewModel.getSearchDefault().observe(this, new Observer<SearchDefault>() {
+            @Override
+            public void onChanged(SearchDefault searchDefault) {
+                mSearchDefault = searchDefault;
+                startSearchAnimator(mViewBinding.appBarMain.tvSearch,searchDefault);
+            }
+        });
+    }
+
+    private void startSearchAnimator(TextView view, SearchDefault searchDefault) {
+        ObjectAnimator animator1 = ObjectAnimator.ofFloat(view, "alpha", 1f, 0.5f);
+        animator1.setDuration(2500);
+        ObjectAnimator animator2 = ObjectAnimator.ofFloat(view, "alpha", 0.5f, 1f);
+        animator2.setDuration(2500);
+        animator2.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                view.setText(searchDefault.getData().getRealkeyword());
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animator1.start();
+            }
+        });
+        animator1.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                view.setText("当前搜索源：" + source);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                animator2.start();
+            }
+        });
+        animator1.start();
     }
 
     @Override
@@ -216,7 +267,12 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                 new SwitchDialogFragment().show(getSupportFragmentManager(), "switch_dialog");
                 break;
             case R.id.tv_search:
-                startActivity(SearchActivity.class);
+                if (mSearchDefault != null){
+                    SearChDefaultBean data = mSearchDefault.getData();
+                    SearchActivity.Companion.startSearchActivity(this,data.getRealkeyword(), data.getSearchType());
+                }else {
+                    startActivity(SearchActivity.class);
+                }
                 break;
         }
     }
