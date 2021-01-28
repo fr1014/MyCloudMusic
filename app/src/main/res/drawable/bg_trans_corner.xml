@@ -2,8 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <corners android:radius="8dp"/>
+    <corners android:radius="10dp"/>
 
     <!-- 设置框内填充颜色 -->
-    <solid android:color="#E6ECEBEB" />
+    <solid android:color="#4D26C6DA" />
 </shape>

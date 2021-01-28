@@ -81,17 +81,12 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
                 .load(data.getCoverImgUrl() + "?param=300y300")
                 .apply(new RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(new RoundedCorners(30)))
                 .into(sharedElementView);
-        // 把每个图片视图设置不同的Transition名称, 防止在一个视图内有多个相同的名称, 在变换的时候造成混乱
-        ViewCompat.setTransitionName(sharedElementView, data.getName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentNavigator.Extras extras = new FragmentNavigator.Extras.Builder()
-                        .addSharedElement(sharedElementView, sharedElementView.getTransitionName())
-                        .build();
                 Bundle bundle = PlayListDetailFragment.createBundle(data.getId(), data.getName(), data.getCoverImgUrl());
                 Navigation.findNavController(view)
-                        .navigate(R.id.playListDetailFragment, bundle, null, extras);
+                        .navigate(R.id.playListDetailFragment, bundle);
             }
         });
     }

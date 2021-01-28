@@ -4,22 +4,32 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
+import com.fr1014.mycoludmusic.utils.PaletteBgUtils
 
-class PlayListDetailAdapter(private val mViewModel: PlayListViewModel) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
+class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private val mOwner: LifecycleOwner) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
     private var networkStatus: NetworkStatus? = null
     private var hasFooter = false
+    private var onPlayAllClickListener: OnPlayAllClickListener? = null
+    private var playListCount: Int? = null
 
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Music>() {
@@ -31,6 +41,10 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel) : PagedLi
                 return oldItem.id == newItem.id
             }
         }
+    }
+
+    fun setPlayListCount(count: Int) {
+        playListCount = count
     }
 
     fun updateNetworkStatus(networkStatus: NetworkStatus?) {
@@ -59,14 +73,33 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel) : PagedLi
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (hasFooter && position == itemCount - 1) R.layout.loading_view else R.layout.item_playlist_detail
+        return if (hasFooter && position == itemCount - 1) {
+            R.layout.loading_view
+        } else if (position == 0) {
+            R.layout.head_playlist_detail
+        } else {
+            R.layout.item_playlist_detail
+        }
+    }
+
+    interface OnPlayAllClickListener {
+        fun clickPlayAll()
+    }
+
+    fun setOnPlayAllClick(onPlayAllClickListener: OnPlayAllClickListener) {
+        this.onPlayAllClickListener = onPlayAllClickListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             R.layout.item_playlist_detail -> PlayListViewHolder.newInstance(parent).also { holder ->
                 holder.itemView.setOnClickListener {
-                    AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition) as Music)
+                    AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition - 1) as Music)
+                }
+            }
+            R.layout.head_playlist_detail -> HeaderViewHolder.newInstance(mViewModel, mOwner, parent).also { holder ->
+                holder.itemView.findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
+                    onPlayAllClickListener?.clickPlayAll()
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {
@@ -80,10 +113,13 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel) : PagedLi
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
             R.layout.loading_view -> (holder as FooterViewHolder).bindWithNetworkStatus(
-                    networkStatus,itemCount
+                    networkStatus, itemCount
             )
+            R.layout.head_playlist_detail -> {
+                playListCount?.let { (holder as HeaderViewHolder).setHeadCount(it) }
+            }
             else -> {
-                val music = getItem(position) ?: return
+                val music = getItem(position - 1) ?: return
                 (holder as PlayListViewHolder).bindWithPhotoItem(music)
             }
         }
@@ -102,7 +138,7 @@ class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
     fun bindWithPhotoItem(music: Music) {
         getView<ConstraintLayout>(R.id.cl_status).visibility = View.VISIBLE
         setText(R.id.tv_song_name, music.title)
-        setText(R.id.tv_rank, layoutPosition.plus(1).toString())
+        setText(R.id.tv_rank, layoutPosition.toString())
         //歌手 - 专辑
         if (TextUtils.isEmpty(music.album)) {
             setText(R.id.tv_author, music.artist)
@@ -121,7 +157,7 @@ class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
         }
     }
 
-    fun bindWithNetworkStatus(networkStatus: NetworkStatus?,count:Int) {
+    fun bindWithNetworkStatus(networkStatus: NetworkStatus?, count: Int) {
         with(itemView) {
             when (networkStatus) {
                 NetworkStatus.FAILED -> {
@@ -144,7 +180,32 @@ class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
         getView<View>(R.id.view_divider).visibility = if (isShowDivider(count)) View.VISIBLE else View.GONE
     }
 
-    private fun isShowDivider(count: Int):Boolean {
+    private fun isShowDivider(count: Int): Boolean {
         return layoutPosition == count - 1
     }
+}
+
+class HeaderViewHolder(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, itemView: View) : BaseViewHolder(itemView) {
+
+    init {
+        mViewModel.getCoverBitmap().observe(mOwner, Observer {
+            Glide.with(itemView)
+                    .load(it)
+                    .apply(RequestOptions().centerCrop().transform(RoundedCorners(32)))
+                    .into(itemView.findViewById<ImageView>(R.id.iv_cover))
+            PaletteBgUtils.paletteDownBg(itemView.findViewById(R.id.iv_bg), it)
+        })
+    }
+
+    fun setHeadCount(count: Int) {
+        itemView.findViewById<TextView>(R.id.tv_count).text = count.toString()
+    }
+
+    companion object {
+        fun newInstance(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, parent: ViewGroup): HeaderViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.head_playlist_detail, parent, false)
+            return HeaderViewHolder(mViewModel, mOwner, view)
+        }
+    }
+
 }

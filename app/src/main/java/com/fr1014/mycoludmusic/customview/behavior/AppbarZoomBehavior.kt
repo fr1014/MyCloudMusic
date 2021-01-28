@@ -52,7 +52,7 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
     private fun init(abl: AppBarLayout) {
         abl.clipChildren = false
         mAppbarHeight = abl.height
-        mImageView = abl.findViewById<View>(R.id.iv_cover) as ImageView
+        mImageView = abl.findViewById<View>(R.id.iv_title) as ImageView
         mImageViewHeight = mImageView.height
     }
 
