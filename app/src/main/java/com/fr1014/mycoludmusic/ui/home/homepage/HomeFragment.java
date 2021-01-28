@@ -1,7 +1,6 @@
 package com.fr1014.mycoludmusic.ui.home.homepage;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,7 +18,6 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.Block;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.Creative;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.databinding.FragmentHomeBinding;
-import com.fr1014.mycoludmusic.ui.home.HomeTopListPagerAdapter;
 import com.fr1014.mycoludmusic.ui.login.LoginActivity;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;

@@ -16,7 +16,7 @@ data class Track(
         val fee: Int,
         val ftype: Int,
         val h: H,
-        val id: Int,
+        val id: Long,
         val l: L,
         val m: M,
         val mark: Long,
@@ -43,7 +43,7 @@ data class Track(
 )
 
 data class Al(
-        val id: Int,
+        val id: Long,
         val name: String,
         val pic: Long,
         val picUrl: String,
@@ -53,7 +53,7 @@ data class Al(
 
 data class Ar(
         val alias: List<Any>,
-        val id: Int,
+        val id: Long,
         val name: String,
         val tns: List<Any>
 )

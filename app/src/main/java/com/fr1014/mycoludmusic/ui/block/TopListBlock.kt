@@ -13,6 +13,8 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Track
 import com.fr1014.mycoludmusic.databinding.BlockTopListBinding
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
+import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
@@ -45,20 +47,32 @@ class TopListBlock @JvmOverloads constructor(
 
                     it.tracks[0].apply {
                         loadImg(al.picUrl, ivCover1)
+                        val author = getSinger(this)
                         tvSongInfo1.text = "1  $name"
-                        tvSinger1.text = " - ${getSinger(this)}"
+                        tvSinger1.text = " - $author"
+                        ivCover1.setOnClickListener {
+                            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
+                        }
                     }
 
                     it.tracks[1].apply {
                         loadImg(al.picUrl, ivCover2)
+                        val author = getSinger(this)
                         tvSongInfo2.text = "2  $name"
-                        tvSinger2.text = " - ${getSinger(this)}"
+                        tvSinger2.text = " - $author"
+                        ivCover2.setOnClickListener {
+                            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
+                        }
                     }
 
                     it.tracks[2].apply {
                         loadImg(al.picUrl, ivCover3)
+                        val author = getSinger(this)
                         tvSongInfo3.text = "3  $name"
-                        tvSinger3.text = " - ${getSinger(this)}"
+                        tvSinger3.text = " - $author"
+                        ivCover3.setOnClickListener {
+                            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
+                        }
                     }
                 }
             }
