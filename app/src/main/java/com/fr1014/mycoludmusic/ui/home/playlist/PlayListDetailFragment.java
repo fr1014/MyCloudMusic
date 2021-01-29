@@ -25,7 +25,6 @@ import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
-import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus;
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils;
@@ -41,6 +40,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     private String name;
     private String cover;
     private PlayListDetailAdapter adapter;
+    private int headerHeight = 0;
 
     public static Bundle createBundle(long id, String name, String coverImg) {
         Bundle bundle = new Bundle();
@@ -125,7 +125,6 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         });
     }
 
-    int headerHeight = 0;
     private int getScrollY() {
         LinearLayoutManager layoutManager = (LinearLayoutManager) mViewBinding.rvPlaylistDetail.getLayoutManager();
         // 获取第一个可见item的位置
