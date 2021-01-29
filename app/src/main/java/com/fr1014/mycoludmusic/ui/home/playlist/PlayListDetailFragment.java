@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -79,6 +81,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     protected void initView() {
         mViewBinding.toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
         mViewBinding.name.setText(name);
+        mViewBinding.playAll.llPlaylist.setVisibility(View.GONE);
 
         Glide.with(this)
                 .asBitmap()
@@ -103,10 +106,28 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                     }
                 });
 
+        initListener();
+    }
+
+    private void initListener() {
         mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Navigation.findNavController(v).popBackStack();
+            }
+        });
+
+        mViewBinding.rvPlaylistDetail.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int offset = recyclerView.computeVerticalScrollOffset();
+                Log.d("hello", "onScrolled: "+offset);
+                if (offset > ScreenUtils.dp2px(198f)){
+                    mViewBinding.playAll.llPlaylist.setVisibility(View.VISIBLE);
+                }else {
+                    mViewBinding.playAll.llPlaylist.setVisibility(View.GONE);
+                }
             }
         });
     }
