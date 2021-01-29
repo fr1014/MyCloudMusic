@@ -29,6 +29,7 @@ import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus;
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
+import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseFragment;
 
 //歌单详情页面
@@ -76,6 +77,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     @Override
     protected void initView() {
+        StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
         mViewBinding.toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
         mViewBinding.name.setText(name);
         mViewBinding.playAll.llPlaylist.setVisibility(View.INVISIBLE);
@@ -115,9 +117,9 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 int scrollOffset = getScrollY();
-                if (scrollOffset > ScreenUtils.dp2px(64f)){
+                if (scrollOffset > ScreenUtils.dp2px(64f)) {
                     PaletteBgUtils.Companion.paletteDownBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());
-                }else {
+                } else {
                     PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());
                 }
                 mViewBinding.playAll.llPlaylist.setVisibility(scrollOffset > ScreenUtils.dp2px(178f) ? View.VISIBLE : View.GONE);
@@ -182,11 +184,14 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     private void initHeaderView(int length) {
         adapter.setPlayListCount(length);
-        mViewBinding.playAll.tvCount.setText(length+"");
+        mViewBinding.playAll.tvCount.setText(length + "");
     }
 
     @Override
     public void onDestroy() {
+        if (getActivity() != null) {
+            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
+        }
         super.onDestroy();
     }
 }

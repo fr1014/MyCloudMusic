@@ -116,7 +116,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     /**
-     * 修改状态栏字颜色为黑色
+     * 修改状态栏字颜色为白色
      * 沉浸式状态栏
      */
     private void initSystemBar() {
