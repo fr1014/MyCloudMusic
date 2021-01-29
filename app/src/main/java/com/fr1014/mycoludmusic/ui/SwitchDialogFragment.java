@@ -20,7 +20,7 @@ public class SwitchDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         MusicSourceCallback callback = (MusicSourceCallback) getActivity();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
-                .title("选择音乐源")
+                .title("选择搜索源")
                 .items(array)
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
