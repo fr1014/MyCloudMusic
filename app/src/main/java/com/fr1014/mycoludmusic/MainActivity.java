@@ -60,6 +60,8 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     private OnPlayerEventListener playEventListener;
     private String source = "";
     private SearchDefault mSearchDefault = null;
+    private ObjectAnimator animator1;
+    private ObjectAnimator animator2;
 
     @Override
     public void musicSource(int position) {
@@ -218,15 +220,15 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
             @Override
             public void onChanged(SearchDefault searchDefault) {
                 mSearchDefault = searchDefault;
-                startSearchAnimator(mViewBinding.appBarMain.tvSearch,searchDefault);
+                startSearchAnimator(mViewBinding.appBarMain.tvSearch, searchDefault);
             }
         });
     }
 
     private void startSearchAnimator(TextView view, SearchDefault searchDefault) {
-        ObjectAnimator animator1 = ObjectAnimator.ofFloat(view, "alpha", 1f, 0.5f);
+        animator1 = ObjectAnimator.ofFloat(view, "alpha", 1f, 0.5f);
         animator1.setDuration(2500);
-        ObjectAnimator animator2 = ObjectAnimator.ofFloat(view, "alpha", 0.5f, 1f);
+        animator2 = ObjectAnimator.ofFloat(view, "alpha", 0.5f, 1f);
         animator2.setDuration(2500);
         animator2.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -253,6 +255,31 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         animator1.start();
     }
 
+    private void startAnimator() {
+        if (animator1 != null && animator2 != null) {
+            animator1.start();
+        }
+    }
+
+    private void stopAnimator() {
+        if (animator1 != null && animator2 != null) {
+            animator1.end();
+            animator2.end();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startAnimator();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopAnimator();
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -267,10 +294,10 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                 new SwitchDialogFragment().show(getSupportFragmentManager(), "switch_dialog");
                 break;
             case R.id.tv_search:
-                if (mSearchDefault != null){
+                if (mSearchDefault != null) {
                     SearChDefaultBean data = mSearchDefault.getData();
-                    SearchActivity.Companion.startSearchActivity(this,data.getShowKeyword(),data.getRealkeyword(), data.getSearchType());
-                }else {
+                    SearchActivity.Companion.startSearchActivity(this, data.getShowKeyword(), data.getRealkeyword(), data.getSearchType());
+                } else {
                     startActivity(SearchActivity.class);
                 }
                 break;
