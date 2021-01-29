@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data.source;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
@@ -56,6 +57,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<ResponseBody> getSongCover(String coverPath) {
         return kwApiService.getSongCover(coverPath);
+    }
+
+    @Override
+    public Observable<DayRecommend> getWYDayRecommend() {
+        return wyApiService.getWYDayRecommend();
     }
 
     @Override

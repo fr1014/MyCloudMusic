@@ -7,6 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.Navigation
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.databinding.BlockHomeClickBinding
+import java.util.*
 
 class HomeTopClickBlock @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -21,6 +22,12 @@ class HomeTopClickBlock @JvmOverloads constructor(
         mViewBinding = BlockHomeClickBinding.inflate(LayoutInflater.from(context), this)
 
         mViewBinding?.apply {
+            tvDate.text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
+
+            ivDayRecommend.setOnClickListener {
+                Navigation.findNavController(it).navigate(R.id.dayRecommendFragment)
+            }
+
             ivLike.setOnClickListener {
                 Navigation.findNavController(it).navigate(R.id.userInfoFragment)
             }

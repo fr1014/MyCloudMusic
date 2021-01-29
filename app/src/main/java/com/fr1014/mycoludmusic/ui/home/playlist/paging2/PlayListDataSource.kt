@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.WYApiService
 import com.fr1014.mycoludmusic.musicmanager.Music
@@ -28,7 +29,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                 .compose(RxSchedulers.apply())
                 .map {
                     val musics: MutableList<Music> = ArrayList()
-                    val songs: List<SongDetailEntity.SongsBean> = it.songs
+                    val songs: List<SongsBean> = it.songs
                     for (song in songs) {
                         val music = Music()
                         val sb = StringBuilder()
@@ -77,7 +78,7 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                 .compose(RxSchedulers.apply())
                 .map {
                     val musics: MutableList<Music> = ArrayList()
-                    val songs: List<SongDetailEntity.SongsBean> = it.songs
+                    val songs: List<SongsBean> = it.songs
                     for (song in songs) {
                         val music = Music()
                         val sb = StringBuilder()

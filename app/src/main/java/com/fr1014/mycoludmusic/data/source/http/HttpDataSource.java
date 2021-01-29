@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data.source.http;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
@@ -42,6 +43,7 @@ public interface HttpDataSource {
     /*
      ========================网易云===================================
    */
+    Observable<DayRecommend> getWYDayRecommend();
     Observable<Logout> getWYLogout();
 
     Observable<UserEntity> getWYUserProfile(String phone, String password);

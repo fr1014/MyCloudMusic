@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.http.api;
 
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
@@ -34,6 +35,12 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    /**
+     * @return 获取每日推荐歌曲
+     */
+    @GET("recommend/songs")
+    Observable<DayRecommend> getWYDayRecommend();
 
     @GET("logout")
     Observable<Logout> getWYLogout();

@@ -117,7 +117,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 int scrollOffset = getScrollY();
-                if (scrollOffset > ScreenUtils.dp2px(64f)) {
+                if (scrollOffset > ScreenUtils.dp2px(89f)) {
                     PaletteBgUtils.Companion.paletteDownBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());
                 } else {
                     PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());

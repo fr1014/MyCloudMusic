@@ -119,18 +119,22 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                if (destination.getId() == R.id.playListDetailFragment) {
-                    mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
-                } else if (destination.getId() == R.id.topListFragment) {
-                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
-                    mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
-                    mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
-                } else if (destination.getId() == R.id.userInfoFragment) {
-                    mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
-                } else {
-                    mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                    mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
-                    mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
+                switch (destination.getId()) {
+                    case R.id.topListFragment:
+                        mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
+                        mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                        mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
+                        break;
+                    case R.id.playListDetailFragment:
+                    case R.id.userInfoFragment:
+                    case R.id.dayRecommendFragment:
+                        mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
+                        break;
+                    default:
+                        mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                        mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                        mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
+                        break;
                 }
             }
         });

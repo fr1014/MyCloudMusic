@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
@@ -67,6 +68,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<ResponseBody> getSongCover(String coverPath) {
         return httpDataSource.getSongCover(coverPath);
+    }
+
+    @Override
+    public Observable<DayRecommend> getWYDayRecommend() {
+        return httpDataSource.getWYDayRecommend();
     }
 
     @Override

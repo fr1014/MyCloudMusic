@@ -3,14 +3,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-        android:id="@+id/iv_like"
+        android:id="@+id/iv_day_recommend"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_home_click"
+        android:src="@drawable/ic_day_recommend"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/tinos_bold"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/iv_day_recommend"
+        app:layout_constraintEnd_toEndOf="@id/iv_day_recommend"
+        app:layout_constraintStart_toStartOf="@id/iv_day_recommend"
+        app:layout_constraintTop_toTopOf="@id/iv_day_recommend" />
+
+    <TextView
+        android:id="@+id/tv_day_recommend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="每日推荐"
+        android:textColor="@color/tv_bt_black"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/iv_day_recommend"
+        app:layout_constraintStart_toStartOf="@id/iv_day_recommend"
+        app:layout_constraintTop_toBottomOf="@id/iv_day_recommend" />
+
+    <ImageView
+        android:id="@+id/iv_like"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="32dp"
+        android:background="@drawable/bg_home_click"
         android:src="@drawable/ic_like_fill"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_day_recommend"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -30,11 +68,11 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="32dp"
-        android:background="@drawable/bg_home_click"
+        android:background="@drawable/bg_home_top_click"
         android:src="@drawable/ic_toplist"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_like"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/tv_top"
@@ -47,5 +85,4 @@
         app:layout_constraintEnd_toEndOf="@id/iv_top"
         app:layout_constraintStart_toStartOf="@id/iv_top"
         app:layout_constraintTop_toBottomOf="@id/iv_top" />
-
 </merge>

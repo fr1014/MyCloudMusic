@@ -23,6 +23,9 @@
             app:exitAnim="@anim/anim_exit"
             app:popEnterAnim="@anim/anim_enter"
             app:popExitAnim="@anim/anim_exit" />
+        <action
+            android:id="@+id/action_nav_home_to_dayRecommendFragment"
+            app:destination="@id/dayRecommendFragment" />
     </fragment>
 
     <fragment
@@ -65,5 +68,12 @@
             app:exitAnim="@anim/fragment_close_exit"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment android:id="@+id/dayRecommendFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.homepage.dayrecommend.DayRecommendFragment"
+        android:label="每日推荐"
+        tools:layout="@layout/fragment_day_recommend">
+
     </fragment>
 </navigation>
