@@ -69,7 +69,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
     }
 
     override fun getItemCount(): Int {
-        return super.getItemCount() + if (hasFooter) 1 else 0
+        return super.getItemCount() + if (hasFooter) 2 else 1
     }
 
     override fun getItemViewType(position: Int): Int {
