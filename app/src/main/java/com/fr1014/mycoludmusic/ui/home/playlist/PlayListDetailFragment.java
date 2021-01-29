@@ -5,14 +5,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -81,7 +78,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     protected void initView() {
         mViewBinding.toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
         mViewBinding.name.setText(name);
-        mViewBinding.playAll.llPlaylist.setVisibility(View.GONE);
+        mViewBinding.playAll.llPlaylist.setVisibility(View.INVISIBLE);
 
         Glide.with(this)
                 .asBitmap()
@@ -110,26 +107,50 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     private void initListener() {
-        mViewBinding.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Navigation.findNavController(v).popBackStack();
-            }
-        });
+        mViewBinding.ivBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+
+        mViewBinding.playAll.llPlaylist.setOnClickListener(v -> AudioPlayer.get().addAndPlay(adapter.getCurrentList()));
 
         mViewBinding.rvPlaylistDetail.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int offset = recyclerView.computeVerticalScrollOffset();
-                Log.d("hello", "onScrolled: "+offset);
-                if (offset > ScreenUtils.dp2px(198f)){
-                    mViewBinding.playAll.llPlaylist.setVisibility(View.VISIBLE);
+                int scrollOffset = getScrollY();
+                if (scrollOffset > ScreenUtils.dp2px(64f)){
+                    PaletteBgUtils.Companion.paletteDownBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());
                 }else {
-                    mViewBinding.playAll.llPlaylist.setVisibility(View.GONE);
+                    PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());
                 }
+                mViewBinding.playAll.llPlaylist.setVisibility(scrollOffset > ScreenUtils.dp2px(178f) ? View.VISIBLE : View.GONE);
             }
         });
+    }
+
+    int headerHeight = 0;
+    private int getScrollY() {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) mViewBinding.rvPlaylistDetail.getLayoutManager();
+        // 获取第一个可见item的位置
+        int position = layoutManager.findFirstVisibleItemPosition();
+
+        if (position == 0) {
+            // 获取header
+            View headerView = layoutManager.findViewByPosition(0);
+            // 获取第一个可见item的高度
+            headerHeight = headerView.getHeight();
+        }
+
+        // 获取第一个可见item
+        View firstVisiableChildView = layoutManager.findViewByPosition(position);
+        // 获取第一个可见item的高度
+        int itemHeight = firstVisiableChildView.getHeight();
+        // 获取第一个可见item的位置
+        int iResult = 0;
+        if (position == 0) {
+            iResult = (position) * itemHeight - firstVisiableChildView.getTop();
+        } else {
+            iResult = (position) * itemHeight - firstVisiableChildView.getTop() + headerHeight;
+        }
+
+        return iResult;
     }
 
     private void initAdapter() {
@@ -137,47 +158,32 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         mViewBinding.rvPlaylistDetail.setAdapter(adapter);
 
-        adapter.setOnPlayAllClick(new PlayListDetailAdapter.OnPlayAllClickListener() {
-            @Override
-            public void clickPlayAll() {
-                AudioPlayer.get().addAndPlay(adapter.getCurrentList());
-            }
-        });
+        adapter.setOnPlayAllClick(() -> AudioPlayer.get().addAndPlay(adapter.getCurrentList()));
     }
 
     @Override
     public void initViewObservable() {
 
-        mViewModel.getPlayListDetail(id).observe(getViewLifecycleOwner(), new Observer<Long[]>() {
-            @Override
-            public void onChanged(Long[] ids) {
-                initAdapter();
-                initHeaderView(ids.length);
-                mViewModel.getPlayList(ids).observe(getViewLifecycleOwner(), new Observer<PagedList<Music>>() {
-                    @Override
-                    public void onChanged(PagedList<Music> musics) {
-                        adapter.submitList(musics);
-                    }
-                });
+        mViewModel.getPlayListDetail(id).observe(getViewLifecycleOwner(), ids -> {
+            initAdapter();
+            initHeaderView(ids.length);
+            mViewModel.getPlayList(ids).observe(getViewLifecycleOwner(), musics -> adapter.submitList(musics));
 
-                mViewModel.networkStatus.observe(getViewLifecycleOwner(), new Observer<NetworkStatus>() {
-                    @Override
-                    public void onChanged(NetworkStatus networkStatus) {
-                        adapter.updateNetworkStatus(networkStatus);
-                        if (networkStatus == NetworkStatus.COMPLETED) {
-                            if (mViewModel.getNeedScrollToTop()) {
-                                mViewBinding.rvPlaylistDetail.scrollToPosition(0);
-                                mViewModel.setNeedScrollToTop(false);
-                            }
-                        }
+            mViewModel.networkStatus.observe(getViewLifecycleOwner(), networkStatus -> {
+                adapter.updateNetworkStatus(networkStatus);
+                if (networkStatus == NetworkStatus.COMPLETED) {
+                    if (mViewModel.getNeedScrollToTop()) {
+                        mViewBinding.rvPlaylistDetail.scrollToPosition(0);
+                        mViewModel.setNeedScrollToTop(false);
                     }
-                });
-            }
+                }
+            });
         });
     }
 
     private void initHeaderView(int length) {
         adapter.setPlayListCount(length);
+        mViewBinding.playAll.tvCount.setText(length+"");
     }
 
     @Override

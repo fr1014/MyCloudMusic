@@ -33,8 +33,8 @@ class PaletteBgUtils {
                         }
                         else -> {
                             createLinearGradientBitmap(
-                                    bg, palette.getLightMutedColor(Color.TRANSPARENT),
-                                    palette.getLightMutedColor(
+                                    bg, palette.getLightVibrantColor(Color.TRANSPARENT),
+                                    palette.getLightVibrantColor(
                                             Color.TRANSPARENT
                                     )
                             )
@@ -69,8 +69,8 @@ class PaletteBgUtils {
                         }
                         else -> {
                             createLinearGradientBitmap(
-                                    bg, palette.getLightMutedColor(Color.TRANSPARENT),
-                                    palette.getLightVibrantColor(
+                                    bg, palette.getLightVibrantColor(Color.TRANSPARENT),
+                                    palette.getLightMutedColor(
                                             Color.TRANSPARENT
                                     )
                             )
