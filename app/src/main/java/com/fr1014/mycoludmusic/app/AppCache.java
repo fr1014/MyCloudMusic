@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
+import com.tencent.bugly.Bugly;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
@@ -36,7 +37,8 @@ public class AppCache {
 //        ToastUtils.init(mContext);
         Preferences.init(mContext);
         ScreenUtils.init(mContext);
-        CrashReport.initCrashReport(mContext, "11c03b3b54", false);
+//        CrashReport.initCrashReport(mContext, "11c03b3b54", false);
+        Bugly.init(mContext, "11c03b3b54", false);
         application.registerActivityLifecycleCallbacks(new ActivityLifecycle());
     }
 

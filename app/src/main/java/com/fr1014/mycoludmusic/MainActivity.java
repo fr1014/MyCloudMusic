@@ -215,7 +215,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     @Override
     public void initData() {
         mViewModel.searchDefault(String.valueOf(System.currentTimeMillis()));
-//        requestMyPermissions();
+        requestMyPermissions();
     }
 
     @Override
