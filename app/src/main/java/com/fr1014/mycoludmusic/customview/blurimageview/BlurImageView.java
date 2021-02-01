@@ -3,8 +3,6 @@ package com.fr1014.mycoludmusic.customview.blurimageview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -18,7 +16,6 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.utils.BlurImageUtils;
-import com.fr1014.mycoludmusic.utils.DisplayUtil;
 
 public class BlurImageView extends AppCompatImageView {
 

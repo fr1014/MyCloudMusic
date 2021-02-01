@@ -17,8 +17,8 @@ public class BlurImageUtils {
 
     public static Drawable getForegroundDrawable(Context context,Bitmap bitmap) {
         /*得到屏幕的宽高比，以便按比例切割图片一部分*/
-        final float widthHeightSize = (float) (DisplayUtil.getScreenWidth()
-                * 1.0 / DisplayUtil.getScreenHeight() * 1.0);
+        final float widthHeightSize = (float) (ScreenUtils.getScreenWidth()
+                * 1.0 / ScreenUtils.getScreenHeight() * 1.0);
 
         int cropBitmapWidth = (int) (widthHeightSize * bitmap.getHeight());
         int cropBitmapWidthX = (int) ((bitmap.getWidth() - cropBitmapWidth) / 2.0);
