@@ -85,7 +85,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawable(null);
-//        EventBus.getDefault().register(this);
         Profile profile = getUserProfile();
         if (profile != null) {
             mViewModel.getLikeIdList(profile.getUserId());
@@ -161,17 +160,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         mViewBinding.appBarMain.ivSwitch.setOnClickListener(this);
         mViewBinding.appBarMain.tvSearch.setOnClickListener(this);
     }
-
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onStringEvent(LoginStatusEvent event) {
-//        if (event.isLogin) {
-//            Profile profile = getUserProfile();
-//            initNavHeaderViewData(profile);
-//            if (profile != null) {
-//                mViewModel.getLikeIdList(profile.getUserId());
-//            }
-//        }
-//    }
 
     private Profile getUserProfile() {
         return Preferences.getUserProfile();
@@ -318,7 +306,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        EventBus.getDefault().unregister(this);
         if (statusBar != null) {
             CoverLoadUtils.get().removeLoadListener(statusBar);
         }
