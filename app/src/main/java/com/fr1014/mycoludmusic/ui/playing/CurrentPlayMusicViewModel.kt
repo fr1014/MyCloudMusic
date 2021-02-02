@@ -16,7 +16,6 @@ import com.fr1014.mymvvm.base.BusLiveData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.lang.NumberFormatException
 import java.util.regex.Pattern
 
 /**
@@ -24,15 +23,15 @@ import java.util.regex.Pattern
  * Describe:
  */
 class CurrentPlayMusicViewModel(application: Application, model: DataRepository) : CommonViewModel(application, model) {
-    private val songLrcPathLive: BusLiveData<String> by lazy {
-        BusLiveData<String>()
+    private val songLrcPathLive: BusLiveData<Array<String>> by lazy {
+        BusLiveData()
     }
 
     private val likeSongResultLive: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
     }
 
-    fun getSongLrcPath(): LiveData<String> = songLrcPathLive
+    fun getSongLrcPath(): LiveData<Array<String>> = songLrcPathLive
     fun getLikeSongResult(): LiveData<Boolean> = likeSongResultLive
 
     fun getLikeList(): LiveData<MutableList<MusicLike>> = model.likeIdsLive
@@ -74,9 +73,14 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
     }
 
     fun getSongLrc(music: Music) {
-        val filePath = FileUtils.getLrcDir() + FileUtils.getLrcFileName(music.artist, music.title)
-        if (!FileUtils.isFileEmpty(filePath)) {
-            songLrcPathLive.postValue(filePath)
+        val lrcFilePath = FileUtils.getLrcDir() + FileUtils.getLrcFileName(music.artist, music.title)
+        var tlyricFilePath = FileUtils.getTlyLrcDir() + FileUtils.getLrcFileName(music.artist, music.title)
+        if (!FileUtils.isFileEmpty(lrcFilePath)) {
+            if (FileUtils.isFileEmpty(tlyricFilePath)){
+                tlyricFilePath = ""
+            }
+            val array = arrayOf(lrcFilePath,tlyricFilePath)
+            songLrcPathLive.postValue(array)
             return
         }
         if (!TextUtils.isEmpty(music.musicrid)) {
@@ -107,11 +111,11 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
                                 append("\n")
                             }
                         }
-                        FileUtils.saveLrcFile(filePath, content.toString())
-                        filePath
+                        FileUtils.saveLrcFile(lrcFilePath, content.toString())
+                        lrcFilePath
                     }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ filePath -> songLrcPathLive.postValue(filePath) }, { songLrcPathLive.postValue("") })
+                    .subscribe({ filePath -> songLrcPathLive.postValue(arrayOf(filePath,"")) }, { songLrcPathLive.postValue(arrayOf("","")) })
             )
         } else {
             addSubscribe(model.getWYSongLrcEntity(music.id)
@@ -119,11 +123,17 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
                     .observeOn(Schedulers.io())
                     .map { wySongLrcEntity ->
                         val lyric = wySongLrcEntity.lrc.lyric
-                        FileUtils.saveLrcFile(filePath, lyric)
-                        filePath
+                        val tlyric = wySongLrcEntity.tlyric.lyric
+                        FileUtils.saveLrcFile(lrcFilePath, lyric)
+                        if (tlyric.isNotEmpty()){
+                            FileUtils.saveLrcFile(tlyricFilePath,tlyric)
+                        }else{
+                            tlyricFilePath = ""
+                        }
+                        arrayOf(lrcFilePath,tlyricFilePath)
                     }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ songLrcPathLive.postValue(filePath) }) { songLrcPathLive.postValue("") }
+                    .subscribe({ songLrcPathLive.postValue(it) }) { songLrcPathLive.postValue(arrayOf("","")) }
             )
         }
     }

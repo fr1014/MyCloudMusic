@@ -127,16 +127,19 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void initViewObservable() {
-        mViewModel.getSongLrcPath().observe(getViewLifecycleOwner(), new Observer<String>() {
+        mViewModel.getSongLrcPath().observe(getViewLifecycleOwner(), new Observer<String[]>() {
             @Override
-            public void onChanged(String lrcPath) {
+            public void onChanged(String[] lrcPath) {
                 mViewBinding.lrcView.setLabel("该歌曲暂无歌词");
-                if (!lrcPath.equals("")) {
-                    mViewBinding.lrcView.loadLrc(new File(lrcPath));
+                if (!lrcPath[0].equals("")) {
+                    if (!lrcPath[1].equals("")) {
+                        mViewBinding.lrcView.loadLrc(new File(lrcPath[0]),new File(lrcPath[1]));
+                    } else {
+                        mViewBinding.lrcView.loadLrc(new File(lrcPath[0]));
+                    }
                 } else {
                     mViewBinding.lrcView.loadLrc("[00:00.000]该歌曲暂无歌词");
                 }
-
             }
         });
     }
