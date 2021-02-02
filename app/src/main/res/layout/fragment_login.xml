@@ -49,6 +49,7 @@
         style="@style/Widget.AppCompat.EditText"
         android:layout_width="0dp"
         android:layout_height="76dp"
+        android:inputType="textPassword"
         android:background="@drawable/bg_login_password"
         android:paddingStart="8dp"
         app:iconSearch_id="@drawable/ic_password"

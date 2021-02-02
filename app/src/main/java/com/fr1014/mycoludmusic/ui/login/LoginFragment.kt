@@ -2,6 +2,7 @@ package com.fr1014.mycoludmusic.ui.login
 
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import com.fr1014.mycoludmusic.MainActivity
 import com.fr1014.mycoludmusic.databinding.FragmentLoginBinding
 import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent
 import com.fr1014.mycoludmusic.musicmanager.Preferences
@@ -23,7 +24,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, LoginViewModel>() {
     override fun initViewObservable() {
         mViewModel.getProfile().observe(this, Observer {
             Preferences.saveUserProfile(it)
-            EventBus.getDefault().post(LoginStatusEvent(true))
+            startActivity(MainActivity::class.java)
+            activity?.finish()
+//            EventBus.getDefault().post(LoginStatusEvent(true))
         })
     }
 }
