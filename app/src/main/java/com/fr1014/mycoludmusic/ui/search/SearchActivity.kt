@@ -1,15 +1,15 @@
 package com.fr1014.mycoludmusic.ui.search
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.View
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
@@ -89,6 +89,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         initListener()
     }
 
+    @SuppressLint("RestrictedApi")
     private fun initSearchView() {
         mViewBinding.serachView.apply {
             //是否一直显示clearIcon
@@ -103,7 +104,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             isFocusable = true
             requestFocusFromTouch()
             //设置提示词
-            queryHint = if (searchShowWord== null) "请输入关键字" else searchShowWord
+            queryHint = if (searchShowWord == null) "请输入关键字" else searchShowWord
 
             //设置输入框文字颜色
             //设置输入框文字颜色
@@ -182,7 +183,8 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 }
 
                 //当搜索内容改变时触发该方法
-                override fun onQueryTextChange(newText: String?): Boolean {
+                override fun onQueryTextChange(newText: String): Boolean {
+                    mViewModel.searchMatch(newText)
                     return false
                 }
 
@@ -190,9 +192,26 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         }
     }
 
+    var matchAdapter: ArrayAdapter<Any>? = null
+    @SuppressLint("RestrictedApi")
     override fun initViewObservable() {
         mViewModel.getSearchKey().observe(this, Observer {
             changeSearchViewText(it)
+        })
+
+        mViewModel.getSearchMatch().observe(this, Observer { list ->
+            val data = ArrayList<String>()
+            list.forEach{
+                data.add(it.keyword)
+            }
+            if (matchAdapter == null){
+                val searchAutoComplete = findViewById<SearchView.SearchAutoComplete>(R.id.search_src_text)
+                matchAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,data.toArray())
+                matchAdapter!!.setNotifyOnChange(true)
+                searchAutoComplete.setAdapter(matchAdapter)
+                searchAutoComplete.threshold = 1
+            }
+            matchAdapter?.add(data.toArray())
         })
     }
 

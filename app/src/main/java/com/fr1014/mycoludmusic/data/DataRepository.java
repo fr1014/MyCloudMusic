@@ -11,6 +11,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlayl
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
@@ -152,6 +153,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<SearchDefault> getSearchDefault(String timestamp) {
         return httpDataSource.getSearchDefault(timestamp);
+    }
+
+    @Override
+    public Observable<SearchRecommend> getSearchMatch(String keywords, String type) {
+        return httpDataSource.getSearchMatch(keywords, type);
     }
 
     @Override
