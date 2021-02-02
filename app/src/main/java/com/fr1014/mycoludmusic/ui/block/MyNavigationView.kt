@@ -9,13 +9,15 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
-import com.fr1014.mycoludmusic.MainActivity
 import com.fr1014.mycoludmusic.MainViewModel
 import com.fr1014.mycoludmusic.R
+import com.fr1014.mycoludmusic.app.AppCache
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile
 import com.fr1014.mycoludmusic.databinding.BlockMynavigationviewBinding
+import com.fr1014.mycoludmusic.musicmanager.PlayService
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.musicmanager.QuitTimer
+import com.fr1014.mycoludmusic.musicmanager.constants.Actions
 import com.fr1014.mycoludmusic.utils.CommonUtils
 
 class MyNavigationView @JvmOverloads constructor(
@@ -44,7 +46,8 @@ class MyNavigationView @JvmOverloads constructor(
                     Preferences.saveUserProfile(null)
                     Preferences.saveCookie(null)
                     CommonUtils.toastShort("啊啊啊啊！居然退出登录啦，你怎么敢的啊！")
-                    (context as MainActivity).finish()
+                    AppCache.get().clearStack()
+                    PlayService.startCommand(context, Actions.ACTION_STOP)
                 } else {
                     CommonUtils.toastShort("遇到了有意思的事情开小差了，请稍后重试")
                 }
