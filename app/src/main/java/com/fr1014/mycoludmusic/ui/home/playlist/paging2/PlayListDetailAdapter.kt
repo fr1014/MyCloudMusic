@@ -166,12 +166,12 @@ class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
                     isClickable = true
                 }
                 NetworkStatus.COMPLETED -> {
-                    getView<TextView>(R.id.tv_loading).text = "加载完毕"
+                    getView<TextView>(R.id.tv_loading).text = "-- 我是有底线的 --"
                     getView<LottieAnimationView>(R.id.lav_loading).visibility = View.GONE
                     isClickable = false
                 }
                 else -> {
-                    getView<TextView>(R.id.tv_loading).text = "正在加载"
+                    getView<TextView>(R.id.tv_loading).text = "正在加载..."
                     getView<LottieAnimationView>(R.id.lav_loading).visibility = View.VISIBLE
                     isClickable = false
                 }

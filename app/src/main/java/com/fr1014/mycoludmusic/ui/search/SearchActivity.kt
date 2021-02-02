@@ -1,6 +1,5 @@
 package com.fr1014.mycoludmusic.ui.search
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +8,6 @@ import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
@@ -18,12 +16,17 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.fr1014.frecyclerviewadapter.BaseAdapter
+import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.SourceHolder
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.base.BasePlayActivity
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.MatchBean
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
@@ -43,6 +46,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     private var searchWord: String? = null
     private var searchShowWord: String? = null
     private var searchType: Int? = null
+    private var searchMatchAdapter: SearchMatchAdapter? = null
 
     companion object {
         fun startSearchActivity(context: Context, searchShowWord: String, searchWord: String, searchType: Int) {
@@ -84,12 +88,20 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun initView() {
         initSystemBar()
-        initSearchView()
         navController = Navigation.findNavController(this, R.id.nav_search_host)
+        initSearchView()
+        initSearchMatchView()
         initListener()
     }
 
-    @SuppressLint("RestrictedApi")
+    private fun initSearchMatchView() {
+        searchMatchAdapter = SearchMatchAdapter(R.layout.item_search_match,navController)
+        mViewBinding.rvSearchMatch.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = searchMatchAdapter
+        }
+    }
+
     private fun initSearchView() {
         mViewBinding.serachView.apply {
             //是否一直显示clearIcon
@@ -130,6 +142,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                                     navigation(query.toString())
                                 }
                             }
+                            mViewBinding.rvSearchMatch.visibility = View.GONE
                             return true
                         }
                         return false
@@ -172,10 +185,11 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             }
         }
 
-        mViewBinding.ivBack.setOnClickListener { onBackPressed() }
-
         // 设置搜索文本监听
         mViewBinding.apply {
+
+            ivBack.setOnClickListener { onBackPressed() }
+
             serachView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 //当点击搜索按钮时触发该方法
                 override fun onQueryTextSubmit(query: String): Boolean {
@@ -184,34 +198,43 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
                 //当搜索内容改变时触发该方法
                 override fun onQueryTextChange(newText: String): Boolean {
-                    mViewModel.searchMatch(newText)
+                    if (newText.isEmpty()) {
+                        mViewBinding.rvSearchMatch.visibility = View.GONE
+                    } else {
+                        mViewModel.searchMatch(newText)
+                    }
                     return false
                 }
 
             })
+
+            flSearchContent.setOnClickListener {
+                if (rvSearchMatch.visibility == View.VISIBLE){
+                    rvSearchMatch.visibility = View.GONE
+                }
+            }
+        }
+
+
+        searchMatchAdapter?.let {
+            it.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver(){
+                override fun onChanged() {
+                    if (CollectionUtils.isEmptyList(it.datas)){
+                        mViewBinding.rvSearchMatch.visibility = View.GONE
+                    }
+                }
+            })
         }
     }
 
-    var matchAdapter: ArrayAdapter<Any>? = null
-    @SuppressLint("RestrictedApi")
     override fun initViewObservable() {
         mViewModel.getSearchKey().observe(this, Observer {
             changeSearchViewText(it)
         })
 
-        mViewModel.getSearchMatch().observe(this, Observer { list ->
-            val data = ArrayList<String>()
-            list.forEach{
-                data.add(it.keyword)
-            }
-            if (matchAdapter == null){
-                val searchAutoComplete = findViewById<SearchView.SearchAutoComplete>(R.id.search_src_text)
-                matchAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1,data.toArray())
-                matchAdapter!!.setNotifyOnChange(true)
-                searchAutoComplete.setAdapter(matchAdapter)
-                searchAutoComplete.threshold = 1
-            }
-            matchAdapter?.add(data.toArray())
+        mViewModel.getSearchMatch().observe(this, Observer {
+            searchMatchAdapter?.setData(it)
+            mViewBinding.rvSearchMatch.visibility = View.VISIBLE
         })
     }
 
@@ -238,11 +261,34 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         statusBarView?.let {
             CoverLoadUtils.get().removeLoadListener(it)
             it.onPlayEventListener?.let { listener ->
                 AudioPlayer.get().removeOnPlayEventListener(listener)
+            }
+        }
+
+        super.onDestroy()
+    }
+}
+
+class SearchMatchAdapter(layoutResId: Int, private val navController: NavController) : BaseAdapter<MatchBean, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
+
+    init {
+        onItemClickListener = this
+    }
+
+    override fun convert(holder: BaseViewHolder, data: MatchBean) {
+        holder.setText(R.id.tv_search_match, data.keyword)
+        holder.addOnClickListener(R.id.cl_search_match)
+    }
+
+    override fun onItemClick(adapter: BaseAdapter<*, *>, view: View, position: Int) {
+        when (view.id) {
+            R.id.cl_search_match -> {
+                navController.navigate(R.id.search_result, SearchResultFragment.createBundle(getData(position).keyword))
+                adapter.clearData()
+                notifyDataSetChanged()
             }
         }
     }

@@ -50,14 +50,28 @@
                 android:src="@drawable/ic_switch" />
         </LinearLayout>
 
-        <fragment
-            android:id="@+id/nav_search_host"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <FrameLayout
+            android:id="@+id/fl_search_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="9.8"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_search" />
+            android:layout_weight="9.8">
+
+            <fragment
+                android:id="@+id/nav_search_host"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_search" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_search_match"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/layer_white_bg"
+                android:visibility="gone" />
+        </FrameLayout>
     </LinearLayout>
 
     <FrameLayout

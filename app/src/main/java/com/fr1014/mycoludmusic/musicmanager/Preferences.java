@@ -124,7 +124,7 @@ public class Preferences {
     }
 
     public static String getMusicSource() {
-        return getString(MUSIC_SOURCE,"酷我");
+        return getString(MUSIC_SOURCE,"网易");
     }
 
     //    public static String getFilterSize() {

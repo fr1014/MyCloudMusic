@@ -12,13 +12,8 @@
         android:orientation="vertical"
         tools:context=".ui.home.HomeFragment">
 
-        <Button
-            android:id="@+id/bt_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="登录" />
-
         <com.fr1014.mycoludmusic.ui.block.HomeTopClickBlock
+            android:layout_marginTop="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_white_cornertlr_8"

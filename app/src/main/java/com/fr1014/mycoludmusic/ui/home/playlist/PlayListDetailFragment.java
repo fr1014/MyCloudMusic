@@ -10,7 +10,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -117,12 +116,14 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         mViewBinding.rvPlaylistDetail.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                Log.d("hello", "onScrolled: "+dy);
                 int scrollOffset = getScrollY();
-                if (scrollOffset > ScreenUtils.dp2px(89f)) {
-                    PaletteBgUtils.Companion.paletteDownBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());
-                } else {
-                    PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle, mViewModel.getCoverBitmap().getValue());
+                Bitmap bitmap = mViewModel.getCoverBitmap().getValue();
+                if (bitmap != null){
+                    if (scrollOffset > ScreenUtils.dp2px(89f)) {
+                        PaletteBgUtils.Companion.paletteDownBg(mViewBinding.ivTitle, bitmap);
+                    } else {
+                        PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle,bitmap);
+                    }
                 }
                 mViewBinding.playAll.llPlaylist.setVisibility(scrollOffset > ScreenUtils.dp2px(178f) ? View.VISIBLE : View.GONE);
             }
