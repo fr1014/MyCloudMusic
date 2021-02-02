@@ -7,6 +7,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
@@ -28,6 +29,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -44,11 +46,12 @@ public interface HttpDataSource {
      ========================网易云===================================
    */
     Observable<DayRecommend> getWYDayRecommend();
+
     Observable<Logout> getWYLogout();
 
     Observable<UserEntity> getWYUserProfile(String phone, String password);
 
-    Observable<WYLikeIdList> getWYLikeIdList(Long uid,String timestamp);
+    Observable<WYLikeIdList> getWYLikeIdList(Long uid, String timestamp);
 
     Observable<WYLikeMusic> likeMusicWY(long id, boolean like);
 
@@ -77,6 +80,8 @@ public interface HttpDataSource {
     Observable<SearchHotDetail> getSearchHotDetail();
 
     Observable<SearchDefault> getSearchDefault(String timestamp);
+
+    Observable<SearchRecommend> getSearchMatch(String keywords, String type);
 
     Observable<WYSearchDetail> getWYSearch(String keywords, int offset);
 
