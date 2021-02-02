@@ -8,6 +8,7 @@ import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.fr1014.mycoludmusic.data.DataRepository
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.MatchBean
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.rx.RxSchedulers
@@ -22,17 +23,34 @@ class SearchViewModel(application: Application, model: DataRepository) : CommonV
     lateinit var pageListLiveData: LiveData<PagedList<Music>>
     lateinit var networkStatus: LiveData<NetworkStatus>
 
-    private val searchHotDetailLive : MutableLiveData<SearchHotDetail> by lazy {
+    private val searchMatchLive: MutableLiveData<List<MatchBean>> by lazy {
         MutableLiveData()
     }
 
-    private val searchKeyLive : MutableLiveData<String> by lazy {
+    private val searchHotDetailLive: MutableLiveData<SearchHotDetail> by lazy {
+        MutableLiveData()
+    }
+
+    private val searchKeyLive: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
 
-    fun getSearchHotDetail() : LiveData<SearchHotDetail> = searchHotDetailLive
+    fun getSearchMatch(): LiveData<List<MatchBean>> = searchMatchLive;
 
-    fun getSearchKey() : MutableLiveData<String> = searchKeyLive
+    fun getSearchHotDetail(): LiveData<SearchHotDetail> = searchHotDetailLive
+
+    fun getSearchKey(): MutableLiveData<String> = searchKeyLive
+
+    fun searchMatch(keyWord: String) {
+        addSubscribe(model.getSearchMatch(keyWord, "mobile")
+                .compose(RxSchedulers.apply())
+                .map {
+                    it.result.allMatch
+                }
+                .subscribe(Consumer {
+                    searchMatchLive.postValue(it)
+                }))
+    }
 
     fun searchHotDetail() {
         addSubscribe(model.searchHotDetail

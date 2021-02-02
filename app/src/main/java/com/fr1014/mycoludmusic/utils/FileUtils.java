@@ -37,6 +37,11 @@ public class FileUtils {
         return MyApplication.getInstance().getFilesDir() + "/MyCloudMusic";
     }
 
+    public static String getTlyLrcDir() {
+        String dir = getAppDir() + "/Tlyric/";
+        return mkdirs(dir);
+    }
+
     public static String getLrcDir() {
         String dir = getAppDir() + "/Lyric/";
         return mkdirs(dir);

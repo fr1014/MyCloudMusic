@@ -4,6 +4,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
@@ -129,6 +130,13 @@ public interface WYApiService {
     @GET("search/default")
     Observable<SearchDefault> getSearchDefault(@Query("timestamp") String timestamp);
 
+    /**
+     * @param keywords 关键词
+     * @param type 如果传 'mobile' 则返回移动端数据
+     * @return 搜索建议
+     */
+    @GET("search/suggest")
+    Observable<SearchRecommend> getSearchMatch(@Query("keywords")String keywords, @Query("type")String type);
     /**
      * 可选参数 :
      * limit : 返回数量 , 默认为 30
