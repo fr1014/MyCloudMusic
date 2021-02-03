@@ -19,17 +19,17 @@ data class UserEntity(
 data class Account(
         val anonimousUser: Boolean,
         val ban: Int,
-        val baoyueVersion: Int,
+        val baoyueVersion: Long,
         val createTime: Long,
-        val donateVersion: Int,
+        val donateVersion: Long,
         val id: Long,
         val salt: String,
         val status: Int,
-        val tokenVersion: Int,
+        val tokenVersion: Long,
         val type: Int,
         val userName: String,
         val vipType: Int,
-        val viptypeVersion: Int,
+        val viptypeVersion: Long,
         val whitelistAuthority: Int
 )
 

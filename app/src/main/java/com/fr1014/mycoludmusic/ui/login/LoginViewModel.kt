@@ -30,6 +30,7 @@ class LoginViewModel(application: Application, model: DataRepository) : BaseView
                 .subscribe({
                     userEntityLive.postValue(it)
                 }, {
+                    Log.d("hello", "getWYUserProfile: " + it.message)
                     CommonUtils.toastLong("需要网易云的账号登录哦，目前仅支持手机号+密码登录的形式")
                 })
         )
