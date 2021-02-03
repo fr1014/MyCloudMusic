@@ -67,7 +67,13 @@ class UserControlBarBlock @JvmOverloads constructor(
     }
 
     private fun initListener() {
-        mViewBinding.ivLike.setOnClickListener(this)
+        mViewBinding.apply {
+            ivLike.setOnClickListener(this@UserControlBarBlock)
+            ivDownload.setOnClickListener(this@UserControlBarBlock)
+            ivComment.setOnClickListener(this@UserControlBarBlock)
+            ivMv.setOnClickListener(this@UserControlBarBlock)
+            ivMore.setOnClickListener(this@UserControlBarBlock)
+        }
     }
 
     fun initUserControlBar(mViewModel: CurrentPlayMusicViewModel, mLifecycleOwner: LifecycleOwner) {
@@ -91,6 +97,9 @@ class UserControlBarBlock @JvmOverloads constructor(
                 } else {
                     CommonUtils.toastLong("该歌曲源不是网易，暂时无法收藏")
                 }
+            }
+            else ->{
+                CommonUtils.toastShort(context.resources.getString(R.string.dev))
             }
         }
     }
