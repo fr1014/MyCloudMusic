@@ -22,6 +22,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.dataconvter.CommonPlaylist
 import com.fr1014.mycoludmusic.databinding.BlockRecommendPlaylistBinding
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
+import com.fr1014.mycoludmusic.utils.CommonUtils
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 import io.supercharge.shimmerlayout.ShimmerLayout
@@ -43,6 +44,13 @@ class RecommendPlayListBlock @JvmOverloads constructor(
         mViewBinding.rvRecommend.apply {
             layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
             adapter = viewAdapter
+        }
+        initListener()
+    }
+
+    private fun initListener() {
+        mViewBinding.tvMore.setOnClickListener {
+            CommonUtils.toastShort(context.resources.getString(R.string.dev))
         }
     }
 
