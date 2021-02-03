@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.ui.home.homepage.dayrecommend
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -28,6 +29,9 @@ class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHol
         holder.getView<TextView>(R.id.tv_title).text = data.name
         holder.getView<TextView>(R.id.tv_info).text = "${data.getArInfo()} - ${data.al.name}"
         holder.addOnClickListener(R.id.cl_item_recommend)
+        if (holder.adapterPosition == (itemCount - 1)){
+            holder.getView<View>(R.id.view_place_holder).visibility = View.VISIBLE
+        }
     }
 
     override fun onItemClick(adapter: BaseAdapter<*, *>, view: View, position: Int) {
