@@ -5,9 +5,11 @@ package com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user
  * Describe:
  */
 data class UserEntity(
+        val msg: String,
+        val message: String,
+        val code: Int,
         val account: Account,
         val bindings: List<Binding>,
-        val code: Int,
         val cookie: String,
         val loginType: Int,
         val profile: Profile,
@@ -15,32 +17,32 @@ data class UserEntity(
 )
 
 data class Account(
-    val anonimousUser: Boolean,
-    val ban: Int,
-    val baoyueVersion: Int,
-    val createTime: Long,
-    val donateVersion: Int,
-    val id: Long,
-    val salt: String,
-    val status: Int,
-    val tokenVersion: Int,
-    val type: Int,
-    val userName: String,
-    val vipType: Int,
-    val viptypeVersion: Int,
-    val whitelistAuthority: Int
+        val anonimousUser: Boolean,
+        val ban: Int,
+        val baoyueVersion: Int,
+        val createTime: Long,
+        val donateVersion: Int,
+        val id: Long,
+        val salt: String,
+        val status: Int,
+        val tokenVersion: Int,
+        val type: Int,
+        val userName: String,
+        val vipType: Int,
+        val viptypeVersion: Int,
+        val whitelistAuthority: Int
 )
 
 data class Binding(
-    val bindingTime: Long,
-    val expired: Boolean,
-    val expiresIn: Int,
-    val id: Long,
-    val refreshTime: Int,
-    val tokenJsonStr: String,
-    val type: Int,
-    val url: String,
-    val userId: Long
+        val bindingTime: Long,
+        val expired: Boolean,
+        val expiresIn: Int,
+        val id: Long,
+        val refreshTime: Int,
+        val tokenJsonStr: String,
+        val type: Int,
+        val url: String,
+        val userId: Long
 )
 
 data class Profile(

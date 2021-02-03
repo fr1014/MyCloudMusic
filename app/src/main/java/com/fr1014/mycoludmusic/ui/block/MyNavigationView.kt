@@ -45,7 +45,7 @@ class MyNavigationView @JvmOverloads constructor(
                 if (logout) {
                     Preferences.saveUserProfile(null)
                     Preferences.saveCookie(null)
-                    CommonUtils.toastShort("啊啊啊啊！居然退出登录啦，你怎么敢的啊！")
+                    CommonUtils.toastShort("退出成功")
                     AppCache.get().clearStack()
                     PlayService.startCommand(context, Actions.ACTION_STOP)
                 } else {

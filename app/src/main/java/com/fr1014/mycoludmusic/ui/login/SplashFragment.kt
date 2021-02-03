@@ -4,6 +4,7 @@ import android.view.ViewGroup
 import androidx.navigation.Navigation
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.databinding.FragmentSplashBinding
+import com.fr1014.mycoludmusic.utils.CommonUtils
 import com.fr1014.mymvvm.base.BaseFragment
 
 class SplashFragment : BaseFragment<FragmentSplashBinding, LoginViewModel>() {
@@ -13,6 +14,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, LoginViewModel>() {
     override fun initView() {
         mViewBinding.tvLogin.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.login)
+        }
+        mViewBinding.tvRegister.setOnClickListener {
+            CommonUtils.toastShort(context?.resources?.getString(R.string.dev))
         }
     }
 }

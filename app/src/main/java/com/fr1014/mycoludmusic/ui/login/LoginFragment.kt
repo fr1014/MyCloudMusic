@@ -6,6 +6,7 @@ import com.fr1014.mycoludmusic.MainActivity
 import com.fr1014.mycoludmusic.databinding.FragmentLoginBinding
 import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent
 import com.fr1014.mycoludmusic.musicmanager.Preferences
+import com.fr1014.mycoludmusic.utils.CommonUtils
 import com.fr1014.mymvvm.base.BaseFragment
 import org.greenrobot.eventbus.EventBus
 
@@ -22,11 +23,15 @@ class LoginFragment : BaseFragment<FragmentLoginBinding, LoginViewModel>() {
     }
 
     override fun initViewObservable() {
-        mViewModel.getProfile().observe(this, Observer {
-            Preferences.saveUserProfile(it)
-            startActivity(MainActivity::class.java)
-            activity?.finish()
-//            EventBus.getDefault().post(LoginStatusEvent(true))
+        mViewModel.getUserEntity().observe(this, Observer {
+            if (it.code == 200){
+                Preferences.saveUserProfile(it.profile)
+                startActivity(MainActivity::class.java)
+                activity?.finish()
+                CommonUtils.toastShort("登录成功，开启你的音乐之旅")
+            }else{
+                CommonUtils.toastShort(it.message)
+            }
         })
     }
 }
