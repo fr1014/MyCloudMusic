@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.tencent.bugly.Bugly;
@@ -38,7 +40,8 @@ public class AppCache {
         Preferences.init(mContext);
         ScreenUtils.init(mContext);
 //        CrashReport.initCrashReport(mContext, "11c03b3b54", false);
-        Bugly.init(mContext, "11c03b3b54", false);
+        String isDebug = application.getResources().getString(R.string.is_debug);
+        Bugly.init(mContext, "11c03b3b54", TextUtils.equals(isDebug, "true"));
         application.registerActivityLifecycleCallbacks(new ActivityLifecycle());
     }
 
