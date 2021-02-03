@@ -201,7 +201,9 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                     if (newText.isEmpty()) {
                         mViewBinding.rvSearchMatch.visibility = View.GONE
                     } else {
-                        mViewModel.searchMatch(newText)
+                        if (!TextUtils.equals(mViewModel.getSearchKey().value,newText)){
+                            mViewModel.searchMatch(newText)
+                        }
                     }
                     return false
                 }
