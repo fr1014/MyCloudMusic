@@ -1,7 +1,6 @@
 package com.fr1014.mycoludmusic.ui.home.homepage.dayrecommend
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
