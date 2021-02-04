@@ -8,8 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Build;
 import android.widget.RemoteViews;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.fr1014.mycoludmusic.MainActivity;
@@ -46,6 +49,36 @@ public class Notifier {
         this.playService = musicService;
         //向系统注册通知渠道，注册后不能改变重要性以及其他通知行为
         this.notificationManager = (NotificationManager) musicService.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startMyOwnForeground(playService);
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void startMyOwnForeground(Context context) {
+        String NOTIFICATION_CHANNEL_ID = "com.fr1014.cloudmusic";
+        String channelName = "My Background Service";
+        NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+        chan.setLightColor(Color.BLUE);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        assert manager != null;
+        manager.createNotificationChannel(chan);
+
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setSmallIcon(R.drawable.ic_notifier)
+                .setContentIntent(pendingIntent)
+                .setContentTitle("App is running in background")
+                .setPriority(NotificationManager.IMPORTANCE_MIN)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .build();
+        playService.startForeground(2, notification);
     }
 
     public void showPlay(Music music) {
@@ -103,9 +136,9 @@ public class Notifier {
         String artist = music.getArtist();
         Bitmap cover;
         Bitmap coverLocal = FileUtils.getCoverLocal(music);
-        if (coverLocal == null){
-            cover = BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_launcher);
-        }else {
+        if (coverLocal == null) {
+            cover = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+        } else {
             cover = coverLocal;
         }
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.notification);

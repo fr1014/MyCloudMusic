@@ -24,9 +24,6 @@ public class PlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForeground(1,new Notification());
-        }
         AudioPlayer.get().init(this);
         MediaSessionManager.get().init(this);
         Notifier.get().init(this);
@@ -69,7 +66,7 @@ public class PlayService extends Service {
         if (mediaPlayer != null) {
             mediaPlayer.release();
         }
-        if (AudioPlayer.get().mCompositeDisposable != null){
+        if (AudioPlayer.get().mCompositeDisposable != null) {
             AudioPlayer.get().mCompositeDisposable.clear();
         }
     }
