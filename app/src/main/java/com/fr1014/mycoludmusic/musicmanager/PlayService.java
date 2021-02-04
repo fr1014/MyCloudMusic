@@ -1,10 +1,12 @@
 package com.fr1014.mycoludmusic.musicmanager;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
@@ -22,6 +24,9 @@ public class PlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForeground(1,new Notification());
+        }
         AudioPlayer.get().init(this);
         MediaSessionManager.get().init(this);
         Notifier.get().init(this);

@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.app;
 
 import android.content.Intent;
+import android.os.Build;
 
 import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.source.HttpDataSourceImpl;
@@ -42,7 +43,11 @@ public class MyApplication extends BaseApplication {
         super.onCreate();
         AppCache.get().init(this);
         Intent intent = new Intent(this, PlayService.class);
-        startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForegroundService(intent);
+        }else {
+            startService(intent);
+        }
 
         WYYServiceProvider.init(createWYYRetrofitBuilder());
         KWServiceProvider.init(createKWRetrofitBuilder());
