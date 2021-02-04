@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.View
@@ -217,7 +218,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             }
         }
 
-
         searchMatchAdapter?.let {
             it.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver(){
                 override fun onChanged() {
@@ -247,6 +247,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     private fun navigation(searchWord: String) {
         navController.navigate(R.id.search_result, SearchResultFragment.createBundle(searchWord))
+        mViewModel.saveHistory(searchWord)
     }
 
     override fun onBackPressed() {

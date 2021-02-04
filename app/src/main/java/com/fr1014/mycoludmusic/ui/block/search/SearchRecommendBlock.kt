@@ -1,15 +1,12 @@
-package com.fr1014.mycoludmusic.ui.block
+package com.fr1014.mycoludmusic.ui.block.search
 
 import android.content.Context
 import android.graphics.Typeface
-import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.fr1014.frecyclerviewadapter.BaseAdapter
@@ -20,7 +17,6 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail
 import com.fr1014.mycoludmusic.databinding.BlockSearchRecommendBinding
 import com.fr1014.mycoludmusic.ui.search.SearchResultFragment
 import com.fr1014.mycoludmusic.ui.search.SearchViewModel
-import com.fr1014.mycoludmusic.utils.ScreenUtils
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 class SearchRecommendBlock @JvmOverloads constructor(
@@ -103,6 +99,7 @@ class SearchHotDetailAdapter(private val mViewModel: SearchViewModel, layoutResI
             R.id.item_searchWord -> {
                 val data = getData(position)
                 mViewModel.getSearchKey().postValue(data.searchWord)
+                mViewModel.saveHistory(data.searchWord)
                 Navigation.findNavController(view).navigate(R.id.search_result, SearchResultFragment.createBundle(data.searchWord))
             }
         }

@@ -10,6 +10,7 @@ import android.util.Log;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
+import com.fr1014.mycoludmusic.utils.sharedpreferences.SharedPreferencesUtil;
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -38,6 +39,7 @@ public class AppCache {
         mContext = application.getApplicationContext();
 //        ToastUtils.init(mContext);
         Preferences.init(mContext);
+        SharedPreferencesUtil.init(mContext);
         ScreenUtils.init(mContext);
 //        CrashReport.initCrashReport(mContext, "11c03b3b54", false);
         String isDebug = application.getResources().getString(R.string.is_debug);
