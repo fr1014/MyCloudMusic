@@ -266,7 +266,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onBufferingUpdate(int percent) {
-        sbProgress.setSecondaryProgress(sbProgress.getMax() * 100 / percent);
+        if (percent > 0){
+            sbProgress.setSecondaryProgress(sbProgress.getMax() * 100 / percent);
+        }
     }
 
     private void getSongLrc(Music music) {
