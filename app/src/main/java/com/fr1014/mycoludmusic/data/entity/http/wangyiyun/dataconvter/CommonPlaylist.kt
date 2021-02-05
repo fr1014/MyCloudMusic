@@ -8,4 +8,5 @@ data class CommonPlaylist(
         val id: Long,
         val name: String,
         val coverImgUrl: String
+
 )

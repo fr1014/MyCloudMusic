@@ -19,17 +19,20 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils
+import de.hdodenhof.circleimageview.CircleImageView
 
 class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private val mOwner: LifecycleOwner) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
     private var networkStatus: NetworkStatus? = null
     private var hasFooter = false
     private var onPlayAllClickListener: OnPlayAllClickListener? = null
     private var playListCount: Int? = null
+    private var playListDetailEntity: PlayListDetailEntity? = null
 
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Music>() {
@@ -45,6 +48,10 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
 
     fun setPlayListCount(count: Int) {
         playListCount = count
+    }
+
+    fun setHeadInfo(playListDetailEntity: PlayListDetailEntity) {
+        this.playListDetailEntity = playListDetailEntity
     }
 
     fun updateNetworkStatus(networkStatus: NetworkStatus?) {
@@ -98,8 +105,21 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                 }
             }
             R.layout.head_playlist_detail -> HeaderViewHolder.newInstance(mViewModel, mOwner, parent).also { holder ->
-                holder.itemView.findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
-                    onPlayAllClickListener?.clickPlayAll()
+                holder.itemView.apply {
+                    findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
+                        onPlayAllClickListener?.clickPlayAll()
+                    }
+                    playListDetailEntity?.apply {
+                        playlist?.apply {
+                            findViewById<TextView>(R.id.tv_name).text = name
+                            val creatorCover = findViewById<CircleImageView>(R.id.creator_cover)
+                            Glide.with(creatorCover)
+                                    .load(creator.avatarUrl)
+                                    .into(creatorCover)
+                            findViewById<TextView>(R.id.tv_creator_name).text = creator.nickname
+                            findViewById<TextView>(R.id.tv_description).text = description
+                        }
+                    }
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {
@@ -199,6 +219,10 @@ class HeaderViewHolder(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, it
 
     fun setHeadCount(count: Int) {
         itemView.findViewById<TextView>(R.id.tv_count).text = count.toString()
+    }
+
+    fun setDescription(name: String) {
+        itemView.findViewById<TextView>(R.id.tv_name).text = name
     }
 
     companion object {

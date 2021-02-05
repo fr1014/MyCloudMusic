@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
@@ -42,6 +44,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     private String cover;
     private PlayListDetailAdapter adapter;
     private int headerHeight = 0;
+    private boolean isShowPlayListName = false;
 
     public static Bundle createBundle(long id, String name, String coverImg) {
         Bundle bundle = new Bundle();
@@ -79,7 +82,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     protected void initView() {
         StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
         mViewBinding.toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
-        mViewBinding.name.setText(name);
+        mViewBinding.name.setText("歌单");
         mViewBinding.playAll.llPlaylist.setVisibility(View.INVISIBLE);
 
         Glide.with(this)
@@ -117,12 +120,23 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 int scrollOffset = getScrollY();
+                if (scrollOffset > ScreenUtils.dp2px(64f)) {
+                    if (!isShowPlayListName) {
+                        mViewBinding.name.setFocusable(true);
+                        mViewBinding.name.setText(name);
+                        isShowPlayListName = true;
+                    }
+                } else {
+                    mViewBinding.name.setFocusable(false);
+                    mViewBinding.name.setText("歌单");
+                    isShowPlayListName = false;
+                }
                 Bitmap bitmap = mViewModel.getCoverBitmap().getValue();
-                if (bitmap != null){
+                if (bitmap != null) {
                     if (scrollOffset > ScreenUtils.dp2px(89f)) {
                         PaletteBgUtils.Companion.paletteDownBg(mViewBinding.ivTitle, bitmap);
                     } else {
-                        PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle,bitmap);
+                        PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle, bitmap);
                     }
                 }
                 mViewBinding.playAll.llPlaylist.setVisibility(scrollOffset > ScreenUtils.dp2px(178f) ? View.VISIBLE : View.GONE);
@@ -147,7 +161,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         // 获取第一个可见item的高度
         int itemHeight = firstVisiableChildView.getHeight();
         // 获取第一个可见item的位置
-        int iResult = 0;
+        int iResult;
         if (position == 0) {
             iResult = (position) * itemHeight - firstVisiableChildView.getTop();
         } else {
@@ -167,7 +181,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     @Override
     public void initViewObservable() {
-
+        // TODO: 2021/2/5  
         mViewModel.getPlayListDetail(id).observe(getViewLifecycleOwner(), ids -> {
             initAdapter();
             initHeaderView(ids.length);
@@ -184,10 +198,17 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                             public void run() {
                                 mViewBinding.rvPlaylistDetail.getChildAt(0).setVisibility(View.VISIBLE);
                             }
-                        },600);
+                        }, 600);
                     }
                 }
             });
+        });
+
+        mViewModel.getPlayListDetailInfo().observe(getViewLifecycleOwner(), new Observer<PlayListDetailEntity>() {
+            @Override
+            public void onChanged(PlayListDetailEntity playListDetailEntity) {
+                adapter.setHeadInfo(playListDetailEntity);
+            }
         });
     }
 

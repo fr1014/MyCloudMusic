@@ -13,7 +13,7 @@ data class Playlist(
         val coverImgUrl: String,
         val createTime: Long,
         val creator: Creator,
-        val description: Any,
+        val description: String,
         val englishTitle: Any,
         val highQuality: Boolean,
         val id: Long,

@@ -1,7 +1,6 @@
 package com.fr1014.mycoludmusic.ui.vm;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -11,13 +10,10 @@ import com.fr1014.mycoludmusic.data.DataRepository;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.TrackIds;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeIdList;
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLikeMusic;
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike;
-import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mymvvm.base.BaseViewModel;
@@ -27,12 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 public class CommonViewModel extends BaseViewModel<DataRepository> {
 
-    protected BusLiveData<Long[]> getPlayListDetail;
+    protected BusLiveData<Long[]> playListDetailIds;
     protected MutableLiveData<List<Playlist>> playlistWYLive;
+    private MutableLiveData<PlayListDetailEntity> playListDetailLive;
 
     public CommonViewModel(@NonNull Application application) {
         super(application);
@@ -40,6 +36,13 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
 
     public CommonViewModel(@NonNull Application application, DataRepository model) {
         super(application, model);
+    }
+
+    public LiveData<PlayListDetailEntity> getPlayListDetailInfo() {
+        if (playListDetailLive == null){
+            playListDetailLive = new MutableLiveData<>();
+        }
+        return playListDetailLive;
     }
 
     public LiveData<List<Playlist>> getPlaylistWYLive() {
@@ -50,31 +53,26 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
     }
 
     public LiveData<Long[]> getPlayListDetail(long id) {
-        if (getPlayListDetail == null) {
-            getPlayListDetail = new BusLiveData<>();
+        if (playListDetailIds == null) {
+            playListDetailIds = new BusLiveData<>();
         }
         getPlayListDetailEntity(id);
-        return getPlayListDetail;
+        return playListDetailIds;
     }
 
     private void getPlayListDetailEntity(final long id) {
         addSubscribe(model.getPlayListDetail(id)
-                .map(new Function<PlayListDetailEntity, Long[]>() {
+                .compose(RxSchedulers.apply())
+                .subscribe(new Consumer<PlayListDetailEntity>() {
                     @Override
-                    public Long[] apply(@io.reactivex.annotations.NonNull PlayListDetailEntity playListDetailEntity) throws Exception {
+                    public void accept(PlayListDetailEntity playListDetailEntity) throws Exception {
                         List<TrackIds> tracks = playListDetailEntity.playlist.getTrackIds();
                         Long[] ids = new Long[tracks.size()];
                         for (int index = 0; index < tracks.size(); index++) {
                             ids[index] = tracks.get(index).getId();
                         }
-                        return ids;
-                    }
-                })
-                .compose(RxSchedulers.apply())
-                .subscribe(new Consumer<Long[]>() {
-                    @Override
-                    public void accept(Long[] longs) throws Exception {
-                        getPlayListDetail.postValue(longs);
+                        playListDetailIds.postValue(ids);
+                        playListDetailLive.postValue(playListDetailEntity);
                     }
                 }));
     }

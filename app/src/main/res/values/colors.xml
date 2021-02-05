@@ -29,5 +29,6 @@
     <color name="lrc_timeline_text_color">#F8BBD0</color>
     <color name="lrc_timeline_color">#809E9E9E</color>
     <color name="lrc_time_text_color">#809E9E9E</color>
+    <color name="font_gray">#898989</color>
     <!--LrcView-->
 </resources>
