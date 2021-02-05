@@ -35,9 +35,9 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
 
 
     override fun onLayoutChild(
-        parent: CoordinatorLayout,
-        abl: AppBarLayout,
-        layoutDirection: Int
+            parent: CoordinatorLayout,
+            abl: AppBarLayout,
+            layoutDirection: Int
     ): Boolean {
         val handled = super.onLayoutChild(parent, abl, layoutDirection)
         init(abl)
@@ -68,12 +68,12 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
      * @return
      */
     override fun onStartNestedScroll(
-        parent: CoordinatorLayout,
-        child: AppBarLayout,
-        directTargetChild: View,
-        target: View,
-        nestedScrollAxes: Int,
-        type: Int
+            parent: CoordinatorLayout,
+            child: AppBarLayout,
+            directTargetChild: View,
+            target: View,
+            nestedScrollAxes: Int,
+            type: Int
     ): Boolean {
         isAnimate = true
         return true
@@ -91,16 +91,19 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
      * @param type
      */
     override fun onNestedPreScroll(
-        coordinatorLayout: CoordinatorLayout,
-        child: AppBarLayout,
-        target: View,
-        dx: Int,
-        dy: Int,
-        consumed: IntArray,
-        type: Int
+            coordinatorLayout: CoordinatorLayout,
+            child: AppBarLayout,
+            target: View,
+            dx: Int,
+            dy: Int,
+            consumed: IntArray,
+            type: Int
     ) {
         if (child.bottom >= mAppbarHeight && dy < 0 && type == ViewCompat.TYPE_TOUCH) {
-            zoomHeaderImageView(child, dy)
+            val canScrollDown = target.canScrollVertically(-1)
+            if (!canScrollDown){
+                zoomHeaderImageView(child, dy)
+            }
         } else {
             if (child.bottom > mAppbarHeight && dy > 0 && type == ViewCompat.TYPE_TOUCH) {
                 consumed[1] = dy
@@ -108,13 +111,13 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
             } else {
                 if (valueAnimator == null || !valueAnimator!!.isRunning) {
                     super.onNestedPreScroll(
-                        coordinatorLayout,
-                        child,
-                        target,
-                        dx,
-                        dy,
-                        consumed,
-                        type
+                            coordinatorLayout,
+                            child,
+                            target,
+                            dx,
+                            dy,
+                            consumed,
+                            type
                     )
                 }
             }
@@ -152,11 +155,11 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
      * @return
      */
     override fun onNestedPreFling(
-        coordinatorLayout: CoordinatorLayout,
-        child: AppBarLayout,
-        target: View,
-        velocityX: Float,
-        velocityY: Float
+            coordinatorLayout: CoordinatorLayout,
+            child: AppBarLayout,
+            target: View,
+            velocityX: Float,
+            velocityY: Float
     ): Boolean {
         if (velocityY > 100) {
             isAnimate = false
@@ -174,10 +177,10 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
      * @param type
      */
     override fun onStopNestedScroll(
-        coordinatorLayout: CoordinatorLayout,
-        abl: AppBarLayout,
-        target: View,
-        type: Int
+            coordinatorLayout: CoordinatorLayout,
+            abl: AppBarLayout,
+            target: View,
+            type: Int
     ) {
         recovery(abl)
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
@@ -202,7 +205,7 @@ class AppbarZoomBehavior(context: Context?, attrs: AttributeSet?) :
                         scaleY = value
                     }
                     abl.bottom =
-                        (mLastBottom - (mLastBottom - mAppbarHeight) * animation.animatedFraction).toInt()
+                            (mLastBottom - (mLastBottom - mAppbarHeight) * animation.animatedFraction).toInt()
                 })
                 valueAnimator?.start()
             } else {

@@ -5,12 +5,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,6 +32,7 @@ import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
@@ -112,7 +116,23 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     private void initListener() {
-        mViewBinding.ivBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+//        mViewBinding.ivBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        mViewBinding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).popBackStack();
+            }
+        });
+
+        mViewBinding.toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.action_search){
+                    CommonUtils.toastShort(getString(R.string.dev));
+                }
+                return true;
+            }
+        });
 
         mViewBinding.playAll.llPlaylist.setOnClickListener(v -> AudioPlayer.get().addAndPlay(adapter.getCurrentList()));
 

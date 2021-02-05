@@ -114,7 +114,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                             findViewById<TextView>(R.id.tv_name).text = name
                             val creatorCover = findViewById<CircleImageView>(R.id.creator_cover)
                             Glide.with(creatorCover)
-                                    .load(creator.avatarUrl)
+                                    .load(creator.avatarUrl + "?param=60y60")
                                     .into(creatorCover)
                             findViewById<TextView>(R.id.tv_creator_name).text = creator.nickname
                             findViewById<TextView>(R.id.tv_description).text = description
