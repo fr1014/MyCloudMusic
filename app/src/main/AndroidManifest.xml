@@ -65,16 +65,20 @@
 
         <meta-data
             android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" /> <!-- 配置APP ID -->
+            android:resource="@array/preloaded_fonts" />
+        <!-- 配置APP ID -->
         <meta-data
             android:name="BUGLY_APPID"
-            android:value="11c03b3b54" /> <!-- 配置APP版本号 -->
+            android:value="11c03b3b54" />
+        <!-- 配置APP版本号 -->
         <meta-data
             android:name="BUGLY_APP_VERSION"
-            android:value="1.0" /> <!-- 配置APP渠道号 -->
+            android:value="@string/app_version" />
+        <!-- 配置APP渠道号 -->
         <meta-data
             android:name="BUGLY_APP_CHANNEL"
-            android:value="11c03b3b54" /> <!-- 配置Bugly调试模式（true或者false） -->
+            android:value="11c03b3b54" />
+        <!-- 配置Bugly调试模式（true或者false） -->
         <meta-data
             android:name="BUGLY_ENABLE_DEBUG"
             android:value="@string/is_debug" />
