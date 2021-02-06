@@ -96,7 +96,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     private fun initSearchMatchView() {
-        searchMatchAdapter = SearchMatchAdapter(R.layout.item_search_match,navController)
+        searchMatchAdapter = SearchMatchAdapter(R.layout.item_search_match, navController, mViewModel)
         mViewBinding.rvSearchMatch.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = searchMatchAdapter
@@ -202,7 +202,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                     if (newText.isEmpty()) {
                         mViewBinding.rvSearchMatch.visibility = View.GONE
                     } else {
-                        if (!TextUtils.equals(mViewModel.getSearchKey().value,newText)){
+                        if (!TextUtils.equals(mViewModel.getSearchKey().value, newText)) {
                             mViewModel.searchMatch(newText)
                         }
                     }
@@ -212,16 +212,16 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             })
 
             flSearchContent.setOnClickListener {
-                if (rvSearchMatch.visibility == View.VISIBLE){
+                if (rvSearchMatch.visibility == View.VISIBLE) {
                     rvSearchMatch.visibility = View.GONE
                 }
             }
         }
 
         searchMatchAdapter?.let {
-            it.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver(){
+            it.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
                 override fun onChanged() {
-                    if (CollectionUtils.isEmptyList(it.datas)){
+                    if (CollectionUtils.isEmptyList(it.datas)) {
                         mViewBinding.rvSearchMatch.visibility = View.GONE
                     }
                 }
@@ -275,7 +275,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 }
 
-class SearchMatchAdapter(layoutResId: Int, private val navController: NavController) : BaseAdapter<MatchBean, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
+class SearchMatchAdapter(layoutResId: Int, private val navController: NavController, private val mViewModel: SearchViewModel) : BaseAdapter<MatchBean, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
 
     init {
         onItemClickListener = this
@@ -289,7 +289,10 @@ class SearchMatchAdapter(layoutResId: Int, private val navController: NavControl
     override fun onItemClick(adapter: BaseAdapter<*, *>, view: View, position: Int) {
         when (view.id) {
             R.id.cl_search_match -> {
-                navController.navigate(R.id.search_result, SearchResultFragment.createBundle(getData(position).keyword))
+                val searchWord = getData(position).keyword
+                navController.navigate(R.id.search_result, SearchResultFragment.createBundle(searchWord))
+                mViewModel.getSearchKey().postValue(searchWord)
+                mViewModel.saveHistory(searchWord)
                 adapter.clearData()
                 notifyDataSetChanged()
             }

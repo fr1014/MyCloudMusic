@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.http;
+package com.fr1014.mycoludmusic.http.utils;
 
 import java.security.cert.CertificateException;
 

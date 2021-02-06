@@ -27,11 +27,13 @@ public class BlurImageUtils {
         Bitmap cropBitmap = Bitmap.createBitmap(bitmap, cropBitmapWidthX, 0, cropBitmapWidth,
                 bitmap.getHeight());
         /*缩小图片*/
-        Bitmap scaleBitmap = Bitmap.createScaledBitmap(cropBitmap, bitmap.getWidth() / 50, bitmap
-                .getHeight() / 50, false);
+        Bitmap scaleBitmap = Bitmap.createScaledBitmap(cropBitmap, bitmap.getWidth() / 20, bitmap
+                .getHeight() / 20, false);
+        if (!cropBitmap.isRecycled()){
+            cropBitmap.recycle();
+        }
         /*模糊化*/
-        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, 6, true);
-
+        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, 5, true);
         final Drawable foregroundDrawable = new BitmapDrawable(blurBitmap);
         /*加入灰色遮罩层，避免图片过亮影响其他控件*/
         foregroundDrawable.setColorFilter(context.getResources().getColor(R.color.gray), PorterDuff.Mode.MULTIPLY);
