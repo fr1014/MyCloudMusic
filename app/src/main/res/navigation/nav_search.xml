@@ -19,9 +19,5 @@
         android:id="@+id/search_result"
         android:name="com.fr1014.mycoludmusic.ui.search.SearchResultFragment"
         android:label="搜索结果"
-        tools:layout="@layout/fragment_search_recommend">
-        <action
-            android:id="@+id/action_search_result_to_search_recommend"
-            app:destination="@id/search_recommend" />
-    </fragment>
+        tools:layout="@layout/fragment_search_recommend"/>
 </navigation>
