@@ -91,7 +91,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
         Glide.with(this)
                 .asBitmap()
-                .load(cover + "?param=300y300")
+                .load(cover)
                 .error(R.drawable.ic_placeholder)
                 .addListener(new RequestListener<Bitmap>() {
                     @Override

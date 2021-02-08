@@ -127,7 +127,7 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     headerBitmap = resource
                                     mHeaderView.findViewById<ImageView>(R.id.iv_head).setImageBitmap(resource)
-                                    mViewBinding.ivBg.setImageDrawable(BlurImageUtils.getForegroundDrawable(context, resource))
+                                    mViewBinding.ivBg.setImageDrawable(BlurImageUtils.getForegroundDrawable(context, resource,5))
                                 }
 
                             })

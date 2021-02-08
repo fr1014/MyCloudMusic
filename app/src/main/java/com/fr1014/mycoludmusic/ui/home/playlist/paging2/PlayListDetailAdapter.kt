@@ -1,9 +1,11 @@
 package com.fr1014.mycoludmusic.ui.home.playlist.paging2
 
+import android.content.Context
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,6 +25,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetai
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
+import com.fr1014.mycoludmusic.ui.home.playlist.dialog.PlayListInfoDialog
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils
 import de.hdodenhof.circleimageview.CircleImageView
@@ -97,6 +100,12 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
         this.onPlayAllClickListener = onPlayAllClickListener
     }
 
+    fun showInfoDialog(context: Context) {
+        val playListInfoDialog = PlayListInfoDialog(context)
+        playListDetailEntity?.let { playListInfoDialog.setData(it) }
+        playListInfoDialog.show()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             R.layout.item_playlist_detail -> PlayListViewHolder.newInstance(parent).also { holder ->
@@ -109,17 +118,26 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                     findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
                         onPlayAllClickListener?.clickPlayAll()
                     }
-                    playListDetailEntity?.apply {
-                        playlist?.apply {
+                    playListDetailEntity?.let { playListDetailEntity ->
+                        playListDetailEntity.playlist?.apply {
                             findViewById<TextView>(R.id.tv_name).text = name
                             val creatorCover = findViewById<CircleImageView>(R.id.creator_cover)
                             Glide.with(creatorCover)
                                     .load(creator.avatarUrl + "?param=60y60")
                                     .into(creatorCover)
                             findViewById<TextView>(R.id.tv_creator_name).text = creator.nickname
-                            findViewById<TextView>(R.id.tv_description).text = description
+                            findViewById<TextView>(R.id.tv_description).apply {
+                                text = description
+                                setOnClickListener {
+                                    showInfoDialog(context)
+                                }
+                            }
+                        }
+                        findViewById<FrameLayout>(R.id.fl_cover).setOnClickListener {
+                            showInfoDialog(context)
                         }
                     }
+
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {

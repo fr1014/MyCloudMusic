@@ -15,7 +15,7 @@ import com.fr1014.mycoludmusic.customview.blurimageview.FastBlurUtil;
  */
 public class BlurImageUtils {
 
-    public static Drawable getForegroundDrawable(Context context,Bitmap bitmap) {
+    public static Drawable getForegroundDrawable(Context context,Bitmap bitmap,int radius) {
         /*得到屏幕的宽高比，以便按比例切割图片一部分*/
         final float widthHeightSize = (float) (ScreenUtils.getScreenWidth()
                 * 1.0 / ScreenUtils.getScreenHeight() * 1.0);
@@ -33,7 +33,7 @@ public class BlurImageUtils {
             cropBitmap.recycle();
         }
         /*模糊化*/
-        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, 5, true);
+        final Bitmap blurBitmap = FastBlurUtil.doBlur(scaleBitmap, radius, true);
         final Drawable foregroundDrawable = new BitmapDrawable(blurBitmap);
         /*加入灰色遮罩层，避免图片过亮影响其他控件*/
         foregroundDrawable.setColorFilter(context.getResources().getColor(R.color.gray), PorterDuff.Mode.MULTIPLY);
