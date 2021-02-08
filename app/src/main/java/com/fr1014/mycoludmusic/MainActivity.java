@@ -106,8 +106,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     protected void initView() {
         setSupportActionBar(mViewBinding.appBarMain.toolbar);
         mViewBinding.appBarMain.toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home)
                 .setOpenableLayout(mViewBinding.drawerLayout)
@@ -121,17 +119,22 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                 switch (destination.getId()) {
                     case R.id.topListFragment:
                         mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
-                        mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                        if (!getSupportActionBar().isShowing()){
+                            getSupportActionBar().show();
+                        }
                         mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
                         break;
                     case R.id.playListDetailFragment:
                     case R.id.userInfoFragment:
                     case R.id.dayRecommendFragment:
-                        mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
+//                        mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
+                        getSupportActionBar().hide();
                         break;
                     default:
                         mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                        mViewBinding.appBarMain.toolbar.setVisibility(View.VISIBLE);
+                        if (!getSupportActionBar().isShowing()){
+                            getSupportActionBar().show();
+                        }
                         mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
                         break;
                 }
