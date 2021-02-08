@@ -127,7 +127,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                     case R.id.playListDetailFragment:
                     case R.id.userInfoFragment:
                     case R.id.dayRecommendFragment:
-//                        mViewBinding.appBarMain.toolbar.setVisibility(View.GONE);
                         getSupportActionBar().hide();
                         break;
                     default:
