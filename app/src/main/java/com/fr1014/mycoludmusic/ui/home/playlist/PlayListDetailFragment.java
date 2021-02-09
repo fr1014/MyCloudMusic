@@ -43,18 +43,29 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     public static final String KEY_ID = "ID";
     public static final String KEY_NAME = "NAME";
     public static final String KEY_COVER = "COVER";
+    public static final String KEY_SHOW_DIALOG_INFO = "SHOW_DIALOG_INFO";
     private long id = 0L;
     private String name;
     private String cover;
     private PlayListDetailAdapter adapter;
     private int headerHeight = 0;
     private boolean isShowPlayListName = false;
+    private boolean showDialogInfo = true;
 
     public static Bundle createBundle(long id, String name, String coverImg) {
         Bundle bundle = new Bundle();
-        bundle.putLong(PlayListDetailFragment.KEY_ID, id);
-        bundle.putString(PlayListDetailFragment.KEY_NAME, name);
-        bundle.putString(PlayListDetailFragment.KEY_COVER, coverImg);
+        bundle.putLong(KEY_ID, id);
+        bundle.putString(KEY_NAME, name);
+        bundle.putString(KEY_COVER, coverImg);
+        return bundle;
+    }
+
+    public static Bundle createBundle(long id, String name, String coverImg,boolean showDialogInfo) {
+        Bundle bundle = new Bundle();
+        bundle.putLong(KEY_ID, id);
+        bundle.putString(KEY_NAME, name);
+        bundle.putString(KEY_COVER, coverImg);
+        bundle.putBoolean(KEY_SHOW_DIALOG_INFO,showDialogInfo);
         return bundle;
     }
 
@@ -68,6 +79,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             id = getArguments().getLong(KEY_ID);
             name = getArguments().getString(KEY_NAME);
             cover = getArguments().getString(KEY_COVER);
+            showDialogInfo = getArguments().getBoolean(KEY_SHOW_DIALOG_INFO,true);
         }
     }
 
@@ -192,7 +204,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     private void initAdapter() {
-        adapter = new PlayListDetailAdapter(mViewModel, getViewLifecycleOwner());
+        adapter = new PlayListDetailAdapter(mViewModel, getViewLifecycleOwner(),showDialogInfo);
         mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         mViewBinding.rvPlaylistDetail.setAdapter(adapter);
 
@@ -201,12 +213,12 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
 
     @Override
     public void initViewObservable() {
-        // TODO: 2021/2/5  
+        mViewBinding.loadingView.llLoading.setVisibility(View.VISIBLE);
+
         mViewModel.getPlayListDetail(id).observe(getViewLifecycleOwner(), ids -> {
             initAdapter();
             initHeaderView(ids.length);
             mViewModel.getPlayList(ids).observe(getViewLifecycleOwner(), musics -> adapter.submitList(musics));
-
             mViewModel.networkStatus.observe(getViewLifecycleOwner(), networkStatus -> {
                 adapter.updateNetworkStatus(networkStatus);
                 if (networkStatus == NetworkStatus.COMPLETED) {
@@ -216,9 +228,11 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                         mViewBinding.rvPlaylistDetail.postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                mViewBinding.loadingView.llLoading.setVisibility(View.GONE);
+                                mViewBinding.rvPlaylistDetail.setVisibility(View.VISIBLE);
                                 mViewBinding.rvPlaylistDetail.getChildAt(0).setVisibility(View.VISIBLE);
                             }
-                        }, 600);
+                        }, 800);
                     }
                 }
             });

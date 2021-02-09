@@ -36,6 +36,11 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
     private var onPlayAllClickListener: OnPlayAllClickListener? = null
     private var playListCount: Int? = null
     private var playListDetailEntity: PlayListDetailEntity? = null
+    private var showDialogInfo = true
+
+    constructor(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, showDialogInfo: Boolean) : this(mViewModel, mOwner) {
+        this.showDialogInfo = showDialogInfo
+    }
 
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Music>() {
@@ -100,10 +105,12 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
         this.onPlayAllClickListener = onPlayAllClickListener
     }
 
-    fun showInfoDialog(context: Context) {
-        val playListInfoDialog = PlayListInfoDialog(context)
-        playListDetailEntity?.let { playListInfoDialog.setData(it) }
-        playListInfoDialog.show()
+    private fun showInfoDialog(context: Context) {
+        if (showDialogInfo) {
+            val playListInfoDialog = PlayListInfoDialog(context)
+            playListDetailEntity?.let { playListInfoDialog.setData(it) }
+            playListInfoDialog.show()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -118,26 +125,12 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                     findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
                         onPlayAllClickListener?.clickPlayAll()
                     }
-                    playListDetailEntity?.let { playListDetailEntity ->
-                        playListDetailEntity.playlist?.apply {
-                            findViewById<TextView>(R.id.tv_name).text = name
-                            val creatorCover = findViewById<CircleImageView>(R.id.creator_cover)
-                            Glide.with(creatorCover)
-                                    .load(creator.avatarUrl + "?param=60y60")
-                                    .into(creatorCover)
-                            findViewById<TextView>(R.id.tv_creator_name).text = creator.nickname
-                            findViewById<TextView>(R.id.tv_description).apply {
-                                text = description
-                                setOnClickListener {
-                                    showInfoDialog(context)
-                                }
-                            }
-                        }
-                        findViewById<FrameLayout>(R.id.fl_cover).setOnClickListener {
-                            showInfoDialog(context)
-                        }
+                    findViewById<FrameLayout>(R.id.fl_cover).setOnClickListener {
+                        showInfoDialog(context)
                     }
-
+                    findViewById<TextView>(R.id.tv_description).setOnClickListener {
+                        showInfoDialog(context)
+                    }
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {
@@ -154,6 +147,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                     networkStatus, itemCount
             )
             R.layout.head_playlist_detail -> {
+                playListDetailEntity?.let { (holder as HeaderViewHolder).setHeadData(it) }
                 playListCount?.let { (holder as HeaderViewHolder).setHeadCount(it) }
             }
             else -> {
@@ -239,8 +233,22 @@ class HeaderViewHolder(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, it
         itemView.findViewById<TextView>(R.id.tv_count).text = count.toString()
     }
 
-    fun setDescription(name: String) {
-        itemView.findViewById<TextView>(R.id.tv_name).text = name
+    fun setHeadData(playListDetailEntity: PlayListDetailEntity) {
+        playListDetailEntity.playlist?.apply {
+            itemView.findViewById<TextView>(R.id.tv_name).text = name
+            val creatorCover = itemView.findViewById<CircleImageView>(R.id.creator_cover)
+            Glide.with(creatorCover)
+                    .load(creator.avatarUrl + "?param=60y60")
+                    .into(creatorCover)
+            itemView.findViewById<TextView>(R.id.tv_creator_name).text = creator.nickname
+            itemView.findViewById<TextView>(R.id.tv_description).apply {
+                if (TextUtils.isEmpty(description)) {
+                    visibility = View.GONE
+                } else {
+                    text = description
+                }
+            }
+        }
     }
 
     companion object {

@@ -16,6 +16,9 @@ import java.util.Locale;
  * 邮箱:1546352238@qq.com
  */
 public class CommonUtils {
+    // 两次点击间隔不能少于1000ms
+    private static final int FAST_CLICK_DELAY_TIME = 1000;
+    private static long lastClickTime;
 
     public static Toast toastShort(String message) {
         Toast toast = Toast.makeText(MyApplication.getInstance(), null, Toast.LENGTH_SHORT);
@@ -64,4 +67,15 @@ public class CommonUtils {
         String ss = String.format(Locale.getDefault(), "%02d", s);
         return pattern.replace("mm", mm).replace("ss", ss);
     }
+
+    public static boolean isFastClick() {
+        boolean flag = true;
+        long currentClickTime = System.currentTimeMillis();
+        if ((currentClickTime - lastClickTime) >= FAST_CLICK_DELAY_TIME ) {
+            flag = false;
+        }
+        lastClickTime = currentClickTime;
+        return flag;
+    }
+
 }

@@ -1,20 +1,22 @@
 package com.fr1014.mycoludmusic.utils;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Rect;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 
-import com.bumptech.glide.Glide;
+import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
-import com.fr1014.mycoludmusic.eventbus.CoverSaveEvent;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,6 +37,11 @@ public class FileUtils {
 
     private static String getAppDir() {
         return MyApplication.getInstance().getFilesDir() + "/MyCloudMusic";
+    }
+
+    public static String getPicDir() {
+        String dir = getAppDir() + "/picture/";
+        return mkdirs(dir);
     }
 
     public static String getTlyLrcDir() {
@@ -169,4 +176,30 @@ public class FileUtils {
         }
         return bitmap;
     }
+
+    public static boolean saveBitmap(Context context, Bitmap bmp,String path) {
+        // 首先保存图片
+        String fileName = path + ".jpg";
+        File file = new File(getPicDir(), fileName);
+        try (FileOutputStream fos = new FileOutputStream(file)){
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        // 把文件插入到系统图库
+        try {
+            MediaStore.Images.Media.insertImage(context.getContentResolver(),
+                    file.getAbsolutePath(), fileName, null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+        // 通知图库更新
+        String[] paths = new String[]{file.getAbsolutePath()};
+        MediaScannerConnection.scanFile(context, paths, null, null);
+        return true;
+    }
+
 }

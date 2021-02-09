@@ -77,7 +77,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
     private fun initListener() {
         mViewBinding.userLike.clPlaylist.setOnClickListener {
             val bundle = myLikePlayList?.id?.let { id ->
-                PlayListDetailFragment.createBundle(id, myLikePlayList?.name, myLikePlayList?.coverImgUrl)
+                PlayListDetailFragment.createBundle(id, myLikePlayList?.name, myLikePlayList?.coverImgUrl,false)
             }
             Navigation.findNavController(it).navigate(R.id.playListDetailFragment, bundle)
         }

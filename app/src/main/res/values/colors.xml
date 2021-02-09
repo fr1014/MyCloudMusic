@@ -22,6 +22,7 @@
     <color name="normal_text_color">#9E9E9E</color>
     <color name="alpha_text_color">#CC9E9E9E</color>
     <color name="selector_false_gray">#C0C0C0</color>
+    <color name="font_gray">#BAB3B3</color>
 
     <!--LrcView -->
     <color name="lrc_normal_text_color">#9E9E9E</color>
@@ -29,6 +30,5 @@
     <color name="lrc_timeline_text_color">#F8BBD0</color>
     <color name="lrc_timeline_color">#809E9E9E</color>
     <color name="lrc_time_text_color">#809E9E9E</color>
-    <color name="font_gray">#898989</color>
     <!--LrcView-->
 </resources>
