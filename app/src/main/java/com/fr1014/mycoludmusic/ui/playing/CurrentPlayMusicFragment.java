@@ -23,6 +23,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
+import com.fr1014.mycoludmusic.ui.playing.dialog.CoverInfoDialog;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
@@ -36,6 +37,7 @@ import java.io.File;
 public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicBinding, CurrentPlayMusicViewModel> implements View.OnClickListener, OnPlayerEventListener, LrcView.OnPlayClickListener, LoadResultListener {
     private MediaPlayer player;
     private SeekBar sbProgress;
+    private CoverInfoDialog coverInfoDialog;
 
     @Override
     protected FragmentCurrentMusicBinding getViewBinding(ViewGroup container) {
@@ -112,6 +114,21 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void openMenu() {
                 new PlayDialogFragment().show(getParentFragmentManager(), "playlist_dialog");
+            }
+        });
+
+        mViewBinding.albumCoverView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Music music = AudioPlayer.get().getPlayMusic();
+                if (getContext() != null && music != null && !TextUtils.isEmpty(music.getImgUrl())){
+                    if (coverInfoDialog == null){
+                        coverInfoDialog = new CoverInfoDialog(getContext());
+                    }
+                    coverInfoDialog.setData(music);
+                    coverInfoDialog.show();
+                }
+                return true;
             }
         });
     }
