@@ -37,6 +37,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
     private var playListCount: Int? = null
     private var playListDetailEntity: PlayListDetailEntity? = null
     private var showDialogInfo = true
+    private var playListInfoDialog: PlayListInfoDialog? = null
 
     constructor(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, showDialogInfo: Boolean) : this(mViewModel, mOwner) {
         this.showDialogInfo = showDialogInfo
@@ -107,9 +108,13 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
 
     private fun showInfoDialog(context: Context) {
         if (showDialogInfo) {
-            val playListInfoDialog = PlayListInfoDialog(context)
-            playListDetailEntity?.let { playListInfoDialog.setData(it) }
-            playListInfoDialog.show()
+            if (playListInfoDialog == null){
+                playListInfoDialog = PlayListInfoDialog(context)
+            }
+            playListInfoDialog!!.apply {
+                playListDetailEntity?.let { setData(it) }
+                show()
+            }
         }
     }
 
