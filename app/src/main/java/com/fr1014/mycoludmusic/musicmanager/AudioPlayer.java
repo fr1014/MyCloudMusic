@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.musicmanager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -54,7 +55,7 @@ public class AudioPlayer implements LoadResultListener {
     private Handler handler;
     private NoisyAudioStreamReceiver noisyReceiver;
     private IntentFilter noisyFilter;
-    private List<Music> musicList = new ArrayList<>();
+    private final List<Music> musicList = new ArrayList<>();
     private final List<OnPlayerEventListener> listeners = new ArrayList<>();
     private int state = STATE_IDLE;
     public CompositeDisposable mCompositeDisposable;
@@ -87,7 +88,8 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     private static class SingletonHolder {
-        private static AudioPlayer instance = new AudioPlayer();
+        @SuppressLint("StaticFieldLeak")
+        private static final AudioPlayer instance = new AudioPlayer();
     }
 
     private AudioPlayer() {
@@ -539,7 +541,7 @@ public class AudioPlayer implements LoadResultListener {
     private void resetMusicUrl(Music music) {
         if (music != null){
             String url = music.getSongUrl();
-            if (TextUtils.isEmpty(url) && url.contains("http")) {
+            if (!TextUtils.isEmpty(url) && url.contains("http")) {
                 music.setSongUrl("");
             }
         }
