@@ -28,7 +28,7 @@ public class CommonUtils {
     }
 
     public static Toast toastLong(String message) {
-        Toast toast = Toast.makeText(MyApplication.getInstance(), null, Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(MyApplication.getInstance(), "", Toast.LENGTH_LONG);
         toast.setText(message);
         toast.show();
         return toast;
