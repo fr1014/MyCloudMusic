@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.navigation.Navigation
@@ -50,8 +51,11 @@ class TopListBlock @JvmOverloads constructor(
                         val author = getSinger(this)
                         tvSongInfo1.text = "1  $name"
                         tvSinger1.text = " - $author"
+                        llInfo1.setOnClickListener {
+                            playMusic(this,author)
+                        }
                         ivCover1.setOnClickListener {
-                            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
+                            playMusic(this,author)
                         }
                     }
 
@@ -60,8 +64,11 @@ class TopListBlock @JvmOverloads constructor(
                         val author = getSinger(this)
                         tvSongInfo2.text = "2  $name"
                         tvSinger2.text = " - $author"
+                        llInfo2.setOnClickListener {
+                            playMusic(this,author)
+                        }
                         ivCover2.setOnClickListener {
-                            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
+                            playMusic(this,author)
                         }
                     }
 
@@ -70,12 +77,21 @@ class TopListBlock @JvmOverloads constructor(
                         val author = getSinger(this)
                         tvSongInfo3.text = "3  $name"
                         tvSinger3.text = " - $author"
+                        llInfo3.setOnClickListener {
+                            playMusic(this,author)
+                        }
                         ivCover3.setOnClickListener {
-                            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
+                            playMusic(this,author)
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun playMusic(track: Track, author: String) {
+        track.apply {
+            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
         }
     }
 

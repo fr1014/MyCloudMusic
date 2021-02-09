@@ -21,10 +21,10 @@
             android:layout_marginTop="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textSize="18sp"
+            app:drawableEndCompat="@drawable/ic_arrow"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:drawableEndCompat="@drawable/ic_arrow" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/iv_cover1"
@@ -36,28 +36,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_top_name" />
 
-        <TextView
-            android:id="@+id/tv_song_info1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:singleLine="true"
-            android:textColor="@color/tv_bt_black"
-            android:textSize="14sp"
+        <LinearLayout
+            android:id="@+id/ll_info1"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@id/iv_cover1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/iv_cover1"
-            app:layout_constraintTop_toTopOf="@id/iv_cover1" />
+            app:layout_constraintTop_toTopOf="@id/iv_cover1">
 
-        <TextView
-            android:id="@+id/tv_singer1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_cover1"
-            app:layout_constraintStart_toEndOf="@id/tv_song_info1"
-            app:layout_constraintTop_toTopOf="@id/iv_cover1" />
+            <TextView
+                android:id="@+id/tv_song_info1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:singleLine="true"
+                android:textColor="@color/tv_bt_black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_singer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/iv_cover2"
@@ -69,28 +77,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_cover1" />
 
-        <TextView
-            android:id="@+id/tv_song_info2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:singleLine="true"
-            android:textColor="@color/tv_bt_black"
-            android:textSize="14sp"
+        <LinearLayout
+            android:id="@+id/ll_info2"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@id/iv_cover2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/iv_cover2"
-            app:layout_constraintTop_toTopOf="@id/iv_cover2" />
+            app:layout_constraintTop_toTopOf="@id/iv_cover2">
 
-        <TextView
-            android:id="@+id/tv_singer2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_cover2"
-            app:layout_constraintStart_toEndOf="@id/tv_song_info2"
-            app:layout_constraintTop_toTopOf="@id/iv_cover2" />
+            <TextView
+                android:id="@+id/tv_song_info2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:singleLine="true"
+                android:textColor="@color/tv_bt_black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_singer2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="12sp" />
+
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/iv_cover3"
@@ -104,27 +121,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_cover2" />
 
-        <TextView
-            android:id="@+id/tv_song_info3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:singleLine="true"
-            android:textColor="@color/tv_bt_black"
-            android:textSize="14sp"
+        <LinearLayout
+            android:id="@+id/ll_info3"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="@id/iv_cover3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toEndOf="@id/iv_cover3"
-            app:layout_constraintTop_toTopOf="@id/iv_cover3" />
+            app:layout_constraintTop_toTopOf="@id/iv_cover3">
 
-        <TextView
-            android:id="@+id/tv_singer3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@id/iv_cover3"
-            app:layout_constraintStart_toEndOf="@id/tv_song_info3"
-            app:layout_constraintTop_toTopOf="@id/iv_cover3" />
+            <TextView
+                android:id="@+id/tv_song_info3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:singleLine="true"
+                android:textColor="@color/tv_bt_black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_singer3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="12sp" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
