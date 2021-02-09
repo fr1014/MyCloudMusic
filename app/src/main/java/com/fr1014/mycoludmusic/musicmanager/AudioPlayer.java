@@ -269,16 +269,15 @@ public class AudioPlayer implements LoadResultListener {
                     .compose(RxSchedulers.apply())
                     .subscribe(songUrlEntity -> {
                         SongUrlEntity.DataBean song = songUrlEntity.getData().get(0);
+                        int fee = song.getFee();
                         //暂无音乐源或付费
-                        if (!TextUtils.isEmpty(song.getUrl())) {
-                            if (song.getFee() != 1) {
-                                music.setSongUrl(song.getUrl());
-                                play(music);
-                                return;
-                            }
+                        if (TextUtils.isEmpty(song.getUrl()) || fee == 1 || fee == 4) {
+                            // TODO: 2021/1/18 从别的音乐源获取歌曲时提示用户
+                            getWYFeeFromKW(music);
+                            return;
                         }
-                        // TODO: 2021/1/18 从别的音乐源获取歌曲时提示用户
-                        getWYFeeFromKW(music);
+                        music.setSongUrl(song.getUrl());
+                        play(music);
                     }));
         }
     }
