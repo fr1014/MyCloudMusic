@@ -26,6 +26,7 @@ import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
+import com.fr1014.mycoludmusic.utils.ResourceUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseFragment;
@@ -174,7 +175,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     private void setMusicImage(Music music) {
         if (TextUtils.isEmpty(music.getImgUrl())) {
-            mViewBinding.biBackground.setBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+            mViewBinding.biBackground.setBackgroundDrawable(ResourceUtils.getGrayDrawable(getContext(),R.drawable.palying_default_bg));
             return;
         }
         setBitmap(FileUtils.getCoverLocal(music));
@@ -214,6 +215,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         if (resource != null) {
             mViewBinding.albumCoverView.songImgSetBitmap(resource);
             mViewBinding.biBackground.setBitmap(resource);
+        }else {
+            mViewBinding.biBackground.setBackgroundDrawable(ResourceUtils.getGrayDrawable(getContext(),R.drawable.palying_default_bg));
         }
     }
 

@@ -69,7 +69,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             if (coverLocal != null) {
                 mViewBinding.ivCoverImg.setImageBitmap(coverLocal);
             } else {
-                mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+                mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.placeholder_film));
             }
             setText(music);
         }
@@ -163,7 +163,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     @Override
     public void coverLoading() {
-        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.placeholder_film));
     }
 
     @Override
@@ -173,6 +173,6 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
 
     @Override
     public void coverLoadFail() {
-        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.film));
+        mViewBinding.ivCoverImg.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.placeholder_film));
     }
 }

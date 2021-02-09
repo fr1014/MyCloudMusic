@@ -9,8 +9,7 @@
     <com.fr1014.mycoludmusic.customview.blurimageview.BlurImageView
         android:id="@+id/bi_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FB8C00" />
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/ll_content"
