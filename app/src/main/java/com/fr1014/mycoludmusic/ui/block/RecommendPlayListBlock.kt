@@ -64,8 +64,12 @@ class RecommendPlayListBlock @JvmOverloads constructor(
         mViewBinding.tvTitle.text = title
     }
 
-    fun setTvButton(button : String){
+    fun setTvButton(button: String) {
         mViewBinding.tvMore.text = button
+    }
+
+    fun showLoadingView(isShow: Boolean) {
+        mViewBinding.loadingView.llLoading.visibility = if (isShow) View.VISIBLE else View.GONE
     }
 }
 
@@ -98,7 +102,7 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, B
                 })
                 .into(holder.getView(R.id.iv_cover))
         holder.addOnClickListener(R.id.item)
-        if (holder.layoutPosition == (itemCount - 1)){
+        if (holder.layoutPosition == (itemCount - 1)) {
             holder.getView<View>(R.id.view_blank).visibility = View.VISIBLE
         }
     }
