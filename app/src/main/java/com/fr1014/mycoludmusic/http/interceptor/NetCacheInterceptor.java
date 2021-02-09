@@ -21,6 +21,7 @@ public class NetCacheInterceptor implements Interceptor {
         filterPaths.add("/song/url");
         filterPaths.add("/user/playlist");
         filterPaths.add("/playlist/detail");
+        filterPaths.add("/login");
     }
 
     @Override
