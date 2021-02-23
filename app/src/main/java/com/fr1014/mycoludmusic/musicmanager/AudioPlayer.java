@@ -26,6 +26,7 @@ import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
+import com.fr1014.mycoludmusic.utils.MusicUtils;
 import com.fr1014.mycoludmusic.utils.ShuffleUtils;
 import com.fr1014.mycoludmusic.utils.sharedpreferences.SharedPreferencesConst;
 import com.fr1014.mycoludmusic.utils.sharedpreferences.SharedPreferencesUtil;
@@ -646,8 +647,7 @@ public class AudioPlayer implements LoadResultListener {
         List<Music> musicList = getPagerMusicList();
         if (CollectionUtils.isEmptyList(musicList)) return -1;
         for (int index = 0; index < musicList.size(); index++) {
-            Music m = musicList.get(index);
-            if (TextUtils.equals(m.getArtist(), music.getArtist()) && TextUtils.equals(m.getTitle(), music.getTitle())) {
+            if (MusicUtils.INSTANCE.isSameMusic(music,musicList.get(index))) {
                 return index;
             }
         }
@@ -657,8 +657,7 @@ public class AudioPlayer implements LoadResultListener {
     public int indexOf(Music music,List<Music> musicList) {
         if (CollectionUtils.isEmptyList(musicList)) return -1;
         for (int index = 0; index < musicList.size(); index++) {
-            Music m = musicList.get(index);
-            if (TextUtils.equals(m.getArtist(), music.getArtist()) && TextUtils.equals(m.getTitle(), music.getTitle())) {
+            if (MusicUtils.INSTANCE.isSameMusic(music,musicList.get(index))) {
                 return index;
             }
         }

@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,11 +21,15 @@ import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.databinding.FragmentPagerPlaydialogBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
+import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
+import com.fr1014.mycoludmusic.utils.ScreenUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +45,7 @@ import io.reactivex.functions.Function;
  * Create by fanrui on 2020/12/17
  * Describe:
  */
-public class PlayDialogPageFragment extends Fragment{
+public class PlayDialogPageFragment extends Fragment {
     private static String PAGE_TYPE = "page_type";
     private static final int PAGE_TYPE_HISTORY = 0; //历史播放
     private static final int PAGE_TYPE_CURRENT = 1; //当前播放
@@ -111,6 +116,9 @@ public class PlayDialogPageFragment extends Fragment{
 
     private void inPageTypeData() {
         if (pageType == PAGE_TYPE_HISTORY) {
+            binding.header.tvMode.setText(getString(R.string.open_outside));
+            binding.header.tvMode.setTextColor(getContext().getResources().getColor(R.color.font_gray));
+            binding.header.tvMode.setOnClickListener((View.OnClickListener) v -> dialogListener.dialogDismiss());
             //刷新adapter中的数据
             DBManager.get().getLocalMusicListLive(true).observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
                 @Override
@@ -142,6 +150,7 @@ public class PlayDialogPageFragment extends Fragment{
                 }
             });
         } else {
+            initPlayMode();
             List<Music> playList = AudioPlayer.get().getMusicList();
             if (playList != null) {
                 playDialogAdapter.setData(playList);
@@ -149,11 +158,17 @@ public class PlayDialogPageFragment extends Fragment{
                 playDialogAdapter.notifyDataSetChanged();
             }
             playDialogAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
+            binding.header.tvMode.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchPlayMode();
+                }
+            });
         }
     }
 
     public void scrollToPosition() {
-        oldPosition = AudioPlayer.get().getPlayPosition();
+        oldPosition = AudioPlayer.get().indexOf(AudioPlayer.get().getCurrentMusic(),AudioPlayer.get().getMusicList());
         binding.rvPlaylist.scrollToPosition(oldPosition);
     }
 
@@ -231,10 +246,62 @@ public class PlayDialogPageFragment extends Fragment{
         binding.header.tvCount.setText(String.format("(%d)", count));
     }
 
+    private void switchPlayMode() {
+        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
+        switch (mode) {
+            case SINGLE:
+                mode = PlayModeEnum.LOOP;
+                break;
+            case LOOP:
+                mode = PlayModeEnum.SHUFFLE;
+                AudioPlayer.get().shuffle();
+                break;
+            case SHUFFLE:
+                mode = PlayModeEnum.SINGLE;
+                break;
+        }
+        Preferences.savePlayMode(mode.value());
+        AudioPlayer.get().notifyMusicListChange();
+        initPlayMode();
+    }
+
+    public void initPlayMode() {
+        if (pageType == PAGE_TYPE_CURRENT){
+            int mode = Preferences.getPlayMode();
+            setImageMode(mode);
+        }
+    }
+
+    private void setImageMode(int mode) {
+        Drawable drawable;
+        String tvMode;
+        switch (mode) {
+            case 0:
+                drawable = getContext().getDrawable(R.drawable.selector_loop);
+                tvMode = getString(R.string.loop);
+                break;
+            case 1:
+                drawable = getContext().getDrawable(R.drawable.selector_random);
+                tvMode = getString(R.string.shuffle);
+                break;
+            case 2:
+                drawable = getContext().getDrawable(R.drawable.selector_cycle);
+                tvMode = getString(R.string.cycle);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + mode);
+        }
+        if (drawable != null) {
+            drawable.setBounds(0, 0, ScreenUtils.dp2px(16), ScreenUtils.dp2px(16));
+            binding.header.tvMode.setCompoundDrawables(drawable, null, null, null);
+            binding.header.tvMode.setText(tvMode);
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (onPlayerEventListener != null){
+        if (onPlayerEventListener != null) {
             AudioPlayer.get().removeOnPlayEventListener(onPlayerEventListener);
         }
     }

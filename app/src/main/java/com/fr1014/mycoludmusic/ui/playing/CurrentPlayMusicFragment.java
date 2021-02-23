@@ -27,6 +27,7 @@ import com.fr1014.mycoludmusic.ui.playing.dialog.CoverInfoDialog;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.FileUtils;
+import com.fr1014.mycoludmusic.utils.MusicUtils;
 import com.fr1014.mycoludmusic.utils.ResourceUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
@@ -237,8 +238,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     private void changeMusicPlay(Music music) {
         Music currentPlayMusic = getCurrentPlayMusic();
-        if(currentPlayMusic == null) return;
-        if ((music.getId() == 0 || currentPlayMusic.getId() != music.getId()) && !TextUtils.equals(currentPlayMusic.getMUSICRID(),music.getMUSICRID())) {
+        if (currentPlayMusic != null && !MusicUtils.INSTANCE.isSameMusic(currentPlayMusic,music)) {
             AudioPlayer.get().stopPlayer();
         }
         if (mViewBinding.llLrc.getVisibility() == View.VISIBLE) {

@@ -79,13 +79,8 @@ public class PlayDialogFragment extends DialogFragment implements PlayDialogPage
             ((RecyclerView) recyclerView).setClipToPadding(false);
         }
         binding.pager.setAdapter(pagerAdapter);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         binding.pager.setCurrentItem(1, false);
+        return binding.getRoot();
     }
 
     /**
@@ -96,6 +91,12 @@ public class PlayDialogFragment extends DialogFragment implements PlayDialogPage
         super.onStart();
 
         resizeDialogFragment();
+
+        PlayDialogPageFragment fragment = (PlayDialogPageFragment) pageFragments.get(1);
+        if (fragment != null){
+            fragment.initPlayMode();
+            fragment.scrollToPosition();
+        }
     }
 
     private void resizeDialogFragment() {
@@ -121,12 +122,6 @@ public class PlayDialogFragment extends DialogFragment implements PlayDialogPage
         }
     }
 
-    @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        ((PlayDialogPageFragment) pageFragments.get(1)).scrollToPosition();
-        super.onDismiss(dialog);
-    }
-
     private class PlayDialogPagerAdapter extends FragmentStateAdapter {
         public PlayDialogPagerAdapter(FragmentActivity fa) {
             super(fa);
@@ -146,7 +141,7 @@ public class PlayDialogFragment extends DialogFragment implements PlayDialogPage
         }
     }
 
-    private Map<Integer, Fragment> pageFragments = new HashMap<>();
+    public Map<Integer, Fragment> pageFragments = new HashMap<>();
 
     private void manageFragments(Fragment fragment, int position) {
         pageFragments.put(position, fragment);
