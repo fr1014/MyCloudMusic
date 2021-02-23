@@ -11,8 +11,8 @@ android {
         applicationId "com.fr1014.mycoludmusic"
         minSdkVersion 22
         targetSdkVersion 30
-        versionCode 110
-        versionName "1.1"
+        versionCode 120
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

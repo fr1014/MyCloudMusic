@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">CloudMusic</string>
     <string name="is_debug">true</string>
-    <string name="app_version">1.0</string>
+    <!--下次发版改为1.3-->
+    <string name="app_version">1.1</string>
 
     <string name="action_search">搜索</string>
     <string name="search">搜索</string>
