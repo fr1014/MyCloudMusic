@@ -30,6 +30,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.MatchBean
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
+import com.fr1014.mycoludmusic.ui.SwitchDialogFragment
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 
@@ -189,6 +190,9 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         mViewBinding.apply {
 
             ivBack.setOnClickListener { onBackPressed() }
+            ivSwitch.setOnClickListener {
+                SwitchDialogFragment().show(supportFragmentManager, "switch_dialog")
+            }
 
             serachView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 //当点击搜索按钮时触发该方法

@@ -39,34 +39,14 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainViewModel> implements View.OnClickListener, SwitchDialogFragment.MusicSourceCallback {
+public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainViewModel> implements View.OnClickListener {
     private static final int REQUEST_PERMISSION_CODE = 100;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
-    private Toast toast;
     private OnPlayerEventListener playEventListener;
-    private String source = "";
     private SearchDefault mSearchDefault = null;
     private ObjectAnimator animator1;
     private ObjectAnimator animator2;
-
-    @Override
-    public void musicSource(int position) {
-        if (toast != null) {
-            toast.cancel();
-        }
-        source = SwitchDialogFragment.array[position];
-        toast = CommonUtils.toastShort("音乐源已切换为: " + source);
-//        mViewBinding.appBarMain.tvSearch.setText("当前搜索源：" + source);
-        switch (position) {
-            case 0:  //酷我
-                SourceHolder.get().setSource("酷我");
-                break;
-            case 1:  //网易
-                SourceHolder.get().setSource("网易");
-                break;
-        }
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

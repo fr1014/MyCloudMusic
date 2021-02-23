@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,21 +18,43 @@ import androidx.viewbinding.ViewBinding;
 
 import com.bumptech.glide.Glide;
 import com.fr1014.mycoludmusic.R;
+import com.fr1014.mycoludmusic.SourceHolder;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
+import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseActivity;
 import com.fr1014.mymvvm.base.BaseViewModel;
 
 import java.lang.ref.WeakReference;
 
-public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseViewModel> extends BaseActivity<VB,VM> {
+public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseViewModel> extends BaseActivity<VB,VM> implements SwitchDialogFragment.MusicSourceCallback {
 
     protected PlayService playService;
     private ServiceConnection serviceConnection;
     private boolean isPlayFragmentShow;
     private CurrentPlayMusicFragment mPlayFragment;
+    private Toast toast;
+    protected String source = "";
+
+    @Override
+    public void musicSource(int position) {
+        if (toast != null) {
+            toast.cancel();
+        }
+        source = SwitchDialogFragment.array[position];
+        toast = CommonUtils.toastShort("音乐源已切换为: " + source);
+        switch (position) {
+            case 0:  //酷我
+                SourceHolder.get().setSource("酷我");
+                break;
+            case 1:  //网易
+                SourceHolder.get().setSource("网易");
+                break;
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
