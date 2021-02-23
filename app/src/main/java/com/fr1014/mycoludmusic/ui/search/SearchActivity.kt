@@ -153,24 +153,18 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     override fun onServiceBound() {
-        DBManager.get().getLocalMusicListLive(false).observe(this, Observer {
-            if (!CollectionUtils.isEmptyList(it)) {
-                if (statusBarView == null) {
-                    statusBarView = PlayStatusBarView(this, supportFragmentManager)
-                    statusBarView?.let { view ->
-                        lifecycle.addObserver(view)
-                        view.addMusicListChangeListener()
-                        view.onPlayEventListener?.let { listener ->
-                            AudioPlayer.get().addOnPlayEventListener(listener)
-                        }
-                        mViewBinding.flPlaystatus.addView(statusBarView)
-                        if (view.visibility != View.VISIBLE) {
-                            view.visibility = View.VISIBLE
-                        }
-                    }
+        if (statusBarView == null) {
+            statusBarView = PlayStatusBarView(this, supportFragmentManager)
+            statusBarView?.let { view ->
+                lifecycle.addObserver(view)
+                view.addMusicListChangeListener()
+                view.onPlayEventListener?.let { listener ->
+                    AudioPlayer.get().addOnPlayEventListener(listener)
                 }
+                mViewBinding.flPlaystatus.addView(statusBarView)
+                AudioPlayer.get().notifyMusicListChange()
             }
-        })
+        }
     }
 
     override fun initData() {
@@ -268,11 +262,11 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun onDestroy() {
         statusBarView?.let {
+            lifecycle.removeObserver(it)
             it.onPlayEventListener?.let { listener ->
                 AudioPlayer.get().removeOnPlayEventListener(listener)
             }
         }
-
         super.onDestroy()
     }
 }

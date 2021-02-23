@@ -208,16 +208,12 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public void addMusicList(List<Music> musics,List<Music> shuffleMusics) {
-        if (!CollectionUtils.isEmptyList(musics)){
-            if (!musicList.containsAll(musics)){
-                musicList.clear();
-            }
+        if (!CollectionUtils.isEmptyList(musics) && !musicList.containsAll(musics)){
+            musicList.clear();
             musicList.addAll(musics);
         }
-        if (!CollectionUtils.isEmptyList(shuffleMusics)){
-            if (!shuffleMusicList.containsAll(shuffleMusics)){
-                shuffleMusicList.clear();
-            }
+        if (!CollectionUtils.isEmptyList(shuffleMusics) && !shuffleMusicList.containsAll(shuffleMusics)){
+            shuffleMusicList.clear();
             shuffleMusicList.addAll(shuffleMusics);
         }
         notifyMusicListChange();
@@ -463,7 +459,6 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public int playNext() {
-//        stopPlayer();
         int nextPosition = -1;
         if (musicList.isEmpty()) {
             play(nextPosition);
@@ -486,7 +481,6 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public int playPre() {
-//        stopPlayer();
         int prePosition = -1;
         if (musicList.isEmpty()) {
             play(prePosition);
