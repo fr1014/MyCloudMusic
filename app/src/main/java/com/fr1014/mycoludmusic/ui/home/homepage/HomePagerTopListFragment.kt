@@ -8,14 +8,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
-import com.fr1014.mycoludmusic.databinding.FragmentHomePageTopListBinding
+import com.fr1014.mycoludmusic.databinding.FragmentPagerHomeToplistBinding
 import com.fr1014.mymvvm.base.BaseFragment
 import java.util.*
 
 private const val ARG_PARAM1 = "param1"
 private const val NUM_PAGES = 6
 private val ids = longArrayOf(3778678,19723756,5453912201,3779629,2884035,991319590)
-class HomePagerTopListFragment : BaseFragment<FragmentHomePageTopListBinding, HomeViewModel>() {
+class HomePagerTopListFragment : BaseFragment<FragmentPagerHomeToplistBinding, HomeViewModel>() {
     private var position: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +35,8 @@ class HomePagerTopListFragment : BaseFragment<FragmentHomePageTopListBinding, Ho
                 }
     }
 
-    override fun getViewBinding(container: ViewGroup?): FragmentHomePageTopListBinding {
-        return FragmentHomePageTopListBinding.inflate(layoutInflater);
+    override fun getViewBinding(container: ViewGroup?): FragmentPagerHomeToplistBinding {
+        return FragmentPagerHomeToplistBinding.inflate(layoutInflater);
     }
 
     override fun initViewModel(): HomeViewModel {

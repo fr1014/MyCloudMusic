@@ -17,7 +17,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
-import com.fr1014.mycoludmusic.databinding.FragmentPlaydialogpageBinding;
+import com.fr1014.mycoludmusic.databinding.FragmentPagerPlaydialogBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
@@ -45,7 +45,7 @@ public class PlayDialogPageFragment extends Fragment{
     private static final int PAGE_TYPE_HISTORY = 0; //历史播放
     private static final int PAGE_TYPE_CURRENT = 1; //当前播放
     private int pageType;
-    private FragmentPlaydialogpageBinding binding;
+    private FragmentPagerPlaydialogBinding binding;
     private PlayDialogAdapter playDialogAdapter;
     private int oldPosition = -1;  //当前播放音乐的位置
     private OnDialogListener dialogListener;
@@ -79,7 +79,7 @@ public class PlayDialogPageFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentPlaydialogpageBinding.inflate(getLayoutInflater());
+        binding = FragmentPagerPlaydialogBinding.inflate(getLayoutInflater());
         initHeader();
         initAdapter();
         binding.rvPlaylist.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
@@ -112,7 +112,7 @@ public class PlayDialogPageFragment extends Fragment{
     private void inPageTypeData() {
         if (pageType == PAGE_TYPE_HISTORY) {
             //刷新adapter中的数据
-            DBManager.get().getLocalMusicList(true).observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
+            DBManager.get().getLocalMusicListLive(true).observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
                 @Override
                 public void onChanged(List<MusicEntity> musicEntities) {
                     if (!CollectionUtils.isEmptyList(musicEntities)) {
@@ -200,6 +200,14 @@ public class PlayDialogPageFragment extends Fragment{
                     } else {
                         int mPosition = AudioPlayer.get().getMusicList().indexOf(music);
                         AudioPlayer.get().delete(mPosition);
+                        DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
+                            @Override
+                            public void onChanged(MusicEntity musicEntity) {
+                                if (musicEntity != null) {
+                                    DBManager.get().delete(musicEntity);
+                                }
+                            }
+                        });
                         initHeader();
                         playDialogAdapter.setData(AudioPlayer.get().getMusicList());
                         playDialogAdapter.notifyDataSetChanged();

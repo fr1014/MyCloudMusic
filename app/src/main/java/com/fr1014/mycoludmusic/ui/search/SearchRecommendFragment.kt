@@ -103,9 +103,7 @@ class SearchHistoryAdapter(private val mViewModel: SearchViewModel, layoutResId:
     override fun convert(holder: BaseViewHolder, data: String) {
         holder.setText(R.id.tv_item_history, data)
         holder.addOnClickListener(R.id.tv_item_history)
-        if (holder.adapterPosition == itemCount - 1) {
-            holder.getView<View>(R.id.place_view).visibility = View.VISIBLE
-        }
+        holder.getView<View>(R.id.place_view).visibility = if(holder.adapterPosition == itemCount - 1) View.VISIBLE else View.GONE
     }
 
     override fun onItemClick(adapter: BaseAdapter<*, *>, view: View, position: Int) {

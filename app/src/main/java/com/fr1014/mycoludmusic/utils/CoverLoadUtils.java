@@ -31,7 +31,9 @@ public class CoverLoadUtils {
     }
 
     public void registerLoadListener(LoadResultListener loadResultListener) {
-        loadResultListenerList.add(loadResultListener);
+        if (!loadResultListenerList.contains(loadResultListener)){
+            loadResultListenerList.add(loadResultListener);
+        }
     }
 
     public void removeLoadListener(LoadResultListener loadResultListener) {
@@ -50,7 +52,7 @@ public class CoverLoadUtils {
         Bitmap coverLocal = FileUtils.getCoverLocal(music);
         if (coverLocal != null) {
             for (LoadResultListener loadResultListener : loadResultListenerList) {
-                loadResultListener.coverLoadSuccess(coverLocal);
+                loadResultListener.coverLoadSuccess(music,coverLocal);
             }
             return;
         }

@@ -144,7 +144,7 @@ public class FileUtils {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             for (LoadResultListener loadResultListener : loadResultListeners) {
-                loadResultListener.coverLoadSuccess(bitmap);
+                loadResultListener.coverLoadSuccess(music,bitmap);
             }
 //            EventBus.getDefault().post(new CoverSaveEvent(true));
         } catch (IOException e) {

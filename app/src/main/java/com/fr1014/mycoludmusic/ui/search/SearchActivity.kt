@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.View
@@ -32,7 +31,6 @@ import com.fr1014.mycoludmusic.data.source.local.room.DBManager
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.utils.CollectionUtils
-import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 
 const val SEARCH_WORD_KEY = "SEARCH_WORD_KEY"
@@ -154,15 +152,16 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     }
 
     override fun onServiceBound() {
-        DBManager.get().getLocalMusicList(false).observe(this, Observer {
+        DBManager.get().getLocalMusicListLive(false).observe(this, Observer {
             if (!CollectionUtils.isEmptyList(it)) {
                 if (statusBarView == null) {
                     statusBarView = PlayStatusBarView(this, supportFragmentManager)
                     statusBarView?.let { view ->
+                        lifecycle.addObserver(view)
+                        view.addMusicListChangeListener()
                         view.onPlayEventListener?.let { listener ->
                             AudioPlayer.get().addOnPlayEventListener(listener)
                         }
-                        CoverLoadUtils.get().registerLoadListener(view)
                         mViewBinding.flPlaystatus.addView(statusBarView)
                         if (view.visibility != View.VISIBLE) {
                             view.visibility = View.VISIBLE
@@ -265,7 +264,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
 
     override fun onDestroy() {
         statusBarView?.let {
-            CoverLoadUtils.get().removeLoadListener(it)
             it.onPlayEventListener?.let { listener ->
                 AudioPlayer.get().removeOnPlayEventListener(listener)
             }

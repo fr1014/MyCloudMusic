@@ -17,20 +17,14 @@ import com.fr1014.mycoludmusic.customview.PlayStatusBarView;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearChDefaultBean;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile;
-import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
-import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
-import com.fr1014.mycoludmusic.eventbus.LoginStatusEvent;
-import com.fr1014.mycoludmusic.musicmanager.Music;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.QuitTimer;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.ui.search.SearchActivity;
-import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
-import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 
 import androidx.annotation.NonNull;
@@ -44,13 +38,6 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainViewModel> implements View.OnClickListener, SwitchDialogFragment.MusicSourceCallback {
     private static final int REQUEST_PERMISSION_CODE = 100;
@@ -171,35 +158,18 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     @Override
     protected void onServiceBound() {
         QuitTimer.get().setOnTimerListener(mViewBinding.navView);
-        DBManager.get().getLocalMusicList(false).observe(this, new Observer<List<MusicEntity>>() {
-            @Override
-            public void onChanged(List<MusicEntity> musicEntities) {
-                if (statusBar == null) {
-                    if (!CollectionUtils.isEmptyList(musicEntities)) {
-                        List<Music> musicList = new ArrayList<>();
-                        for (MusicEntity musicEntity : musicEntities) {
-                            long id = 0L;
-                            if (musicEntity.getId() != null) {
-                                id = musicEntity.getId();
-                            }
-                            musicList.add(new Music(id, musicEntity.getArtist(), musicEntity.getTitle(), "", musicEntity.getImgUrl(), musicEntity.getMusicRid(), musicEntity.getDuration()));
-                        }
-                        AudioPlayer.get().addMusicList(musicList);
-                    }
-                    statusBar = new PlayStatusBarView(MainActivity.this, getSupportFragmentManager());
-                    playEventListener = statusBar.getOnPlayEventListener();
-                    if (playEventListener != null) {
-                        AudioPlayer.get().addOnPlayEventListener(playEventListener);
-                    }
-                    CoverLoadUtils.get().registerLoadListener(statusBar);
-                    mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
-                }
-
-                if (statusBar.getVisibility() != View.VISIBLE && !CollectionUtils.isEmptyList(musicEntities)) {
-                    statusBar.setVisibility(View.VISIBLE);
-                }
+        if (statusBar == null) {
+            statusBar = new PlayStatusBarView(MainActivity.this, getSupportFragmentManager());
+            getLifecycle().addObserver(statusBar);
+            playEventListener = statusBar.getOnPlayEventListener();
+            statusBar.addMusicListChangeListener();
+            if (playEventListener != null) {
+                AudioPlayer.get().addOnPlayEventListener(playEventListener);
             }
-        });
+            mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
+
+            AudioPlayer.get().initMusicList();
+        }
     }
 
     @Override
@@ -300,19 +270,18 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
 
     @Override
     protected void onStop() {
+        AudioPlayer.get().saveMusicsInfo();
         super.onStop();
-//        //维护当前播放列表
-//        mViewModel.delOldInsertNewMusicList(AudioPlayer.get().getMusicList());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (statusBar != null) {
-            CoverLoadUtils.get().removeLoadListener(statusBar);
-        }
         if (playEventListener != null) {
             AudioPlayer.get().removeOnPlayEventListener(playEventListener);
+        }
+        if (statusBar != null){
+            getLifecycle().removeObserver(statusBar);
         }
     }
 

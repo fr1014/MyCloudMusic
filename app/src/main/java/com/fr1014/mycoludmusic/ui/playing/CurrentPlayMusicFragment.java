@@ -61,7 +61,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         AudioPlayer.get().addOnPlayEventListener(this);
         CoverLoadUtils.get().registerLoadListener(this);
         player = AudioPlayer.get().getMediaPlayer();
-        Music music = AudioPlayer.get().getPlayMusic();
+        Music music = AudioPlayer.get().getCurrentMusic();
         if (music == null) return;
         onChange(music);
         if (AudioPlayer.get().isPlaying()) {
@@ -120,7 +120,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewBinding.albumCoverView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Music music = AudioPlayer.get().getPlayMusic();
+                Music music = getCurrentPlayMusic();
                 if (getContext() != null && music != null && !TextUtils.isEmpty(music.getImgUrl())){
                     if (coverInfoDialog == null){
                         coverInfoDialog = new CoverInfoDialog(getContext());
@@ -174,7 +174,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                     mViewBinding.albumCoverView.setVisibility(View.GONE);
                     mViewBinding.albumCoverView.pauseAnimator();
                     mViewBinding.llLrc.setVisibility(View.VISIBLE);
-                    getSongLrc(AudioPlayer.get().getPlayMusic());
+                    getSongLrc(getCurrentPlayMusic());
                 }
                 break;
         }
@@ -182,20 +182,12 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     private void initViewData(Music music) {
         initSeekBarData(music);
-        setMusicImage(music);
+        setBitmap(FileUtils.getCoverLocal(music));
     }
 
     private void setMusicInfo(Music music) {
         mViewBinding.tvTitle.setText(music.getTitle());
         mViewBinding.tvArtist.setText(music.getArtist());
-    }
-
-    private void setMusicImage(Music music) {
-        if (TextUtils.isEmpty(music.getImgUrl())) {
-            mViewBinding.biBackground.setBackgroundDrawable(ResourceUtils.getGrayDrawable(getContext(),R.drawable.palying_default_bg));
-            return;
-        }
-        setBitmap(FileUtils.getCoverLocal(music));
     }
 
     private void initSeekBarData(Music music) {
@@ -244,7 +236,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     private void changeMusicPlay(Music music) {
-        if (AudioPlayer.get().getPlayMusic() != music) {
+        Music currentPlayMusic = getCurrentPlayMusic();
+        if(currentPlayMusic == null) return;
+        if ((music.getId() == 0 || currentPlayMusic.getId() != music.getId()) && !TextUtils.equals(currentPlayMusic.getMUSICRID(),music.getMUSICRID())) {
             AudioPlayer.get().stopPlayer();
         }
         if (mViewBinding.llLrc.getVisibility() == View.VISIBLE) {
@@ -315,6 +309,10 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         return false;
     }
 
+    private Music getCurrentPlayMusic(){
+        return AudioPlayer.get().getCurrentMusic();
+    }
+
     //加载图片
     @Override
     public void coverLoading() {
@@ -322,8 +320,10 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     }
 
     @Override
-    public void coverLoadSuccess(Bitmap coverLocal) {
-        setBitmap(coverLocal);
+    public void coverLoadSuccess(Music music, Bitmap coverLocal) {
+        if (AudioPlayer.get().getPlayMusic() == music){
+            setBitmap(coverLocal);
+        }
     }
 
     @Override

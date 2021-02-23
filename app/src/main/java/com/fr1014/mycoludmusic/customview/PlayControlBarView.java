@@ -95,6 +95,7 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
             case LOOP:
                 toast = CommonUtils.toastShort("随机播放");
                 mode = PlayModeEnum.SHUFFLE;
+                AudioPlayer.get().shuffle();
                 break;
             case SHUFFLE:
                 toast = CommonUtils.toastShort("单曲循环");
@@ -102,6 +103,7 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
                 break;
         }
         Preferences.savePlayMode(mode.value());
+        AudioPlayer.get().notifyMusicListChange();
         initPlayMode();
     }
 
@@ -126,12 +128,12 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
 
     public Music playPreMusic() {
         int playPosition = AudioPlayer.get().playPre();
-        return AudioPlayer.get().getMusicList().get(playPosition);
+        return AudioPlayer.get().getPagerMusicList().get(playPosition);
     }
 
     public Music playNextMusic() {
         int playPosition = AudioPlayer.get().playNext();
-        return AudioPlayer.get().getMusicList().get(playPosition);
+        return AudioPlayer.get().getPagerMusicList().get(playPosition);
     }
 
     public void setStateImage(@DrawableRes int resId) {

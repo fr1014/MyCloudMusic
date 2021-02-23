@@ -40,8 +40,12 @@ public class DBManager {
         return model.getItemLive(music.getTitle(), music.getArtist());
     }
 
-    public LiveData<List<MusicEntity>> getLocalMusicList(boolean isHistory) {
+    public LiveData<List<MusicEntity>> getLocalMusicListLive(boolean isHistory) {
         return model.getAllHistoryOrCurrentLive(isHistory);
+    }
+
+    public List<MusicEntity> getLocalMusicList(boolean isHistory) {
+        return model.getAllHistoryOrCurrent(isHistory);
     }
 
     public void insert(Music music, boolean isHistory) {

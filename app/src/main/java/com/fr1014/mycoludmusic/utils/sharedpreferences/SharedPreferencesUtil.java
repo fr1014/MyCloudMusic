@@ -3,6 +3,13 @@ package com.fr1014.mycoludmusic.utils.sharedpreferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SharedPreferencesUtil {
 
     public static Context mContext;
@@ -70,6 +77,60 @@ public class SharedPreferencesUtil {
         SharedPreferences.Editor editor = getEditor(name);
         editor.putString(key, value);
         editor.apply();
+    }
+
+    public static void putMusic(String name,String key,Music music){
+        if (music == null) return;
+        SharedPreferences.Editor editor = getEditor(name);
+        Gson gson = new Gson();
+        //转换成json数据，再保存
+        String strJson = gson.toJson(music);
+        editor.clear();
+        editor.putString(key, strJson);
+        editor.apply();
+    }
+
+    public static Music getMusic(String name, String key) {
+        String strJson = getSharedPreferences(name).getString(key, null);
+        if (null == strJson) {
+            return null;
+        }
+        Gson gson = new Gson();
+        return gson.fromJson(strJson, new TypeToken<Music>() {
+        }.getType());
+    }
+
+    /**
+     * 保存List
+     */
+    public static <T> void setDataList(String name,String key, List<T> dataList) {
+        if (null == dataList || dataList.size() <= 0)
+            return;
+
+        SharedPreferences.Editor editor = getEditor(name);
+        Gson gson = new Gson();
+        //转换成json数据，再保存
+        String strJson = gson.toJson(dataList);
+        editor.clear();
+        editor.putString(key, strJson);
+        editor.apply();
+    }
+
+    /**
+     * 获取List
+     * @return
+     */
+    public static List<Music> getDataList(String name, String key) {
+        List<Music> datalist = new ArrayList<Music>();
+        String strJson = getSharedPreferences(name).getString(key, null);
+        if (null == strJson) {
+            return datalist;
+        }
+        Gson gson = new Gson();
+        datalist = gson.fromJson(strJson, new TypeToken<List<Music>>() {
+        }.getType());
+        return datalist;
+
     }
 
     public static void remove(String name, String key) {

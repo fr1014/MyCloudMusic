@@ -18,6 +18,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongUrlEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.listener.LoadResultListener;
+import com.fr1014.mycoludmusic.musicmanager.listener.MusicListChangeListener;
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
@@ -25,12 +26,14 @@ import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils;
+import com.fr1014.mycoludmusic.utils.ShuffleUtils;
+import com.fr1014.mycoludmusic.utils.sharedpreferences.SharedPreferencesConst;
+import com.fr1014.mycoludmusic.utils.sharedpreferences.SharedPreferencesUtil;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -56,7 +59,9 @@ public class AudioPlayer implements LoadResultListener {
     private NoisyAudioStreamReceiver noisyReceiver;
     private IntentFilter noisyFilter;
     private final List<Music> musicList = new ArrayList<>();
+    private List<Music> shuffleMusicList = new ArrayList<>();
     private final List<OnPlayerEventListener> listeners = new ArrayList<>();
+    private final List<MusicListChangeListener> musicListChangeListeners = new ArrayList<>();
     private int state = STATE_IDLE;
     public CompositeDisposable mCompositeDisposable;
     DataRepository dataRepository;
@@ -72,14 +77,27 @@ public class AudioPlayer implements LoadResultListener {
         return SingletonHolder.instance;
     }
 
+    public void addMusicListChangeListener(MusicListChangeListener listener) {
+        if (!musicListChangeListeners.contains(listener)) {
+            musicListChangeListeners.add(listener);
+        }
+    }
+
+    public void removeMusicListChangeListener(MusicListChangeListener listener) {
+        musicListChangeListeners.remove(listener);
+    }
+
+
     @Override
     public void coverLoading() {
 
     }
 
     @Override
-    public void coverLoadSuccess(Bitmap coverLocal) {
-        notifyShowPlay(getPlayMusic());
+    public void coverLoadSuccess(Music music, Bitmap coverLocal) {
+        if (music == getPlayMusic()) {
+            notifyShowPlay(music);
+        }
     }
 
     @Override
@@ -137,6 +155,12 @@ public class AudioPlayer implements LoadResultListener {
         });
     }
 
+    public void initMusicList(){
+        List<Music> musicList = SharedPreferencesUtil.getDataList(SharedPreferencesConst.MUSIC_LIST, SharedPreferencesConst.MUSIC_LIST_KEY);
+        List<Music> shuffleMusicList = SharedPreferencesUtil.getDataList(SharedPreferencesConst.SHUFFLE_MUSIC_LIST, SharedPreferencesConst.SHUFFLE_MUSIC_LIST_KEY);
+        addMusicList(musicList,shuffleMusicList);
+    }
+
     public void notifyShowPlay(Music music) {
         Notifier.get().showPlay(music);
     }
@@ -151,12 +175,19 @@ public class AudioPlayer implements LoadResultListener {
         listeners.remove(listener);
     }
 
+    public void notifyMusicListChange(){
+        for (MusicListChangeListener listener : musicListChangeListeners){
+            listener.isChanged(getPagerMusicList());
+        }
+    }
+
     public void addAndPlay(Music music) {
         int position = indexOf(music);
         if (position < 0) {
             musicList.add(music);
+            shuffleMusicList.add(music);
             position = musicList.size() - 1;
-            DBManager.get().insert(music,false);
+            notifyMusicListChange();
         }
         play(position);
     }
@@ -167,25 +198,62 @@ public class AudioPlayer implements LoadResultListener {
             musicList.clear();
         }
         musicList.addAll(musics);
+        setNeedShuffle(true);
+        if (getPlayMode() == PlayModeEnum.SHUFFLE){
+            shuffle();
+        }
+        notifyMusicListChange();
         play(0);
-        DBManager.get().delOldInsertNewMusicList(musics,false);
     }
 
-    public void addMusicList(List<Music> musics) {
-        if (CollectionUtils.isEmptyList(musics)) return;
-        if (!CollectionUtils.isEmptyList(musicList)) {
-            musicList.clear();
+    public void addMusicList(List<Music> musics,List<Music> shuffleMusics) {
+        if (!CollectionUtils.isEmptyList(musics)){
+            if (!musicList.containsAll(musics)){
+                musicList.clear();
+            }
+            musicList.addAll(musics);
         }
-        musicList.addAll(musics);
+        if (!CollectionUtils.isEmptyList(shuffleMusics)){
+            if (!shuffleMusicList.containsAll(shuffleMusics)){
+                shuffleMusicList.clear();
+            }
+            shuffleMusicList.addAll(shuffleMusics);
+        }
+        notifyMusicListChange();
+    }
+
+    public void addShuffleMusicList(List<Music> musics) {
+        if (CollectionUtils.isEmptyList(musics)) return;
+        if (!CollectionUtils.isEmptyList(shuffleMusicList)) {
+            shuffleMusicList.clear();
+        }
+        shuffleMusicList.addAll(musics);
+        notifyMusicListChange();
+    }
+
+    public PlayModeEnum getPlayMode(){
+        return PlayModeEnum.valueOf(Preferences.getPlayMode());
+    }
+
+    //是否为循环播放
+    public boolean isLoop(){
+        return PlayModeEnum.LOOP == getPlayMode();
     }
 
     public void play(int position) {
-        if (musicList.isEmpty()) {
-            return;
+        if (isLoop()) {
+            if (musicList.isEmpty()) {
+                return;
+            }
+        } else {
+            if (shuffleMusicList.isEmpty()){
+                return;
+            }
         }
-
         setPlayPosition(position);
         Music music = getPlayMusic();
+        if (music == null) return;
+        saveCurrentMusic(music);
         notifyShowPlay(music);
         //网络歌曲，每次都需要重新获取url
         if (music.isOnlineMusic()) {
@@ -332,7 +400,7 @@ public class AudioPlayer implements LoadResultListener {
         } else if (isPausing()) {
             startPlayer();
         } else {
-            play(getPlayPosition());
+            play(indexOf(AudioPlayer.get().getCurrentMusic()));
         }
     }
 
@@ -401,14 +469,11 @@ public class AudioPlayer implements LoadResultListener {
             return nextPosition;
         }
 
-        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
-        switch (mode) {
-            case SHUFFLE:
-                nextPosition = new Random().nextInt(musicList.size());
-                break;
+        switch (getPlayMode()) {
             case SINGLE:
                 nextPosition = getPlayPosition();
                 break;
+            case SHUFFLE:
             case LOOP:
             default:
                 nextPosition = getPlayPosition() + 1;
@@ -427,14 +492,11 @@ public class AudioPlayer implements LoadResultListener {
             return prePosition;
         }
 
-        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
-        switch (mode) {
-            case SHUFFLE:
-                prePosition = new Random().nextInt(musicList.size());
-                break;
+        switch (getPlayMode()) {
             case SINGLE:
                 prePosition = getPlayPosition();
                 break;
+            case SHUFFLE:
             case LOOP:
             default:
                 prePosition = getPlayPosition() - 1;
@@ -443,6 +505,13 @@ public class AudioPlayer implements LoadResultListener {
         prePosition = checkPosition(prePosition);
         play(prePosition);
         return prePosition;
+    }
+
+    public void shuffle() {
+        if (getNeedShuffle()){
+            addShuffleMusicList(ShuffleUtils.shuffle(musicList));
+            setNeedShuffle(false);
+        }
     }
 
     private int checkPosition(int position) {
@@ -493,19 +562,46 @@ public class AudioPlayer implements LoadResultListener {
         }
     }
 
+    public void saveCurrentMusic(Music music){
+        SharedPreferencesUtil.putMusic(SharedPreferencesConst.CURRENT_MUSIC,SharedPreferencesConst.CURRENT_MUSIC_KEY,music);
+    }
+
+    public Music getCurrentMusic(){
+        return SharedPreferencesUtil.getMusic(SharedPreferencesConst.CURRENT_MUSIC,SharedPreferencesConst.CURRENT_MUSIC_KEY);
+    }
+
     public Music getPlayMusic() {
-        if (musicList.isEmpty()) {
-            return null;
+        if (isLoop()) {
+            if (CollectionUtils.isEmptyList(musicList)) {
+                return null;
+            }
+            return musicList.get(getPlayPosition());
+        } else {
+            if (CollectionUtils.isEmptyList(shuffleMusicList)) {
+                return null;
+            }
+            return shuffleMusicList.get(getPlayPosition());
         }
-        return musicList.get(getPlayPosition());
     }
 
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
 
+    public List<Music> getPagerMusicList() {
+        if (isLoop()) {
+            return musicList;
+        } else {
+            return shuffleMusicList;
+        }
+    }
+
     public List<Music> getMusicList() {
         return musicList;
+    }
+
+    public List<Music> getShuffleMusicList(){
+        return shuffleMusicList;
     }
 
     public boolean isPlaying() {
@@ -538,7 +634,7 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     private void resetMusicUrl(Music music) {
-        if (music != null){
+        if (music != null) {
             String url = music.getSongUrl();
             if (!TextUtils.isEmpty(url) && url.contains("http")) {
                 music.setSongUrl("");
@@ -546,7 +642,8 @@ public class AudioPlayer implements LoadResultListener {
         }
     }
 
-    private int indexOf(Music music) {
+    public int indexOf(Music music) {
+        List<Music> musicList = getPagerMusicList();
         if (CollectionUtils.isEmptyList(musicList)) return -1;
         for (int index = 0; index < musicList.size(); index++) {
             Music m = musicList.get(index);
@@ -557,8 +654,32 @@ public class AudioPlayer implements LoadResultListener {
         return -1;
     }
 
-    public void quit(){
+    public int indexOf(Music music,List<Music> musicList) {
+        if (CollectionUtils.isEmptyList(musicList)) return -1;
+        for (int index = 0; index < musicList.size(); index++) {
+            Music m = musicList.get(index);
+            if (TextUtils.equals(m.getArtist(), music.getArtist()) && TextUtils.equals(m.getTitle(), music.getTitle())) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    public void quit() {
         AppCache.get().clearStack();
         PlayService.startCommand(context, Actions.ACTION_STOP);
+    }
+
+    public boolean getNeedShuffle(){
+        return SharedPreferencesUtil.getBoolean(SharedPreferencesConst.SHUFFLE_MUSIC_LIST,SharedPreferencesConst.SHUFFLE_NEED_KEY,true);
+    }
+
+    public void setNeedShuffle(boolean isNeed){
+        SharedPreferencesUtil.putBoolean(SharedPreferencesConst.SHUFFLE_MUSIC_LIST,SharedPreferencesConst.SHUFFLE_NEED_KEY,isNeed);
+    }
+
+    public void saveMusicsInfo(){
+        SharedPreferencesUtil.setDataList(SharedPreferencesConst.MUSIC_LIST,SharedPreferencesConst.MUSIC_LIST_KEY,musicList);
+        SharedPreferencesUtil.setDataList(SharedPreferencesConst.SHUFFLE_MUSIC_LIST,SharedPreferencesConst.SHUFFLE_MUSIC_LIST_KEY,shuffleMusicList);
     }
 }

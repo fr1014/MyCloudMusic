@@ -1,11 +1,14 @@
 package com.fr1014.mycoludmusic.musicmanager;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * 创建时间:2020/9/7
  * 作者:fr
  * 邮箱:1546352238@qq.com
  */
-public class Music {
+public class Music implements Parcelable {
     private long id;                //网易歌曲id
     private String artist;          //歌手
     private String title;           //歌曲名
@@ -152,4 +155,50 @@ public class Music {
                 ", isOnlineMusic=" + isOnlineMusic +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.artist);
+        dest.writeString(this.title);
+        dest.writeString(this.subTitle);
+        dest.writeString(this.songUrl);
+        dest.writeString(this.imgUrl);
+        dest.writeString(this.MUSICRID);
+        dest.writeLong(this.duration);
+        dest.writeString(this.original);
+        dest.writeString(this.album);
+        dest.writeByte(this.isOnlineMusic ? (byte) 1 : (byte) 0);
+    }
+
+    protected Music(Parcel in) {
+        this.id = in.readLong();
+        this.artist = in.readString();
+        this.title = in.readString();
+        this.subTitle = in.readString();
+        this.songUrl = in.readString();
+        this.imgUrl = in.readString();
+        this.MUSICRID = in.readString();
+        this.duration = in.readLong();
+        this.original = in.readString();
+        this.album = in.readString();
+        this.isOnlineMusic = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<Music> CREATOR = new Parcelable.Creator<Music>() {
+        @Override
+        public Music createFromParcel(Parcel source) {
+            return new Music(source);
+        }
+
+        @Override
+        public Music[] newArray(int size) {
+            return new Music[size];
+        }
+    };
 }

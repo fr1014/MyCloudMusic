@@ -21,7 +21,7 @@ public class CommonUtils {
     private static long lastClickTime;
 
     public static Toast toastShort(String message) {
-        Toast toast = Toast.makeText(MyApplication.getInstance(), null, Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(MyApplication.getInstance(), "", Toast.LENGTH_SHORT);
         toast.setText(message);
         toast.show();
         return toast;
