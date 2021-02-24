@@ -96,13 +96,11 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
         // 获取第一个可见item的高度
         val itemHeight = firstVisiableChildView!!.height
         // 获取第一个可见item的位置
-        var iResult = 0
-        if (position == 0) {
-            iResult = position * itemHeight - firstVisiableChildView.top
+        return if (position == 0) {
+            position * itemHeight - firstVisiableChildView.top
         } else {
-            iResult = position * itemHeight - firstVisiableChildView.top + headerHeight
+            position * itemHeight - firstVisiableChildView.top + headerHeight
         }
-        return iResult
     }
 
     override fun initData() {
@@ -159,10 +157,4 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
         return musics
     }
 
-    override fun onDestroy() {
-        activity?.let {
-            StatusBarUtils.setImmersiveStatusBar(it.window, true)
-        }
-        super.onDestroy()
-    }
 }

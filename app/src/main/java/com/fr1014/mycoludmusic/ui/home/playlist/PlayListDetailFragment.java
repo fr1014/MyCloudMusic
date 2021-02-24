@@ -251,11 +251,4 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         mViewBinding.playAll.tvCount.setText(length + "");
     }
 
-    @Override
-    public void onDestroy() {
-        if (getActivity() != null) {
-            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
-        }
-        super.onDestroy();
-    }
 }
