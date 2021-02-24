@@ -47,6 +47,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     private var searchShowWord: String? = null
     private var searchType: Int? = null
     private var searchMatchAdapter: SearchMatchAdapter? = null
+    private var showSearchMatcher: Boolean = true
 
     companion object {
         fun startSearchActivity(context: Context, searchShowWord: String, searchWord: String, searchType: Int) {
@@ -129,6 +130,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 setOnEditorActionListener(object : TextView.OnEditorActionListener {
                     override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
                         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                            showSearchMatcher = false
                             if (TextUtils.isEmpty(query)) {
                                 if (searchWord != null) {
                                     mViewBinding.serachView.apply {
@@ -142,7 +144,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                                     navigation(query.toString())
                                 }
                             }
-                            mViewBinding.rvSearchMatch.visibility = View.GONE
+                            setSearchViewVisibility(View.GONE)
                             return true
                         }
                         return false
@@ -197,9 +199,10 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 //当搜索内容改变时触发该方法
                 override fun onQueryTextChange(newText: String): Boolean {
                     if (newText.isEmpty()) {
-                        mViewBinding.rvSearchMatch.visibility = View.GONE
+                        setSearchViewVisibility(View.GONE)
                     } else {
                         if (!TextUtils.equals(mViewModel.getSearchKey().value, newText)) {
+                            showSearchMatcher = true
                             mViewModel.searchMatch(newText)
                         }
                     }
@@ -209,20 +212,18 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             })
 
             flSearchContent.setOnClickListener {
-                if (rvSearchMatch.visibility == View.VISIBLE) {
-                    rvSearchMatch.visibility = View.GONE
-                }
+                setSearchViewVisibility(View.GONE)
             }
         }
 
-        searchMatchAdapter?.let {
-            it.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-                override fun onChanged() {
-                    if (CollectionUtils.isEmptyList(it.datas)) {
-                        mViewBinding.rvSearchMatch.visibility = View.GONE
-                    }
-                }
-            })
+        searchMatchAdapter?.registerAdapterDataObserver(searchMatchAdapterObserver)
+    }
+
+    private val searchMatchAdapterObserver = object : RecyclerView.AdapterDataObserver() {
+        override fun onChanged() {
+            if (CollectionUtils.isEmptyList(searchMatchAdapter?.datas)) {
+                setSearchViewVisibility(View.GONE)
+            }
         }
     }
 
@@ -232,9 +233,28 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
         })
 
         mViewModel.getSearchMatch().observe(this, Observer {
-            searchMatchAdapter?.setData(it)
-            mViewBinding.rvSearchMatch.visibility = View.VISIBLE
+            if (showSearchMatcher){
+                searchMatchAdapter?.setData(it)
+                setSearchViewVisibility(View.VISIBLE)
+            }
         })
+    }
+
+    private fun setSearchViewVisibility(showView: Int) {
+        mViewBinding.rvSearchMatch.apply {
+            if (showView == View.VISIBLE) {
+                if (visibility == View.GONE) {
+                    visibility = View.VISIBLE
+                }
+                return
+            }
+            if (showView == View.GONE) {
+                if (visibility == View.VISIBLE) {
+                    visibility = View.GONE
+                }
+                return
+            }
+        }
     }
 
     private fun changeSearchViewText(text: String) {
@@ -267,6 +287,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
                 AudioPlayer.get().removeOnPlayEventListener(listener)
             }
         }
+        searchMatchAdapter?.unregisterAdapterDataObserver(searchMatchAdapterObserver)
         super.onDestroy()
     }
 }
