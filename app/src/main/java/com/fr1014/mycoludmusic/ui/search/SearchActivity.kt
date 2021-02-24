@@ -27,7 +27,6 @@ import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.base.BasePlayActivity
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.MatchBean
-import com.fr1014.mycoludmusic.data.source.local.room.DBManager
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment
