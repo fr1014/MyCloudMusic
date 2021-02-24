@@ -321,7 +321,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void coverLoadSuccess(Music music, Bitmap coverLocal) {
-        if (AudioPlayer.get().getPlayMusic() == music){
+        if (AudioPlayer.get().getCurrentMusic() == music){
             setBitmap(coverLocal);
         }
     }

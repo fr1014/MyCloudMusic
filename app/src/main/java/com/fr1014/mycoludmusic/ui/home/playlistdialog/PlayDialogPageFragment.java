@@ -157,7 +157,7 @@ public class PlayDialogPageFragment extends Fragment {
                 scrollToPosition();
                 playDialogAdapter.notifyDataSetChanged();
             }
-            playDialogAdapter.setCurrentMusic(AudioPlayer.get().getPlayMusic());
+            playDialogAdapter.setCurrentMusic(AudioPlayer.get().getCurrentMusic());
             binding.header.tvMode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

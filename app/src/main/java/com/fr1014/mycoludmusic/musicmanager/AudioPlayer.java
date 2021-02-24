@@ -60,7 +60,7 @@ public class AudioPlayer implements LoadResultListener {
     private NoisyAudioStreamReceiver noisyReceiver;
     private IntentFilter noisyFilter;
     private final List<Music> musicList = new ArrayList<>();
-    private List<Music> shuffleMusicList = new ArrayList<>();
+    private final List<Music> shuffleMusicList = new ArrayList<>();
     private final List<OnPlayerEventListener> listeners = new ArrayList<>();
     private final List<MusicListChangeListener> musicListChangeListeners = new ArrayList<>();
     private int state = STATE_IDLE;
@@ -96,7 +96,7 @@ public class AudioPlayer implements LoadResultListener {
 
     @Override
     public void coverLoadSuccess(Music music, Bitmap coverLocal) {
-        if (music == getPlayMusic()) {
+        if (music == getCurrentMusic()) {
             notifyShowPlay(music);
         }
     }
@@ -137,7 +137,7 @@ public class AudioPlayer implements LoadResultListener {
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
                 startPlayer();
-                Music music = getPlayMusic();
+                Music music = getCurrentMusic();
                 resetMusicUrl(music);
                 DBManager.get().insert(music, true);
             }
@@ -187,8 +187,10 @@ public class AudioPlayer implements LoadResultListener {
         if (position < 0) {
             musicList.add(music);
             shuffleMusicList.add(music);
-            position = musicList.size() - 1;
             notifyMusicListChange();
+            position = musicList.size() - 1;
+            play(position,false);
+            return;
         }
         play(position);
     }
@@ -237,7 +239,11 @@ public class AudioPlayer implements LoadResultListener {
         return PlayModeEnum.LOOP == getPlayMode();
     }
 
-    public void play(int position) {
+    public void play(int position){
+        play(position,true);
+    }
+
+    public void play(int position,boolean isSavePosition) {
         if (isLoop()) {
             if (musicList.isEmpty()) {
                 return;
@@ -247,8 +253,14 @@ public class AudioPlayer implements LoadResultListener {
                 return;
             }
         }
-        setPlayPosition(position);
-        Music music = getPlayMusic();
+
+        Music music;
+        if (isSavePosition){
+            setPlayPosition(position);
+            music = getPlayMusic();
+        }else {
+            music = getPlayMusic(position);
+        }
         if (music == null) return;
         saveCurrentMusic(music);
         notifyShowPlay(music);
@@ -383,7 +395,7 @@ public class AudioPlayer implements LoadResultListener {
             } else {
                 stopPlayer();
                 for (OnPlayerEventListener listener : listeners) {
-                    listener.onChange(getPlayMusic());
+                    listener.onChange(getCurrentMusic());
                 }
             }
         }
@@ -410,7 +422,7 @@ public class AudioPlayer implements LoadResultListener {
             mediaPlayer.start();
             state = STATE_PLAYING;
             handler.post(mPublishRunnable);
-            notifyShowPlay(getPlayMusic());
+            notifyShowPlay(getCurrentMusic());
             MediaSessionManager.get().updatePlaybackState();
             context.registerReceiver(noisyReceiver, noisyFilter);
 
@@ -432,7 +444,7 @@ public class AudioPlayer implements LoadResultListener {
         mediaPlayer.pause();
         state = STATE_PAUSE;
         handler.removeCallbacks(mPublishRunnable);
-        Notifier.get().showPause(getPlayMusic());
+        Notifier.get().showPause(getCurrentMusic());
         MediaSessionManager.get().updatePlaybackState();
         try {
             context.unregisterReceiver(noisyReceiver);
@@ -576,6 +588,20 @@ public class AudioPlayer implements LoadResultListener {
                 return null;
             }
             return shuffleMusicList.get(getPlayPosition());
+        }
+    }
+
+    public Music getPlayMusic(int position) {
+        if (isLoop()) {
+            if (CollectionUtils.isEmptyList(musicList)) {
+                return null;
+            }
+            return musicList.get(position);
+        } else {
+            if (CollectionUtils.isEmptyList(shuffleMusicList)) {
+                return null;
+            }
+            return shuffleMusicList.get(position);
         }
     }
 

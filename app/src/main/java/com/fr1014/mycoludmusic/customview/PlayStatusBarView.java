@@ -117,7 +117,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             @Override
             public void onChange(@NotNull Music music) {
                 setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-                switchPagerFragment(AudioPlayer.get().getPlayPosition());
+                switchPagerFragment(AudioPlayer.get().indexOf(AudioPlayer.get().getCurrentMusic()));
             }
 
             @Override
@@ -166,7 +166,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                 AudioPlayer.get().playPause();
                 break;
             case R.id.iv_music_menu:
-                if (AudioPlayer.get().getPlayMusic() != null) {
+                if (AudioPlayer.get().getCurrentMusic() != null) {
                     if (!listDialogFragment.isAdded()) {
                         //弹出当前播放列表
                         listDialogFragment.show(fragmentManager, "playlist_dialog");

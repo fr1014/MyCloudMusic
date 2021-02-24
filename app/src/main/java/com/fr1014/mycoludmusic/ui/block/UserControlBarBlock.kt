@@ -53,7 +53,7 @@ class UserControlBarBlock @JvmOverloads constructor(
             mViewModel?.getLikeList()?.observe(owner, Observer {
                 musicLikes.clear()
                 musicLikes.addAll(it)
-                val playMusic = AudioPlayer.get().playMusic
+                val playMusic = AudioPlayer.get().currentMusic
                 initLikeIcon(playMusic)
             })
 
@@ -86,7 +86,7 @@ class UserControlBarBlock @JvmOverloads constructor(
         when (v.id) {
             R.id.iv_like -> {
                 startLikeAnimator()
-                val playMusic = AudioPlayer.get().playMusic
+                val playMusic = AudioPlayer.get().currentMusic
                 if (userLikePid == 0L) {
                     CommonUtils.toastShort("尚未登录")
                     return
