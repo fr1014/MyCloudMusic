@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_nav_home_to_dayRecommendFragment"
             app:destination="@id/dayRecommendFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_songSaleFragment"
+            app:destination="@id/songSaleFragment" />
     </fragment>
 
     <fragment
@@ -62,6 +65,13 @@
         android:name="com.fr1014.mycoludmusic.ui.home.homepage.dayrecommend.DayRecommendFragment"
         android:label="每日推荐"
         tools:layout="@layout/fragment_day_recommend">
+
+    </fragment>
+
+    <fragment android:id="@+id/songSaleFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.songsale.SongSaleFragment"
+        android:label="数字专辑"
+        tools:layout="@layout/fragment_song_sale">
 
     </fragment>
 </navigation>

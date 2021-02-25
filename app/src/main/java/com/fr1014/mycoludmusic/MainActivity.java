@@ -83,6 +83,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
+                if (getSupportActionBar() == null) return;
                 switch (destination.getId()) {
                     case R.id.topListFragment:
                         mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
@@ -95,6 +96,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                     case R.id.userInfoFragment:
                     case R.id.dayRecommendFragment:
                         getSupportActionBar().hide();
+                        break;
+                    case R.id.songSaleFragment:
+                        mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
                         break;
                     default:
                         mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));

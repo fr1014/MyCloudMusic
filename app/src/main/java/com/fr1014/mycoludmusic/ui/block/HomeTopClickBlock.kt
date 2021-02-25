@@ -35,6 +35,10 @@ class HomeTopClickBlock @JvmOverloads constructor(
             ivTop.setOnClickListener {
                 Navigation.findNavController(it).navigate(R.id.topListFragment)
             }
+
+            ivSongSale.setOnClickListener {
+                Navigation.findNavController(it).navigate(R.id.songSaleFragment)
+            }
         }
     }
 }
