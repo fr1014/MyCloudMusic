@@ -228,9 +228,11 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                         mViewBinding.rvPlaylistDetail.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                mViewBinding.loadingView.llLoading.setVisibility(View.GONE);
-                                mViewBinding.rvPlaylistDetail.setVisibility(View.VISIBLE);
-                                mViewBinding.rvPlaylistDetail.getChildAt(0).setVisibility(View.VISIBLE);
+                                if (getView() != null) {
+                                    mViewBinding.loadingView.llLoading.setVisibility(View.GONE);
+                                    mViewBinding.rvPlaylistDetail.setVisibility(View.VISIBLE);
+                                    mViewBinding.rvPlaylistDetail.getChildAt(0).setVisibility(View.VISIBLE);
+                                }
                             }
                         }, 800);
                     }

@@ -107,9 +107,13 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         });
     }
 
-    private void switchPagerFragment(int position) {
+    private void switchPagerFragment() {
         isPagerSlideSelected = false;
-        mViewBinding.pagerList.setCurrentItem(position, false);
+        Music currentMusic = AudioPlayer.get().getCurrentMusic();
+        if (currentMusic != null){
+            int position = AudioPlayer.get().indexOf(currentMusic);
+            mViewBinding.pagerList.setCurrentItem(position, false);
+        }
     }
 
     private void initListener() {
@@ -117,7 +121,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             @Override
             public void onChange(@NotNull Music music) {
                 setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-                switchPagerFragment(AudioPlayer.get().indexOf(AudioPlayer.get().getCurrentMusic()));
+                switchPagerFragment();
             }
 
             @Override
@@ -185,7 +189,10 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         }
         if (pagerAdapter != null) {
             pagerAdapter.setMusicList(musicList);
-            switchPagerFragment(AudioPlayer.get().indexOf(AudioPlayer.get().getCurrentMusic()));
+            Music currentMusic = AudioPlayer.get().getCurrentMusic();
+            if (currentMusic != null) {
+                switchPagerFragment();
+            }
         }
     }
 
