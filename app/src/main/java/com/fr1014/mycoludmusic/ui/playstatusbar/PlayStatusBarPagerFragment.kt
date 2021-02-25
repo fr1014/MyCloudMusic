@@ -23,6 +23,7 @@ import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.FileUtils
+import com.fr1014.mycoludmusic.utils.MusicUtils
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 import com.fr1014.mymvvm.base.BaseFragment
 import java.util.*
@@ -123,8 +124,10 @@ class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBindin
 
     override fun coverLoadSuccess(music: Music, coverLocal: Bitmap) {
         if (isLoaded) return
-        if (this.music?.title.equals(music.title) && this.music?.artist.equals(music.artist)) {
-           setBitmap(coverLocal)
+        this.music?.let{
+            if (MusicUtils.isSameMusic(it,music)) {
+                setBitmap(coverLocal)
+            }
         }
     }
 
