@@ -138,7 +138,6 @@ public class AudioPlayer implements LoadResultListener {
             if (isPreparing()) {
                 startPlayer();
                 Music music = getCurrentMusic();
-                resetMusicUrl(music);
                 DBManager.get().insert(music, true);
             }
         });
@@ -285,6 +284,7 @@ public class AudioPlayer implements LoadResultListener {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(music.getSongUrl());
             mediaPlayer.prepareAsync();
+            resetMusicUrl(music);
             for (OnPlayerEventListener listener : listeners) {
                 listener.onChange(music);
             }
@@ -664,6 +664,7 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public int indexOf(Music music) {
+        if (music == null) return -1;
         List<Music> musicList = getPagerMusicList();
         if (CollectionUtils.isEmptyList(musicList)) return -1;
         for (int index = 0; index < musicList.size(); index++) {
