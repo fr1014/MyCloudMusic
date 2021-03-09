@@ -181,6 +181,10 @@ public class AudioPlayer implements LoadResultListener {
         }
     }
 
+    public void addAndPlay(Music music, boolean isSongSale) {
+        getWYFeeFromKW(music, isSongSale);
+    }
+
     public void addAndPlay(Music music) {
         int position = indexOf(music);
         if (position < 0) {
@@ -359,8 +363,12 @@ public class AudioPlayer implements LoadResultListener {
         }
     }
 
-    //从酷我搜索网易的付费歌曲
     private void getWYFeeFromKW(Music music) {
+        getWYFeeFromKW(music, false);
+    }
+
+    //从酷我搜索网易的付费歌曲
+    private void getWYFeeFromKW(Music music, boolean isSongSale) {
         addDisposable(
                 dataRepository.getKWSearchResult(music.getTitle() + music.getArtist(), 0, 1)
                         .compose(RxSchedulers.apply())
@@ -371,7 +379,11 @@ public class AudioPlayer implements LoadResultListener {
                                 if (!CollectionUtils.isEmptyList(abslist)) {
 //                                    music.setId(0);
                                     music.setMUSICRID(abslist.get(0).getMUSICRID());
-                                    getSongUrl(music);
+                                    if (isSongSale){
+                                        addAndPlay(music);
+                                    }else {
+                                        getSongUrl(music);
+                                    }
                                 } else {
                                     CommonUtils.toastShort(music.getTitle() + ": 暂时无法播放!!!\n已为您播放了其它歌曲");
                                     playNext();

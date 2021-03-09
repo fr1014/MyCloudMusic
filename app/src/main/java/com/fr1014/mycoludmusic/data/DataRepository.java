@@ -12,6 +12,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlay
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchRecommend;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.SongSale;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
@@ -69,6 +70,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<ResponseBody> getSongCover(String coverPath) {
         return httpDataSource.getSongCover(coverPath);
+    }
+
+    @Override
+    public Observable<SongSale> getWYSongSaleList(String type, int albumType) {
+        return httpDataSource.getWYSongSaleList(type, albumType);
     }
 
     @Override

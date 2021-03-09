@@ -159,7 +159,9 @@ class PlayStatusBarPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa)
     override fun getItemId(position: Int): Long {
         val music = musicList[position]
         if (music.id == 0L){
-            return music.musicrid.getRid()
+            val musicrid = music.musicrid
+            if (TextUtils.isEmpty(musicrid)) return 0L
+            return musicrid.getRid()
         }
         return music.id
     }

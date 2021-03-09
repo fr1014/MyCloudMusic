@@ -9,6 +9,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.SongSale;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYLevelInfo;
@@ -36,6 +37,12 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    /**
+     * @return 专辑畅销榜
+     */
+    @GET("album/songsaleboard")
+    Observable<SongSale> getWYSongSaleList(@Query("type") String type, @Query("albumType") int albumType);
 
     /**
      * @return 获取每日推荐歌曲
@@ -132,11 +139,12 @@ public interface WYApiService {
 
     /**
      * @param keywords 关键词
-     * @param type 如果传 'mobile' 则返回移动端数据
+     * @param type     如果传 'mobile' 则返回移动端数据
      * @return 搜索建议
      */
     @GET("search/suggest")
-    Observable<SearchRecommend> getSearchMatch(@Query("keywords")String keywords, @Query("type")String type);
+    Observable<SearchRecommend> getSearchMatch(@Query("keywords") String keywords, @Query("type") String type);
+
     /**
      * 可选参数 :
      * limit : 返回数量 , 默认为 30
