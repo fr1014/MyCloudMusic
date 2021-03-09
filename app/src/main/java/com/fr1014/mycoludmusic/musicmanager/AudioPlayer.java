@@ -382,6 +382,7 @@ public class AudioPlayer implements LoadResultListener {
                                     if (isSongSale){
                                         addAndPlay(music);
                                     }else {
+                                        saveCurrentMusic(music);
                                         getSongUrl(music);
                                     }
                                 } else {

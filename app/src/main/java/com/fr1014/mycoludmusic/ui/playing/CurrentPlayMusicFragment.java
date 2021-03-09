@@ -191,7 +191,10 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     private void setTipsVisibility(int visibility) {
         Music music = getCurrentPlayMusic();
         if (music == null) return;
-        if (music.getId() != 0L && TextUtils.isEmpty(music.getMUSICRID())) return;
+        if (music.getId() != 0L && TextUtils.isEmpty(music.getMUSICRID())){
+            mViewBinding.tvTips.setVisibility(View.GONE);
+            return;
+        }
 
         if (music.getId() != 0L && !TextUtils.isEmpty(music.getMUSICRID())){
             String tips = "该歌曲源并非来自\"网易\"\n匹配的歌曲源可能不正确";
