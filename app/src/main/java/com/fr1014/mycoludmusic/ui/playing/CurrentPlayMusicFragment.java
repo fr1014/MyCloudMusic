@@ -122,8 +122,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public boolean onLongClick(View v) {
                 Music music = getCurrentPlayMusic();
-                if (getContext() != null && music != null && !TextUtils.isEmpty(music.getImgUrl())){
-                    if (coverInfoDialog == null){
+                if (getContext() != null && music != null && !TextUtils.isEmpty(music.getImgUrl())) {
+                    if (coverInfoDialog == null) {
                         coverInfoDialog = new CoverInfoDialog(getContext());
                     }
                     coverInfoDialog.setData(music);
@@ -152,7 +152,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
                 mViewBinding.lrcView.setLabel("该歌曲暂无歌词");
                 if (!lrcPath[0].equals("")) {
                     if (!lrcPath[1].equals("")) {
-                        mViewBinding.lrcView.loadLrc(new File(lrcPath[0]),new File(lrcPath[1]));
+                        mViewBinding.lrcView.loadLrc(new File(lrcPath[0]), new File(lrcPath[1]));
                     } else {
                         mViewBinding.lrcView.loadLrc(new File(lrcPath[0]));
                     }
@@ -173,6 +173,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             case R.id.album_cover_view:
                 if (mViewBinding.albumCoverView.getVisibility() == View.VISIBLE) {
                     mViewBinding.albumCoverView.setVisibility(View.GONE);
+                    setTipsVisibility(View.GONE);
                     mViewBinding.albumCoverView.pauseAnimator();
                     mViewBinding.llLrc.setVisibility(View.VISIBLE);
                     getSongLrc(getCurrentPlayMusic());
@@ -184,6 +185,22 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     private void initViewData(Music music) {
         initSeekBarData(music);
         setBitmap(FileUtils.getCoverLocal(music));
+        setTipsVisibility(View.VISIBLE);
+    }
+
+    private void setTipsVisibility(int visibility) {
+        Music music = getCurrentPlayMusic();
+        if (music == null) return;
+        if (music.getId() != 0L && TextUtils.isEmpty(music.getMUSICRID())) return;
+
+        if (music.getId() != 0L && !TextUtils.isEmpty(music.getMUSICRID())){
+            String tips = "该歌曲源并非来自\"网易\"\n匹配的歌曲源可能不正确";
+            mViewBinding.tvTips.setText(tips);
+        }else if (music.getId() != 0L){
+            String tips = "该歌曲源并非来自\"网易\"\n1、该歌曲无法收藏\n2、匹配的歌曲源可能不正确";
+            mViewBinding.tvTips.setText(tips);
+        }
+        mViewBinding.tvTips.setVisibility(visibility);
     }
 
     private void setMusicInfo(Music music) {
@@ -213,6 +230,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
             @Override
             public void onTap(LrcView view, float x, float y) {
                 mViewBinding.albumCoverView.setVisibility(View.VISIBLE);
+                setTipsVisibility(View.VISIBLE);
                 if (AudioPlayer.get().isPlaying()) {
                     mViewBinding.albumCoverView.resumeAnimator();
                 }
@@ -225,8 +243,8 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         if (resource != null) {
             mViewBinding.albumCoverView.songImgSetBitmap(resource);
             mViewBinding.biBackground.setBitmap(resource);
-        }else {
-            mViewBinding.biBackground.setBackgroundDrawable(ResourceUtils.getGrayDrawable(getContext(),R.drawable.palying_default_bg));
+        } else {
+            mViewBinding.biBackground.setBackgroundDrawable(ResourceUtils.getGrayDrawable(getContext(), R.drawable.palying_default_bg));
         }
     }
 
@@ -238,7 +256,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     private void changeMusicPlay(Music music) {
         Music currentPlayMusic = getCurrentPlayMusic();
-        if (currentPlayMusic != null && !MusicUtils.INSTANCE.isSameMusic(currentPlayMusic,music)) {
+        if (currentPlayMusic != null && !MusicUtils.INSTANCE.isSameMusic(currentPlayMusic, music)) {
             AudioPlayer.get().stopPlayer();
         }
         if (mViewBinding.llLrc.getVisibility() == View.VISIBLE) {
@@ -280,7 +298,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onBufferingUpdate(int percent) {
-        if (percent > 0){
+        if (percent > 0) {
             sbProgress.setSecondaryProgress(sbProgress.getMax() * 100 / percent);
         }
     }
@@ -309,7 +327,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         return false;
     }
 
-    private Music getCurrentPlayMusic(){
+    private Music getCurrentPlayMusic() {
         return AudioPlayer.get().getCurrentMusic();
     }
 
@@ -321,7 +339,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void coverLoadSuccess(Music music, Bitmap coverLocal) {
-        if (MusicUtils.INSTANCE.isSameMusic(music,AudioPlayer.get().getCurrentMusic())){
+        if (MusicUtils.INSTANCE.isSameMusic(music, AudioPlayer.get().getCurrentMusic())) {
             setBitmap(coverLocal);
         }
     }

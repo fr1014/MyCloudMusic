@@ -119,6 +119,16 @@
             </LinearLayout>
         </FrameLayout>
 
+        <TextView
+            android:id="@+id/tv_tips"
+            android:layout_marginStart="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white_alpha"
+            android:textSize="8sp"
+            android:text="该歌曲源并非来自&quot;网易&quot;\n1、该歌曲无法收藏\n2、匹配的歌曲源可能不正确"
+            android:visibility="gone"/>
+
         <com.fr1014.mycoludmusic.ui.block.UserControlBarBlock
             android:id="@+id/userControlBar"
             android:layout_width="match_parent"
