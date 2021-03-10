@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.fr1014.frecyclerviewadapter.BaseAdapter
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
+import com.fr1014.mycoludmusic.MainActivity
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
@@ -19,6 +21,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.Product
 import com.fr1014.mycoludmusic.databinding.FragmentDetailSaleBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.ui.home.songsale.detail.*
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 import com.fr1014.mymvvm.base.BaseFragment
 
@@ -75,13 +78,20 @@ class DetailSaleFragment : BaseFragment<FragmentDetailSaleBinding, SongSaleViewM
                     when (mAlbumType) {
 
                         TYPE_ALBUM -> { //专辑榜
-
+                            activity?.apply {
+                                if (activity is MainActivity){
+                                    supportFragmentManager.beginTransaction()
+                                            .replace(R.id.nav_host_fragment, AlbumDetailFragment.newInstance(mAdapter.getData(position)))
+                                            .addToBackStack(null)
+                                            .commitAllowingStateLoss()
+                                }
+                            }
                         }
 
                         TYPE_SINGLE -> { //单曲榜
                             val product = mAdapter.getData(position)
                             val music = Music(product.artistName, product.albumName, "", "", true)
-                            AudioPlayer.get().addAndPlay(music,true)
+                            AudioPlayer.get().addAndPlay(music, true)
                         }
                     }
                 }

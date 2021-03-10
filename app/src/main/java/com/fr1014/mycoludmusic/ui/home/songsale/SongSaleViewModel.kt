@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fr1014.mycoludmusic.data.DataRepository
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.Product
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
@@ -16,7 +17,13 @@ class SongSaleViewModel(application: Application, model: DataRepository) : Commo
         MutableLiveData()
     }
 
+    private val albumDetailLive: MutableLiveData<List<SongsBean>> by lazy {
+        MutableLiveData()
+    }
+
     fun getProducts(): LiveData<List<Product>> = productsLive
+
+    fun getAlbumDetail(): LiveData<List<SongsBean>> = albumDetailLive
 
     fun getSongSaleList(type: String, albumType: Int) {
         addSubscribe(
@@ -27,6 +34,18 @@ class SongSaleViewModel(application: Application, model: DataRepository) : Commo
                         }, {
                             Log.d("hello", "请求参数: type = $type, albumType = $albumType")
                             Log.d("hello", "getSongSaleList: " + it.message)
+                        })
+        )
+    }
+
+    fun getAlbumDetail(id: Long) {
+        addSubscribe(
+                model.getWYAlbumDetail(id)
+                        .compose(RxSchedulers.apply())
+                        .subscribe({
+                            albumDetailLive.postValue(it.songs)
+                        }, {
+                            Log.d("hello", "getAlbumDetail: " + it.message)
                         })
         )
     }

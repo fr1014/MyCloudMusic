@@ -12,6 +12,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.AlbumDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.SongSale;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
@@ -58,6 +59,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<ResponseBody> getSongCover(String coverPath) {
         return kwApiService.getSongCover(coverPath);
+    }
+
+    @Override
+    public Observable<AlbumDetail> getWYAlbumDetail(long id) {
+        return wyApiService.getWYAlbumDetail(id);
     }
 
     @Override

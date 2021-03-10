@@ -14,6 +14,11 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
+    private var showItemCover = true
+
+    constructor(layoutResId: Int, showItemCover: Boolean) : this(layoutResId) {
+        this.showItemCover = showItemCover
+    }
 
     init {
         onItemClickListener = this
@@ -21,21 +26,28 @@ class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHol
 
     @SuppressLint("SetTextI18n")
     override fun convert(holder: BaseViewHolder, data: SongsBean) {
-        GlideApp.with(holder.itemView)
-                .load(data.al.picUrl + "?param=200y200")
-                .apply(RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(RoundedCorners(30)))
-                .into(holder.getView(R.id.iv_cover))
+        if (showItemCover){
+            GlideApp.with(holder.itemView)
+                    .load(data.al.picUrl + "?param=200y200")
+                    .apply(RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(RoundedCorners(30)))
+                    .into(holder.getView(R.id.iv_cover))
+        }else{
+            holder.getView<TextView>(R.id.tv_order).apply {
+                text = holder.adapterPosition.plus(1).toString()
+                visibility = View.VISIBLE
+            }
+        }
         holder.apply {
-            getView<TextView>(R.id.tv_title).text = data.name
-            getView<TextView>(R.id.tv_info).text = "${data.getArInfo()} - ${data.al.name}"
-            addOnClickListener(R.id.cl_item_recommend)
+            getView<TextView>(R.id.tv_song_name).text = data.name
+            getView<TextView>(R.id.tv_author).text = "${data.getArInfo()} - ${data.al.name}"
+            addOnClickListener(R.id.item_view)
             getView<View>(R.id.view_place_holder).visibility = if (holder.layoutPosition == (itemCount - 1)) View.VISIBLE else View.GONE
         }
     }
 
     override fun onItemClick(adapter: BaseAdapter<*, *>, view: View, position: Int) {
         when (view.id) {
-            R.id.cl_item_recommend -> {
+            R.id.item_view -> {
                 val data = getData(position)
                 AudioPlayer.get().addAndPlay(Music(data.id, data.getArInfo(), data.name, "", "", ""))
             }

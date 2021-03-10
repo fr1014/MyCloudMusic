@@ -9,19 +9,20 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/item_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_status"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            >
+            android:layout_weight="1">
 
             <TextView
-                android:id="@+id/tv_rank"
+                android:id="@+id/tv_order"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAllCaps="false"
@@ -31,29 +32,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-            <!--            <ImageView-->
-            <!--                android:id="@+id/iv_status"-->
-            <!--                android:layout_width="12dp"-->
-            <!--                android:layout_height="12dp"-->
-            <!--                android:layout_marginTop="8dp"-->
-            <!--                android:layout_marginEnd="8dp"-->
-            <!--                android:layout_marginBottom="8dp"-->
-            <!--                android:src="@drawable/bg_play"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                app:layout_constraintEnd_toEndOf="@+id/tv_rank"-->
-            <!--                app:layout_constraintStart_toStartOf="@+id/tv_rank"-->
-            <!--                app:layout_constraintTop_toBottomOf="@+id/tv_rank" />-->
-
-            <!--            <TextView-->
-            <!--                android:id="@+id/tv_status"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:text="指数"-->
-            <!--                android:textSize="8sp"-->
-            <!--                app:layout_constraintBottom_toBottomOf="@+id/iv_status"-->
-            <!--                app:layout_constraintStart_toEndOf="@+id/iv_status"-->
-            <!--                app:layout_constraintTop_toTopOf="@+id/iv_status" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -109,14 +87,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:visibility="gone"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textSize="12sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/tv_song_name"
                 app:layout_constraintTop_toBottomOf="@id/tv_prompt"
                 tools:text="天龙八部2" />
         </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:id="@+id/view_place_holder"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:visibility="gone" />
 </LinearLayout>

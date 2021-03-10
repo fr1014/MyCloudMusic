@@ -175,7 +175,7 @@ class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
     fun bindWithPhotoItem(music: Music) {
         getView<ConstraintLayout>(R.id.cl_status).visibility = View.VISIBLE
         setText(R.id.tv_song_name, music.title)
-        setText(R.id.tv_rank, layoutPosition.toString())
+        setText(R.id.tv_order, layoutPosition.toString())
         //歌手 - 专辑
         if (TextUtils.isEmpty(music.album)) {
             setText(R.id.tv_author, music.artist)

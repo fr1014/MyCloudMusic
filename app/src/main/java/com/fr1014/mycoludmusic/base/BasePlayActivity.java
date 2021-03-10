@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewbinding.ViewBinding;
 
@@ -21,6 +22,7 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.SourceHolder;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
+import com.fr1014.mycoludmusic.ui.home.songsale.detail.AlbumDetailFragment;
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
@@ -29,6 +31,7 @@ import com.fr1014.mymvvm.base.BaseActivity;
 import com.fr1014.mymvvm.base.BaseViewModel;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseViewModel> extends BaseActivity<VB,VM> implements SwitchDialogFragment.MusicSourceCallback {
 
@@ -158,6 +161,15 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
             hidePlayingFragment();
             return;
         }
+
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof AlbumDetailFragment){
+                ((AlbumDetailFragment) fragment).onBackPressed();
+                return;
+            }
+        }
+
         super.onBackPressed();
     }
 

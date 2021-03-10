@@ -23,6 +23,7 @@ import com.fr1014.mycoludmusic.musicmanager.QuitTimer;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.ui.home.songsale.detail.AlbumDetailFragment;
 import com.fr1014.mycoludmusic.ui.search.SearchActivity;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
@@ -31,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -38,6 +40,8 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+
+import java.util.List;
 
 public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainViewModel> implements View.OnClickListener {
     private static final int REQUEST_PERMISSION_CODE = 100;
@@ -87,7 +91,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                 switch (destination.getId()) {
                     case R.id.topListFragment:
                         mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.white));
-                        if (!getSupportActionBar().isShowing()){
+                        if (!getSupportActionBar().isShowing()) {
                             getSupportActionBar().show();
                         }
                         mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
@@ -95,14 +99,12 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                     case R.id.playListDetailFragment:
                     case R.id.userInfoFragment:
                     case R.id.dayRecommendFragment:
-                        getSupportActionBar().hide();
-                        break;
                     case R.id.songSaleFragment:
-                        mViewBinding.appBarMain.llContent.setVisibility(View.GONE);
+                        getSupportActionBar().hide();
                         break;
                     default:
                         mViewBinding.appBarMain.toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                        if (!getSupportActionBar().isShowing()){
+                        if (!getSupportActionBar().isShowing()) {
                             getSupportActionBar().show();
                         }
                         mViewBinding.appBarMain.llContent.setVisibility(View.VISIBLE);
@@ -264,7 +266,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         if (playEventListener != null) {
             AudioPlayer.get().removeOnPlayEventListener(playEventListener);
         }
-        if (statusBar != null){
+        if (statusBar != null) {
             getLifecycle().removeObserver(statusBar);
         }
     }

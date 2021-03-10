@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_item_recommend"
+        android:id="@+id/item_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground">
@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_title"
+            android:id="@+id/tv_song_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -39,7 +39,7 @@
             app:layout_constraintTop_toTopOf="@+id/iv_cover" />
 
         <TextView
-            android:id="@+id/tv_info"
+            android:id="@+id/tv_author"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -63,6 +63,6 @@
     <View
         android:id="@+id/view_place_holder"
         android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="?attr/actionBarSize"/>
+        android:layout_height="?attr/actionBarSize"
+        android:visibility="gone" />
 </LinearLayout>

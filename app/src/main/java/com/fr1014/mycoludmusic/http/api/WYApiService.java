@@ -9,6 +9,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.AlbumDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.SongSale;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
@@ -37,6 +38,13 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    /**
+     * @param id
+     * @return 专辑详情
+     */
+    @GET("album")
+    Observable<AlbumDetail> getWYAlbumDetail(@Query("id") long id);
 
     /**
      * @return 专辑畅销榜

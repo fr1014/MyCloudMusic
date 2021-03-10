@@ -12,6 +12,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.CheckEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.AlbumDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.songsale.SongSale;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Logout;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.UserEntity;
@@ -46,6 +47,8 @@ public interface HttpDataSource {
     /*
      ========================网易云===================================
    */
+    Observable<AlbumDetail> getWYAlbumDetail(long id);
+
     Observable<SongSale> getWYSongSaleList(String type, int albumType);
 
     Observable<DayRecommend> getWYDayRecommend();

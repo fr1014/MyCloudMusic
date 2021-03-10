@@ -71,7 +71,6 @@
     <fragment android:id="@+id/songSaleFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.songsale.SongSaleFragment"
         android:label="数字专辑"
-        tools:layout="@layout/fragment_song_sale">
+        tools:layout="@layout/fragment_song_sale"/>
 
-    </fragment>
 </navigation>
