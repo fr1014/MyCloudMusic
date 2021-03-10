@@ -281,12 +281,14 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 //        initSeekBarData(AudioPlayer.get().getPlayMusic());
         mViewBinding.playControlBar.setStateImage(R.drawable.selector_stop_state);
         mViewBinding.albumCoverView.resumeOrStartAnimator();
+        mViewBinding.albumCoverView.startArmAnimator();
     }
 
     @Override
     public void onPlayerPause() {
-        mViewBinding.albumCoverView.pauseAnimator();
         mViewBinding.playControlBar.setStateImage(R.drawable.selector_play_state);
+        mViewBinding.albumCoverView.pauseAnimator();
+        mViewBinding.albumCoverView.endArmAnimator();
     }
 
     @Override

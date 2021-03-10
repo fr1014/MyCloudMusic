@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
-    android:focusable="true"
-    android:fitsSystemWindows="false">
+    android:fitsSystemWindows="false"
+    android:focusable="true">
 
     <com.fr1014.mycoludmusic.customview.blurimageview.BlurImageView
         android:id="@+id/bi_background"
@@ -117,17 +117,18 @@
                     app:lrcTimelineColor="#80FFFFFF"
                     app:lrcTimelineTextColor="#CCFFFFFF" />
             </LinearLayout>
-        </FrameLayout>
 
-        <TextView
-            android:id="@+id/tv_tips"
-            android:layout_marginStart="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white_alpha"
-            android:textSize="8sp"
-            android:text="该歌曲源并非来自&quot;网易&quot;\n1、该歌曲无法收藏\n2、匹配的歌曲源可能不正确"
-            android:visibility="gone"/>
+            <TextView
+                android:id="@+id/tv_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="16dp"
+                android:text="该歌曲源并非来自&quot;网易&quot;\n1、该歌曲无法收藏\n2、匹配的歌曲源可能不正确"
+                android:textColor="@color/white_alpha"
+                android:textSize="8sp"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <com.fr1014.mycoludmusic.ui.block.UserControlBarBlock
             android:id="@+id/userControlBar"

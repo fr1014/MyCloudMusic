@@ -46,11 +46,18 @@ public class AlbumCoverView extends RelativeLayout implements LifecycleObserver 
     private void initView() {
         mViewBinding = AlubmCoverviewBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
+        mViewBinding.ivArm.setPivotX(0);
+        mViewBinding.ivArm.setPivotY(0);
+        if (AudioPlayer.get().isPlaying()) {
+            ObjectAnimator.ofFloat(mViewBinding.ivArm, "rotation", 0f).start();
+        }else {
+            ObjectAnimator.ofFloat(mViewBinding.ivArm, "rotation", 0f, -20f).start();
+        }
         initAnimator();
     }
 
     public void initAnimator() {
-        rotationAnimator = ObjectAnimator.ofFloat(mViewBinding.civSongImg, "rotation", 0f, 360f);//旋转的角度可有多个
+        rotationAnimator = ObjectAnimator.ofFloat(mViewBinding.flCover, "rotation", 0f, 360f);//旋转的角度可有多个
         rotationAnimator.setDuration(25000);
         rotationAnimator.setRepeatCount(ValueAnimator.INFINITE);
         rotationAnimator.setRepeatMode(ObjectAnimator.RESTART);//匀速
@@ -92,21 +99,34 @@ public class AlbumCoverView extends RelativeLayout implements LifecycleObserver 
         mViewBinding.civSongImg.setImageBitmap(resource);
     }
 
+    public void startArmAnimator() {
+        ObjectAnimator ra = ObjectAnimator.ofFloat(mViewBinding.ivArm, "rotation", -20f, 0f);
+        ra.setDuration(800);
+        ra.start();
+    }
+
+    public void endArmAnimator() {
+        ObjectAnimator ra = ObjectAnimator.ofFloat(mViewBinding.ivArm, "rotation", 0f, -20f);
+        ra.setDuration(800);
+        ra.start();
+    }
+
+
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    void onResume(){
+    void onResume() {
         if (AudioPlayer.get().isPlaying()) {
             resumeAnimator();
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    void onPause(){
+    void onPause() {
         pauseAnimator();
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    void onDestroy(){
-        if (mViewBinding != null){
+    void onDestroy() {
+        if (mViewBinding != null) {
             endAnimator();
         }
     }
