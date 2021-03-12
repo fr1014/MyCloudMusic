@@ -379,9 +379,9 @@ public class AudioPlayer implements LoadResultListener {
                                 if (!CollectionUtils.isEmptyList(abslist)) {
 //                                    music.setId(0);
                                     music.setMUSICRID(abslist.get(0).getMUSICRID());
-                                    if (isSongSale){
+                                    if (isSongSale) {
                                         addAndPlay(music);
-                                    }else {
+                                    } else {
                                         saveCurrentMusic(music);
                                         getSongUrl(music);
                                     }
@@ -394,14 +394,18 @@ public class AudioPlayer implements LoadResultListener {
         );
     }
 
-    public void delete(int position) {
+    public void delete(final Music music) {
+        int indexOrder = indexOf(music, musicList);
+        int indexShuffle = indexOf(music, shuffleMusicList);
         int playPosition = getPlayPosition();
-        musicList.remove(position);
-//        Music music = musicList.remove(position);
-//        DBManager.get().delete(music);
-        if (playPosition > position) {
-            setPlayPosition(playPosition - 1);
-        } else if (playPosition == position) {
+        if (indexOrder != -1) {
+            musicList.remove(indexOrder);
+        }
+        if (indexShuffle != -1) {
+            shuffleMusicList.remove(indexShuffle);
+        }
+        notifyMusicListChange();
+        if (MusicUtils.INSTANCE.isSameMusic(music, getCurrentMusic())) {
             if (isPlaying() || isPreparing()) {
                 setPlayPosition(playPosition - 1);
                 playNext();
@@ -411,6 +415,8 @@ public class AudioPlayer implements LoadResultListener {
                     listener.onChange(getCurrentMusic());
                 }
             }
+        }else if (playPosition > getPagerMusicPosition(music)) {
+            setPlayPosition(playPosition - 1);
         }
     }
 
@@ -620,6 +626,10 @@ public class AudioPlayer implements LoadResultListener {
 
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
+    }
+
+    public int getPagerMusicPosition(final Music music) {
+        return indexOf(music, getPagerMusicList());
     }
 
     public List<Music> getPagerMusicList() {

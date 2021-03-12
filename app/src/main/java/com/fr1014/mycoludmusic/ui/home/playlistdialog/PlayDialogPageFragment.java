@@ -155,9 +155,9 @@ public class PlayDialogPageFragment extends Fragment {
             if (playList != null) {
                 playDialogAdapter.setData(playList);
                 scrollToPosition();
+                playDialogAdapter.setCurrentMusic(AudioPlayer.get().getCurrentMusic());
                 playDialogAdapter.notifyDataSetChanged();
             }
-            playDialogAdapter.setCurrentMusic(AudioPlayer.get().getCurrentMusic());
             binding.header.tvMode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -213,8 +213,7 @@ public class PlayDialogPageFragment extends Fragment {
                             }
                         });
                     } else {
-                        int mPosition = AudioPlayer.get().getMusicList().indexOf(music);
-                        AudioPlayer.get().delete(mPosition);
+                        AudioPlayer.get().delete(music);
                         DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
                             @Override
                             public void onChanged(MusicEntity musicEntity) {
