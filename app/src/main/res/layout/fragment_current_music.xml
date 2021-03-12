@@ -126,7 +126,7 @@
                 android:layout_marginStart="16dp"
                 android:text="该歌曲源并非来自&quot;网易&quot;\n1、该歌曲无法收藏\n2、匹配的歌曲源可能不正确"
                 android:textColor="@color/white_alpha"
-                android:textSize="8sp"
+                android:textSize="6sp"
                 android:visibility="gone" />
         </FrameLayout>
 
