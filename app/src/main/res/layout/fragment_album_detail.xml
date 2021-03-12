@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
+        android:id="@+id/frameLayout3"
         android:layout_width="match_parent"
         android:layout_height="138dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,4 +77,13 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 
+    <include
+        android:id="@+id/include_loading_view"
+        layout="@layout/loading_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/rv_album" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -130,10 +130,10 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding, SongSaleVie
         }
     }
 
-    private fun addAndPlay(){
+    private fun addAndPlay() {
         val musics = ArrayList<Music>()
         for (data in mAdapter.datas) {
-            musics.add(Music(data.id,data.getArInfo(), data.name, "", cover, ""))
+            musics.add(Music(data.id, data.getArInfo(), data.name, "", cover, ""))
         }
         AudioPlayer.get().addAndPlay(musics)
     }
@@ -167,6 +167,7 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding, SongSaleVie
 
     override fun initViewObservable() {
         mViewModel.getAlbumDetail().observe(viewLifecycleOwner, Observer {
+            mViewBinding.includeLoadingView.llLoading.visibility = View.GONE
             mAdapter.setData(it)
             it.size.toString().apply {
                 mViewBinding.playAll.tvCount.text = this
