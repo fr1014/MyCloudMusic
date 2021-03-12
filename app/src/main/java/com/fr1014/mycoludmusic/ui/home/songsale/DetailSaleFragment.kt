@@ -105,6 +105,7 @@ class DetailSaleFragment : BaseFragment<FragmentDetailSaleBinding, SongSaleViewM
 
     override fun initViewObservable() {
         mViewModel.getProducts().observe(this, Observer {
+            mViewBinding.loadingView.llLoading.visibility = View.GONE
             mAdapter.setData(it)
         })
     }

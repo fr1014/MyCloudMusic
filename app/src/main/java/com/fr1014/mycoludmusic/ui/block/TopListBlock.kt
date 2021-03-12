@@ -37,6 +37,8 @@ class TopListBlock @JvmOverloads constructor(
     @SuppressLint("SetTextI18n")
     fun setData(playListDetailEntity: PlayListDetailEntity?) {
         mViewBinding.apply {
+            loadingView.llLoading.visibility = View.GONE
+            content.visibility = VISIBLE
             playListDetailEntity?.playlist?.let {
                 tvTopName.apply {
                     text = it.name
@@ -52,10 +54,10 @@ class TopListBlock @JvmOverloads constructor(
                         tvSongInfo1.text = "1  $name"
                         tvSinger1.text = " - $author"
                         llInfo1.setOnClickListener {
-                            playMusic(this,author)
+                            playMusic(this, author)
                         }
                         ivCover1.setOnClickListener {
-                            playMusic(this,author)
+                            playMusic(this, author)
                         }
                     }
 
@@ -65,10 +67,10 @@ class TopListBlock @JvmOverloads constructor(
                         tvSongInfo2.text = "2  $name"
                         tvSinger2.text = " - $author"
                         llInfo2.setOnClickListener {
-                            playMusic(this,author)
+                            playMusic(this, author)
                         }
                         ivCover2.setOnClickListener {
-                            playMusic(this,author)
+                            playMusic(this, author)
                         }
                     }
 
@@ -78,10 +80,10 @@ class TopListBlock @JvmOverloads constructor(
                         tvSongInfo3.text = "3  $name"
                         tvSinger3.text = " - $author"
                         llInfo3.setOnClickListener {
-                            playMusic(this,author)
+                            playMusic(this, author)
                         }
                         ivCover3.setOnClickListener {
-                            playMusic(this,author)
+                            playMusic(this, author)
                         }
                     }
                 }

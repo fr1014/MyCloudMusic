@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
@@ -37,6 +38,10 @@ class SongSaleFragment : BaseFragment<FragmentSongSaleBinding, SongSaleViewModel
             tvSingle.setOnClickListener {
                 hideAlbumSaleFragment()
                 showSingleSaleFragment()
+            }
+
+            ivBack.setOnClickListener {
+                Navigation.findNavController(it).popBackStack()
             }
         }
     }

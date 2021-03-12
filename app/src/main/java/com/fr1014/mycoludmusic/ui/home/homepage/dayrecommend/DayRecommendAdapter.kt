@@ -33,7 +33,7 @@ class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHol
                     .into(holder.getView(R.id.iv_cover))
         }else{
             holder.getView<TextView>(R.id.tv_order).apply {
-                text = holder.adapterPosition.plus(1).toString()
+                text = holder.adapterPosition.toString()
                 visibility = View.VISIBLE
             }
         }
