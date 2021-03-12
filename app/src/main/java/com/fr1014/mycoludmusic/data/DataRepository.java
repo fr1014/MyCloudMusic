@@ -193,8 +193,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<HomeBlock> getWYHomeBlock() {
-        return httpDataSource.getWYHomeBlock();
+    public Observable<HomeBlock> getWYHomeBlock(boolean refresh) {
+        return httpDataSource.getWYHomeBlock(refresh);
     }
 
 //    @Override

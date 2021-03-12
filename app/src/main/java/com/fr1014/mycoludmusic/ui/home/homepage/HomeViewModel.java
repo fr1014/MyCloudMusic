@@ -38,6 +38,7 @@ public class HomeViewModel extends CommonViewModel {
     public LiveData<HomeBlock> getHomeBlockLiveData() {
         if (homeBlockLiveData == null){
             homeBlockLiveData = new MutableLiveData<>();
+            getWYHomePage(true);
         }
         return homeBlockLiveData;
     }
@@ -63,8 +64,8 @@ public class HomeViewModel extends CommonViewModel {
         return recommendListLiveData;
     }
 
-    public void getWYHomePage(){
-        addSubscribe(model.getWYHomeBlock()
+    public void getWYHomePage(boolean refresh){
+        addSubscribe(model.getWYHomeBlock(refresh)
         .compose(RxSchedulers.apply())
         .subscribe(new Consumer<HomeBlock>() {
             @Override

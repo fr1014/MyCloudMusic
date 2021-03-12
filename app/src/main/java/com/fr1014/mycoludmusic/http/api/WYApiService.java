@@ -175,7 +175,7 @@ public interface WYApiService {
     Observable<RecommendPlayList> getWYRecommendPlayList(@Query("limit") int limit);
 
     @GET("homepage/block/page")
-    Observable<HomeBlock> getWYHomeBlock();
+    Observable<HomeBlock> getWYHomeBlock(@Query("refresh") boolean refresh);
 
 //    /**
 //     * KW的api 返回的为json

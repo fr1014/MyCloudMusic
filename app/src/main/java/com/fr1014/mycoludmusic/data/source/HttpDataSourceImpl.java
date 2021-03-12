@@ -182,8 +182,8 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<HomeBlock> getWYHomeBlock() {
-        return wyApiService.getWYHomeBlock();
+    public Observable<HomeBlock> getWYHomeBlock(boolean refresh) {
+        return wyApiService.getWYHomeBlock(refresh);
     }
 
 //    @Override

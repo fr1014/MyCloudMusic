@@ -95,7 +95,7 @@ public interface HttpDataSource {
 
     Observable<RecommendPlayList> getWYRecommendPlayList(int limit);
 
-    Observable<HomeBlock> getWYHomeBlock();
+    Observable<HomeBlock> getWYHomeBlock(boolean refresh);
 
     /*
     ===============================酷我========================================

@@ -65,7 +65,6 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
 
     @Override
     public void initData() {
-        mViewModel.getWYHomePage();
 //        mViewModel.getWYRecommendList(30);
 //        mViewModel.getWYNetizensPlayList("new","全部",10,0);
     }
@@ -79,16 +78,16 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
                 for (Block block : blocks) {
                     List<Creative> results = block.component5();
                     List<CommonPlaylist> commonPlaylists = new ArrayList<>();
-                    try {
-                        if (CollectionUtils.isEmptyList(results)) return;
-                        for (int index = 0; index < results.size() - 1; index++) {
-                            Creative creative = results.get(index);
-                            if (creative != null) {
+                    if (CollectionUtils.isEmptyList(results)) return;
+                    for (int index = 0; index < results.size() - 1; index++) {
+                        Creative creative = results.get(index);
+                        if (creative != null) {
+                            try {
                                 commonPlaylists.add(new CommonPlaylist(Long.parseLong(creative.getCreativeId()), creative.getUiElement().getMainTitle().getTitle(), creative.getUiElement().getImage().getImageUrl()));
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
                             }
                         }
-                    } catch (NumberFormatException e) {
-                        e.printStackTrace();
                     }
                     if (TextUtils.equals(block.getBlockCode(), "HOMEPAGE_BLOCK_PLAYLIST_RCMD")) { //推荐歌单
                         mViewBinding.blockRecommend.showLoadingView(false);
@@ -96,10 +95,16 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
 //                        mViewBinding.blockRecommend.setTvButton(block.getUiElement().getButton().getText());
                         mViewBinding.blockRecommend.bindData(commonPlaylists);
                     } else if (TextUtils.equals(block.getBlockCode(), "HOMEPAGE_BLOCK_OFFICIAL_PLAYLIST")) { //专属场景歌单
+                        mViewBinding.blockNetizensPlaylist.setVisibility(View.VISIBLE);
                         mViewBinding.blockNetizensPlaylist.showLoadingView(false);
                         mViewBinding.blockNetizensPlaylist.setTitle(block.getUiElement().getSubTitle().getTitle());
 //                        mViewBinding.blockNetizensPlaylist.setTitle(block.getUiElement().getButton().getText());
                         mViewBinding.blockNetizensPlaylist.bindData(commonPlaylists);
+                    } else if (TextUtils.equals(block.getBlockCode(), "HOMEPAGE_BLOCK_MGC_PLAYLIST")) { //音乐雷达
+                        mViewBinding.blockMusicRadar.setVisibility(View.VISIBLE);
+                        mViewBinding.blockMusicRadar.showLoadingView(false);
+                        mViewBinding.blockMusicRadar.setTitle(block.getUiElement().getSubTitle().getTitle());
+                        mViewBinding.blockMusicRadar.bindData(commonPlaylists);
                     }
 //                    else if (TextUtils.equals(block.getBlockCode(),"HOMEPAGE_VOICELIST_RCMD")){ //播客合集
 //                        mViewBinding.blockVoiceList.setTitle(block.getUiElement().getSubTitle().getTitle());
