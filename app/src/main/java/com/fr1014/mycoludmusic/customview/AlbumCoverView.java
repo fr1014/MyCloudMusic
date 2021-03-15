@@ -10,6 +10,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -21,7 +22,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
  * Create by fanrui on 2020/12/11
  * Describe:
  */
-public class AlbumCoverView extends RelativeLayout implements LifecycleObserver {
+public class AlbumCoverView extends ConstraintLayout implements LifecycleObserver {
     private ObjectAnimator rotationAnimator;
 
     private AlubmCoverviewBinding mViewBinding;
@@ -44,8 +45,7 @@ public class AlbumCoverView extends RelativeLayout implements LifecycleObserver 
 
 
     private void initView() {
-        mViewBinding = AlubmCoverviewBinding.inflate(LayoutInflater.from(getContext()), this, false);
-        addView(mViewBinding.getRoot());
+        mViewBinding = AlubmCoverviewBinding.inflate(LayoutInflater.from(getContext()), this);
         mViewBinding.ivArm.setPivotX(0);
         mViewBinding.ivArm.setPivotY(0);
         if (AudioPlayer.get().isPlaying()) {
