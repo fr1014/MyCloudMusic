@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
@@ -94,13 +95,28 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
+    public Observable<UserEntity> getUserAccountInfo() {
+        return httpDataSource.getUserAccountInfo();
+    }
+
+    @Override
+    public Observable<BaseResponse> getWYPhoneCaptcha(String phone, String captcha) {
+        return httpDataSource.getWYPhoneCaptcha(phone, captcha);
+    }
+
+    @Override
+    public Observable<BaseResponse> getWYPhoneVerify(String phone) {
+        return httpDataSource.getWYPhoneVerify(phone);
+    }
+
+    @Override
     public Observable<UserEntity> getWYUserProfile(String phone, String password) {
         return httpDataSource.getWYUserProfile(phone, password);
     }
 
     @Override
-    public Observable<WYLikeIdList> getWYLikeIdList(Long uid,String timestamp) {
-        return httpDataSource.getWYLikeIdList(uid,timestamp);
+    public Observable<WYLikeIdList> getWYLikeIdList(Long uid, String timestamp) {
+        return httpDataSource.getWYLikeIdList(uid, timestamp);
     }
 
     @Override

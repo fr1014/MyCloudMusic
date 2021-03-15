@@ -27,7 +27,7 @@ public class ReceivedCookiesInterceptor implements Interceptor {
         String path = request.url().url().getPath();
         Response originalResponse = chain.proceed(chain.request());
         //这里获取请求返回的cookie
-        if (path.contains("login") && !originalResponse.headers("Set-Cookie").isEmpty()) {
+        if (path.contains("login") || path.contains("verify") && !originalResponse.headers("Set-Cookie").isEmpty()) {
 
             HashSet<String> cookies = new HashSet<>();
             for(String header: originalResponse.headers("Set-Cookie"))

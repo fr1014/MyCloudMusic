@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +8,6 @@
     tools:context=".ui.login.LoginActivity">
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottieAnimationView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
@@ -48,55 +48,61 @@
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/lottie_music_fly" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="登录方式"
-        android:textSize="16sp"
-        android:textColor="@color/bg_white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline2" />
-
-    <TextView
-        android:id="@+id/tv_login"
+    <com.fr1014.mycoludmusic.customview.SearchView
+        android:id="@+id/phone"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_login_register"
-        android:gravity="center_horizontal"
-        android:text="手机号/密码"
-        android:textColor="@color/bg_white"
-        android:textSize="18sp"
+        android:layout_height="76dp"
+        android:background="@drawable/bg_login_user"
+        android:elevation="1dp"
+        android:hint="手机号"
+        android:inputType="phone"
+        android:paddingStart="8dp"
+        android:singleLine="true"
+        app:iconSearch_id="@drawable/ic_user"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="@id/guideline5"
+        app:layout_constraintStart_toEndOf="@id/guideline4" />
+
+    <com.fr1014.mycoludmusic.customview.SearchView
+        android:id="@+id/captcha"
+        style="@style/Widget.AppCompat.EditText"
+        android:layout_width="0dp"
+        android:layout_height="76dp"
+        android:background="@drawable/bg_login_password"
+        android:hint="请输入验证码"
+        android:inputType="number"
+        android:paddingStart="8dp"
+        android:singleLine="true"
+        android:visibility="invisible"
+        app:iconSearch_id="@drawable/ic_password"
         app:layout_constraintEnd_toEndOf="@id/guideline5"
         app:layout_constraintStart_toEndOf="@id/guideline4"
         app:layout_constraintTop_toBottomOf="@id/guideline" />
 
-    <TextView
-        android:id="@+id/tv_verify"
+    <Button
+        android:id="@+id/bt_login"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_login_register"
-        android:gravity="center_horizontal"
-        android:text="手机号/验证码"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_bt_login"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:text="获取验证码"
         android:textColor="@color/bg_white"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@id/guideline5"
-        app:layout_constraintStart_toEndOf="@id/guideline4"
-        app:layout_constraintTop_toBottomOf="@id/guideline6" />
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@+id/guideline5"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
+        app:layout_constraintTop_toBottomOf="@+id/captcha" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.55" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.65" />
+        app:layout_constraintGuide_percent="0.6" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

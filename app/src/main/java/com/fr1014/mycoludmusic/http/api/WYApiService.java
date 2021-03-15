@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.http.api;
 
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
@@ -60,6 +61,24 @@ public interface WYApiService {
 
     @GET("logout")
     Observable<Logout> getWYLogout();
+
+    @GET("user/account")
+    Observable<UserEntity> getUserAccountInfo();
+
+    /**
+     * @param phone   手机号
+     * @param captcha 验证码
+     * @return 手机号 + 验证码登录
+     */
+    @POST("captcha/verify")
+    Observable<BaseResponse> getWYPhoneCaptcha(@Query("phone") String phone, @Query("captcha") String captcha);
+
+    /**
+     * @param phone
+     * @return 验证码
+     */
+    @POST("captcha/sent")
+    Observable<BaseResponse> getWYPhoneVerify(@Query("phone") String phone);
 
     @POST("login/cellphone")
     Observable<UserEntity> getWYUserProfile(@Query("phone") String phone, @Query("password") String password);

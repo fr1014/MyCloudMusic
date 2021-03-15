@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data.source.http;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
@@ -31,7 +32,6 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
-import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -54,6 +54,12 @@ public interface HttpDataSource {
     Observable<DayRecommend> getWYDayRecommend();
 
     Observable<Logout> getWYLogout();
+
+    Observable<UserEntity> getUserAccountInfo();
+
+    Observable<BaseResponse> getWYPhoneCaptcha(String phone, String captcha);
+
+    Observable<BaseResponse> getWYPhoneVerify(String phone);
 
     Observable<UserEntity> getWYUserProfile(String phone, String password);
 

@@ -15,8 +15,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding, LoginViewModel>() {
         mViewBinding.tvLogin.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.login)
         }
-        mViewBinding.tvRegister.setOnClickListener {
-            CommonUtils.toastShort(context?.resources?.getString(R.string.dev))
+        mViewBinding.tvVerify.setOnClickListener {
+            CommonUtils.toastShort("暂不支持该登录方式")
+//            Navigation.findNavController(it).navigate(R.id.login_verify)
         }
     }
 }

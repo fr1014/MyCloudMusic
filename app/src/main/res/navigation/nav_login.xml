@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_splash_to_login"
             app:destination="@id/login" />
+        <action
+            android:id="@+id/action_splash_to_login_verify"
+            app:destination="@id/login_verify" />
     </fragment>
 
     <fragment
@@ -20,5 +23,12 @@
         android:name="com.fr1014.mycoludmusic.ui.login.LoginFragment"
         android:label="登录"
         tools:layout="@layout/fragment_login">
+    </fragment>
+
+    <fragment
+        android:id="@+id/login_verify"
+        android:name="com.fr1014.mycoludmusic.ui.login.VerifyFragment"
+        android:label="登录"
+        tools:layout="@layout/fragment_verify">
     </fragment>
 </navigation>

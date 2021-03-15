@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.data.source;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
@@ -79,6 +80,21 @@ public class HttpDataSourceImpl implements HttpDataSource {
     @Override
     public Observable<Logout> getWYLogout() {
         return wyApiService.getWYLogout();
+    }
+
+    @Override
+    public Observable<UserEntity> getUserAccountInfo() {
+        return wyApiService.getUserAccountInfo();
+    }
+
+    @Override
+    public Observable<BaseResponse> getWYPhoneCaptcha(String phone, String captcha) {
+        return wyApiService.getWYPhoneCaptcha(phone, captcha);
+    }
+
+    @Override
+    public Observable<BaseResponse> getWYPhoneVerify(String phone) {
+        return wyApiService.getWYPhoneVerify(phone);
     }
 
     @Override
