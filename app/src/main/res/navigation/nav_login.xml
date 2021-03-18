@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/splash"
-        android:name="com.fr1014.mycoludmusic.ui.login.SplashFragment"
+        android:name="com.fr1014.mycoludmusic.ui.login.LoginRootFragment"
         android:label="登录注册"
         tools:layout="@layout/fragment_splash">
         <action

@@ -90,6 +90,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
                         }
                     }
                     if (TextUtils.equals(block.getBlockCode(), "HOMEPAGE_BLOCK_PLAYLIST_RCMD")) { //推荐歌单
+                        mViewBinding.blockRecommend.setVisibility(View.VISIBLE);
                         mViewBinding.blockRecommend.showLoadingView(false);
                         mViewBinding.blockRecommend.setTitle(block.getUiElement().getSubTitle().getTitle());
 //                        mViewBinding.blockRecommend.setTvButton(block.getUiElement().getButton().getText());

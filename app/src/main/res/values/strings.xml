@@ -13,6 +13,7 @@
     <string name="menu_timer">定时关闭</string>
     <string name="timer_set">设置成功，将于%s分钟后关闭</string>
     <string name="timer_cancel">定时停止播放已取消</string>
+    <string name="tips_login">此功能需要登录</string>
 
     <string name="original">原唱</string>
 

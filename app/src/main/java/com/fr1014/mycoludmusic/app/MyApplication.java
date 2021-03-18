@@ -42,6 +42,7 @@ public class MyApplication extends BaseApplication {
     public void onCreate() {
         super.onCreate();
         AppCache.get().init(this);
+        BaseConfig.INSTANCE.initBaseConfig();
         Intent intent = new Intent(this, PlayService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             startForegroundService(intent);

@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,12 +13,15 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import com.fr1014.mycoludmusic.MainActivity
 import com.fr1014.mycoludmusic.R
+import com.fr1014.mycoludmusic.app.BaseConfig
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike
 import com.fr1014.mycoludmusic.databinding.CustomUserControlbarBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.musicmanager.Preferences
+import com.fr1014.mycoludmusic.ui.login.LoginActivity
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicViewModel
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CommonUtils
@@ -85,20 +89,27 @@ class UserControlBarBlock @JvmOverloads constructor(
     override fun onClick(v: View) {
         when (v.id) {
             R.id.iv_like -> {
-                startLikeAnimator()
-                val playMusic = AudioPlayer.get().currentMusic
-                if (userLikePid == 0L) {
-                    CommonUtils.toastShort("尚未登录")
-                    return
-                }
-                if (playMusic.id != 0L) {
-                    val isLikeMusic = playMusic.isLikeMusic(musicLikes)
-                    mViewModel?.getLikeSong(!isLikeMusic, userLikePid!!, playMusic.id.toString(), System.currentTimeMillis().toString())
+                if (BaseConfig.isLogin) {
+                    startLikeAnimator()
+                    val playMusic = AudioPlayer.get().currentMusic
+                    if (userLikePid == 0L) {
+                        CommonUtils.toastShort("尚未登录")
+                        return
+                    }
+                    if (playMusic.id != 0L) {
+                        val isLikeMusic = playMusic.isLikeMusic(musicLikes)
+                        mViewModel?.getLikeSong(!isLikeMusic, userLikePid!!, playMusic.id.toString(), System.currentTimeMillis().toString())
+                    } else {
+                        CommonUtils.toastLong("该歌曲源不是网易，暂时无法收藏")
+                    }
                 } else {
-                    CommonUtils.toastLong("该歌曲源不是网易，暂时无法收藏")
+                    if (context is MainActivity) {
+                        CommonUtils.toastShort(context.getString(R.string.tips_login))
+                        context.startActivity(Intent(context, LoginActivity::class.java))
+                    }
                 }
             }
-            else ->{
+            else -> {
                 CommonUtils.toastShort(context.resources.getString(R.string.dev))
             }
         }
@@ -119,19 +130,19 @@ class UserControlBarBlock @JvmOverloads constructor(
         }
     }
 
-    private fun startLikeAnimator(){
+    private fun startLikeAnimator() {
         val ivLikeX = ObjectAnimator.ofFloat(mViewBinding.ivLike, "scaleX", 1f, 1.4f)
         val ivLikeY = ObjectAnimator.ofFloat(mViewBinding.ivLike, "scaleY", 1f, 1.4f)
         val ivLikeX2 = ObjectAnimator.ofFloat(mViewBinding.ivLike, "scaleX", 1.4f, 1f)
         val ivLikeY2 = ObjectAnimator.ofFloat(mViewBinding.ivLike, "scaleY", 1.4f, 1f)
         AnimatorSet().apply {
-            playTogether(ivLikeX,ivLikeY)
+            playTogether(ivLikeX, ivLikeY)
             duration = 200
             start()
-        }.addListener(object :AnimatorListenerAdapter(){
+        }.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 AnimatorSet().apply {
-                    playTogether(ivLikeX2,ivLikeY2)
+                    playTogether(ivLikeX2, ivLikeY2)
                     duration = 200
                     start()
                 }

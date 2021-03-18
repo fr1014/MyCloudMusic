@@ -10,4 +10,6 @@ public interface SharedPreferencesConst {
     String SHUFFLE_NEED_KEY = "shuffle_need_key";
     String CURRENT_MUSIC = "current_music";
     String CURRENT_MUSIC_KEY = "current_music_key";
+    String ACCOUNT = "account";
+    String ACCOUNT_TOURIST_KEY = "account_tourist_key";
 }

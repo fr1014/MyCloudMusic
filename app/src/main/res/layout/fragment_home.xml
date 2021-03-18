@@ -24,7 +24,8 @@
             android:id="@+id/block_recommend"
             android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:background="@drawable/bg_white_cornerblr_8" />
+            android:background="@drawable/bg_white_cornerblr_8"
+            android:visibility="gone"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
