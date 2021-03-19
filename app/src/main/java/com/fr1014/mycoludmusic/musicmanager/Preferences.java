@@ -34,14 +34,6 @@ public class Preferences {
         sContext = context.getApplicationContext();
     }
 
-    public static Set<String> getCookie(){
-        return getStringSet(COOKIE_DATA,null);
-    }
-
-    public static void saveCookie(Set<String> cookie){
-        saveStringSet(COOKIE_DATA,cookie);
-    }
-
     public static Profile getUserProfile(){
         Profile profile = null;
         try {
@@ -173,14 +165,6 @@ public class Preferences {
 
     private static void saveString(String key, @Nullable String value) {
         getPreferences().edit().putString(key, value).apply();
-    }
-
-    private static Set<String> getStringSet(String key, Set<String> defValue){
-        return getPreferences().getStringSet(key, defValue);
-    }
-
-    private static void saveStringSet(String key, Set<String> stringSet){
-        getPreferences().edit().putStringSet(key,stringSet).apply();
     }
 
     private static SharedPreferences getPreferences() {

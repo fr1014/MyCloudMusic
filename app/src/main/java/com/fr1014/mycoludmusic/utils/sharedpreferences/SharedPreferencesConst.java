@@ -12,4 +12,5 @@ public interface SharedPreferencesConst {
     String CURRENT_MUSIC_KEY = "current_music_key";
     String ACCOUNT = "account";
     String ACCOUNT_TOURIST_KEY = "account_tourist_key";
+    String ACCOUNT_COOKIES_KEY = "account_cookies_key";
 }

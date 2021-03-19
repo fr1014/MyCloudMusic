@@ -18,7 +18,10 @@ import com.fr1014.mycoludmusic.musicmanager.PlayService
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.musicmanager.QuitTimer
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions
+import com.fr1014.mycoludmusic.utils.AccountUtils
 import com.fr1014.mycoludmusic.utils.CommonUtils
+import com.fr1014.mycoludmusic.utils.sharedpreferences.SharedPreferencesConst
+import com.fr1014.mycoludmusic.utils.sharedpreferences.SharedPreferencesUtil
 
 class MyNavigationView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -44,10 +47,8 @@ class MyNavigationView @JvmOverloads constructor(
             mViewModel?.getLogoutLive()?.observe(it, Observer { logout: Boolean ->
                 if (logout) {
                     Preferences.saveUserProfile(null)
-                    Preferences.saveCookie(null)
-                    CommonUtils.toastShort("退出成功")
-                    AppCache.get().clearStack()
-                    PlayService.startCommand(context, Actions.ACTION_STOP)
+                    SharedPreferencesUtil.remove(SharedPreferencesConst.ACCOUNT, SharedPreferencesConst.ACCOUNT_COOKIES_KEY)
+                    finish()
                 } else {
                     CommonUtils.toastShort("遇到了有意思的事情开小差了，请稍后重试")
                 }
@@ -66,8 +67,9 @@ class MyNavigationView @JvmOverloads constructor(
                 val profile = Preferences.getUserProfile()
                 if (profile != null) {
                     mViewModel?.logout();
-                } else {
-                    CommonUtils.toastShort("尚未登录你咋退出啊？")
+                } else { //游客登录的退出
+                    AccountUtils.saveLoginTourist(false)
+                    finish()
                 }
             }
             includeTiming.clTiming.setOnClickListener {
@@ -111,5 +113,11 @@ class MyNavigationView @JvmOverloads constructor(
     override fun onTimer(remain: Long) {
         val title: String = context.getString(R.string.menu_timer)
         mViewBinding.includeTiming.tvItem.text = if (remain == 0L) title else CommonUtils.formatTime("$title(mm:ss)", remain)
+    }
+
+    fun finish() {
+        CommonUtils.toastShort("退出成功")
+        AppCache.get().clearStack()
+        PlayService.startCommand(context, Actions.ACTION_STOP)
     }
 }

@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class SharedPreferencesUtil {
 
@@ -79,7 +80,7 @@ public class SharedPreferencesUtil {
         editor.apply();
     }
 
-    public static void putMusic(String name,String key,Music music){
+    public static void putMusic(String name, String key, Music music) {
         if (music == null) return;
         SharedPreferences.Editor editor = getEditor(name);
         Gson gson = new Gson();
@@ -100,10 +101,20 @@ public class SharedPreferencesUtil {
         }.getType());
     }
 
+    public static Set<String> getStringSet(String name, String key, Set<String> defValue) {
+        return getSharedPreferences(name).getStringSet(key, defValue);
+    }
+
+    public static void saveStringSet(String name, String key, Set<String> stringSet) {
+        SharedPreferences.Editor editor = getEditor(name);
+        editor.putStringSet(key, stringSet);
+        editor.apply();
+    }
+
     /**
      * 保存List
      */
-    public static <T> void setDataList(String name,String key, List<T> dataList) {
+    public static <T> void setDataList(String name, String key, List<T> dataList) {
         if (null == dataList || dataList.size() <= 0)
             return;
 
@@ -118,6 +129,7 @@ public class SharedPreferencesUtil {
 
     /**
      * 获取List
+     *
      * @return
      */
     public static List<Music> getDataList(String name, String key) {

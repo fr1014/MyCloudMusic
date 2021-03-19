@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.http.interceptor;
 import android.util.Log;
 
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
+import com.fr1014.mycoludmusic.utils.AccountUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -30,13 +31,12 @@ public class ReceivedCookiesInterceptor implements Interceptor {
         if (path.contains("login") || path.contains("verify") && !originalResponse.headers("Set-Cookie").isEmpty()) {
 
             HashSet<String> cookies = new HashSet<>();
-            for(String header: originalResponse.headers("Set-Cookie"))
-            {
-                Log.d("hello", "拦截的cookie是："+header);
+            for (String header : originalResponse.headers("Set-Cookie")) {
+                Log.d("hello", "拦截的cookie是：" + header);
                 cookies.add(header);
             }
             //保存的sharepreference文件名为cookie
-            Preferences.saveCookie(cookies);
+            AccountUtils.INSTANCE.saveCookies(cookies);
         }
 
         return originalResponse;
