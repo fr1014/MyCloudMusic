@@ -21,6 +21,7 @@ import com.fr1014.mycoludmusic.ui.vm.CommonViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
@@ -36,7 +37,7 @@ public class HomeViewModel extends CommonViewModel {
     }
 
     public LiveData<HomeBlock> getHomeBlockLiveData() {
-        if (homeBlockLiveData == null){
+        if (homeBlockLiveData == null) {
             homeBlockLiveData = new MutableLiveData<>();
             getWYHomePage(true);
         }
@@ -44,7 +45,7 @@ public class HomeViewModel extends CommonViewModel {
     }
 
     public LiveData<PlayListDetailEntity> getPlayListDetail() {
-        if (playListDetailLive == null){
+        if (playListDetailLive == null) {
             playListDetailLive = new MutableLiveData<>();
         }
         return playListDetailLive;
@@ -64,15 +65,15 @@ public class HomeViewModel extends CommonViewModel {
         return recommendListLiveData;
     }
 
-    public void getWYHomePage(boolean refresh){
-        addSubscribe(model.getWYHomeBlock(refresh)
-        .compose(RxSchedulers.apply())
-        .subscribe(new Consumer<HomeBlock>() {
-            @Override
-            public void accept(HomeBlock homeBlock) throws Exception {
-                homeBlockLiveData.postValue(homeBlock);
-            }
-        }));
+    public void getWYHomePage(boolean refresh) {
+        addSubscribe(model.getWYHomeBlock(refresh, String.valueOf(System.currentTimeMillis()))
+                .compose(RxSchedulers.apply())
+                .subscribe(new Consumer<HomeBlock>() {
+                    @Override
+                    public void accept(HomeBlock homeBlock) throws Exception {
+                        homeBlockLiveData.postValue(homeBlock);
+                    }
+                }));
     }
 
     //获取歌单详情(网易)
@@ -105,7 +106,7 @@ public class HomeViewModel extends CommonViewModel {
                         .subscribe(new Consumer<List<CommonPlaylist>>() {
                             @Override
                             public void accept(List<CommonPlaylist> commonPlaylists) throws Exception {
-                                    recommendListLiveData.postValue(commonPlaylists);
+                                recommendListLiveData.postValue(commonPlaylists);
                             }
                         })
         );

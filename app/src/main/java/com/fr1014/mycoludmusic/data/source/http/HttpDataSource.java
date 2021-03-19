@@ -32,6 +32,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -101,7 +102,7 @@ public interface HttpDataSource {
 
     Observable<RecommendPlayList> getWYRecommendPlayList(int limit);
 
-    Observable<HomeBlock> getWYHomeBlock(boolean refresh);
+    Observable<HomeBlock> getWYHomeBlock(boolean refresh, String timestamp);
 
     /*
     ===============================酷我========================================

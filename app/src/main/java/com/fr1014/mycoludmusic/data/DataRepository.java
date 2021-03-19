@@ -41,6 +41,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 /**
  * 创建时间:2020/9/4
@@ -209,8 +210,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<HomeBlock> getWYHomeBlock(boolean refresh) {
-        return httpDataSource.getWYHomeBlock(refresh);
+    public Observable<HomeBlock> getWYHomeBlock(boolean refresh, String timestamp) {
+        return httpDataSource.getWYHomeBlock(refresh,timestamp);
     }
 
 //    @Override

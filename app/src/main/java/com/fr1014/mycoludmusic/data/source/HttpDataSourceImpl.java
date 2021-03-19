@@ -35,6 +35,7 @@ import com.fr1014.mycoludmusic.http.api.WYApiService;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.http.Query;
 
 public class HttpDataSourceImpl implements HttpDataSource {
     private volatile static HttpDataSourceImpl instance = null;
@@ -198,8 +199,8 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<HomeBlock> getWYHomeBlock(boolean refresh) {
-        return wyApiService.getWYHomeBlock(refresh);
+    public Observable<HomeBlock> getWYHomeBlock(boolean refresh, String timestamp) {
+        return wyApiService.getWYHomeBlock(refresh,timestamp);
     }
 
 //    @Override
