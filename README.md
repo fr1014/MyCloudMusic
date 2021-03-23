@@ -1,6 +1,8 @@
 # MyCloudMusic
 一款音乐App
 
+APP体验地址：https://github.com/fr1014/MyCloudMusic/releases/download/untagged-0da3659c2d39e75582e8/CloudMusic_V1.4.apk
+
 ## 首页
 <div>
 <img src="https://raw.githubusercontent.com/fr1014/MyCloudMusic/master/static/pic/%E9%A6%96%E9%A1%B51.jpg" alt="首页1" style="display:inline" width="300"/>
