@@ -83,7 +83,7 @@ public class MediaSessionManager {
 
         @Override
         public void onSkipToNext() {
-            AudioPlayer.get().playNext();
+            AudioPlayer.get().playNext(false);
         }
 
         @Override

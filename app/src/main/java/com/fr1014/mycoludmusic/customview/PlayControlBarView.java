@@ -132,7 +132,7 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
     }
 
     public Music playNextMusic() {
-        int playPosition = AudioPlayer.get().playNext();
+        int playPosition = AudioPlayer.get().playNext(false);
         return AudioPlayer.get().getPagerMusicList().get(playPosition);
     }
 

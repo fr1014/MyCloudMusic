@@ -132,7 +132,7 @@ public class AudioPlayer implements LoadResultListener {
             for (OnPlayerEventListener listener : listeners) {
                 listener.onPlayerComplete();
             }
-            playNext();
+            playNext(true);
         });
         mediaPlayer.setOnPreparedListener(mp -> {
             if (isPreparing()) {
@@ -237,6 +237,10 @@ public class AudioPlayer implements LoadResultListener {
         return PlayModeEnum.valueOf(Preferences.getPlayMode());
     }
 
+    public boolean isShuffle() {
+        return PlayModeEnum.SHUFFLE == getPlayMode();
+    }
+
     //是否为循环播放
     public boolean isLoop() {
         return PlayModeEnum.LOOP == getPlayMode();
@@ -247,12 +251,12 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public void play(int position, boolean isSavePosition) {
-        if (isLoop()) {
-            if (musicList.isEmpty()) {
+        if (isShuffle()) {
+            if (shuffleMusicList.isEmpty()) {
                 return;
             }
         } else {
-            if (shuffleMusicList.isEmpty()) {
+            if (musicList.isEmpty()) {
                 return;
             }
         }
@@ -387,7 +391,7 @@ public class AudioPlayer implements LoadResultListener {
                                     }
                                 } else {
                                     CommonUtils.toastShort(music.getTitle() + ": 暂时无法播放!!!\n已为您播放了其它歌曲");
-                                    playNext();
+                                    playNext(false);
                                 }
                             }
                         })
@@ -408,14 +412,14 @@ public class AudioPlayer implements LoadResultListener {
         if (MusicUtils.INSTANCE.isSameMusic(music, getCurrentMusic())) {
             if (isPlaying() || isPreparing()) {
                 setPlayPosition(playPosition - 1);
-                playNext();
+                playNext(false);
             } else {
                 stopPlayer();
                 for (OnPlayerEventListener listener : listeners) {
                     listener.onChange(getCurrentMusic());
                 }
             }
-        }else if (playPosition > getPagerMusicPosition(music)) {
+        } else if (playPosition > getPagerMusicPosition(music)) {
             setPlayPosition(playPosition - 1);
         }
     }
@@ -489,7 +493,7 @@ public class AudioPlayer implements LoadResultListener {
         state = STATE_IDLE;
     }
 
-    public int playNext() {
+    public int playNext(boolean isComplete) {
         int nextPosition = -1;
         if (musicList.isEmpty()) {
             play(nextPosition);
@@ -498,7 +502,11 @@ public class AudioPlayer implements LoadResultListener {
 
         switch (getPlayMode()) {
             case SINGLE:
-                nextPosition = getPlayPosition();
+                if (isComplete) {
+                    nextPosition = indexOf(getCurrentMusic());
+                } else {
+                    nextPosition = getPlayPosition() + 1;
+                }
                 break;
             case SHUFFLE:
             case LOOP:
@@ -518,16 +526,17 @@ public class AudioPlayer implements LoadResultListener {
             return prePosition;
         }
 
-        switch (getPlayMode()) {
-            case SINGLE:
-                prePosition = getPlayPosition();
-                break;
-            case SHUFFLE:
-            case LOOP:
-            default:
-                prePosition = getPlayPosition() - 1;
-                break;
-        }
+        prePosition = getPlayPosition() - 1;
+//        switch (getPlayMode()) {
+//            case SINGLE:
+//                prePosition = indexOf(getCurrentMusic());
+//                break;
+//            case SHUFFLE:
+//            case LOOP:
+//            default:
+//                prePosition = getPlayPosition() - 1;
+//                break;
+//        }
         prePosition = checkPosition(prePosition);
         play(prePosition);
         return prePosition;
@@ -597,30 +606,30 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public Music getPlayMusic() {
-        if (isLoop()) {
-            if (CollectionUtils.isEmptyList(musicList)) {
-                return null;
-            }
-            return musicList.get(getPlayPosition());
-        } else {
+        if (isShuffle()) {
             if (CollectionUtils.isEmptyList(shuffleMusicList)) {
                 return null;
             }
             return shuffleMusicList.get(getPlayPosition());
+        } else {
+            if (CollectionUtils.isEmptyList(musicList)) {
+                return null;
+            }
+            return musicList.get(getPlayPosition());
         }
     }
 
     public Music getPlayMusic(int position) {
-        if (isLoop()) {
-            if (CollectionUtils.isEmptyList(musicList)) {
-                return null;
-            }
-            return musicList.get(position);
-        } else {
+        if (isShuffle()) {
             if (CollectionUtils.isEmptyList(shuffleMusicList)) {
                 return null;
             }
             return shuffleMusicList.get(position);
+        } else {
+            if (CollectionUtils.isEmptyList(musicList)) {
+                return null;
+            }
+            return musicList.get(position);
         }
     }
 
@@ -633,10 +642,10 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public List<Music> getPagerMusicList() {
-        if (isLoop()) {
-            return musicList;
-        } else {
+        if (isShuffle()) {
             return shuffleMusicList;
+        } else {
+            return musicList;
         }
     }
 

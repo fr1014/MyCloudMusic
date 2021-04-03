@@ -39,8 +39,8 @@ import retrofit2.http.Query;
 
 public class HttpDataSourceImpl implements HttpDataSource {
     private volatile static HttpDataSourceImpl instance = null;
-    private WYApiService wyApiService;
-    private KWApiService kwApiService;
+    private final WYApiService wyApiService;
+    private final KWApiService kwApiService;
 
     public static HttpDataSourceImpl getInstance(WYApiService wyApiService, KWApiService kwApiService) {
         if (instance == null) {

@@ -25,7 +25,7 @@ public class StatusBarReceiver extends BroadcastReceiver {
         if (TextUtils.equals(extra,EXTRA_BACK)){
             AudioPlayer.get().playPre();
         } else if (TextUtils.equals(extra, EXTRA_NEXT)) {
-            AudioPlayer.get().playNext();
+            AudioPlayer.get().playNext(false);
         } else if (TextUtils.equals(extra, EXTRA_PLAY_PAUSE)) {
             AudioPlayer.get().playPause();
         }else if (TextUtils.equals(extra,EXTRA_QUIT)){
