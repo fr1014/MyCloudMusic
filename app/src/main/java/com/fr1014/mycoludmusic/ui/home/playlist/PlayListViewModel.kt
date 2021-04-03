@@ -41,4 +41,8 @@ class PlayListViewModel(application: Application, model: DataRepository) : Commo
     fun retry() {
         factory.playListDataSource.value?.retry?.invoke()
     }
+
+    fun collectPlayList(){
+
+    }
 }

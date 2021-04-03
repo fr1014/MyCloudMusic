@@ -3,6 +3,7 @@ package com.fr1014.mycoludmusic.http.api;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchRecommend;
@@ -39,6 +40,16 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    /**
+     * 说明 : 调用此接口 , 传入类型和歌单 id 可收藏歌单或者取消收藏歌单
+     * 必选参数 :
+     * t : 类型,1:收藏,2:取消收藏 id : 歌单 id
+     * 接口地址 : /playlist/subscribe
+     * 调用例子 : /playlist/subscribe?t=1&id=106697785 /playlist/subscribe?t=2&id=106697785
+     */
+    @GET("playlist/subscribe")
+    Observable<CollectPlaylist> getWYCollectPlayList(@Query("t") int type, @Query("id") long id);
 
     /**
      * @param id

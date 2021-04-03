@@ -171,7 +171,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                         PaletteBgUtils.Companion.paletteTopBg(mViewBinding.ivTitle, bitmap);
                     }
                 }
-                mViewBinding.playAll.llPlaylist.setVisibility(scrollOffset > ScreenUtils.dp2px(178f) ? View.VISIBLE : View.GONE);
+                mViewBinding.playAll.llPlaylist.setVisibility(scrollOffset > ScreenUtils.dp2px(204f) ? View.VISIBLE : View.GONE);
             }
         });
     }
