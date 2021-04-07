@@ -6,6 +6,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchRecommend;
@@ -64,6 +65,11 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
+    public Observable<CollectPlaylist> getWYCollectPlayList(int type, long id, String timestamp) {
+        return wyApiService.getWYCollectPlayList(type, id, timestamp);
+    }
+
+    @Override
     public Observable<AlbumDetail> getWYAlbumDetail(long id) {
         return wyApiService.getWYAlbumDetail(id);
     }
@@ -104,8 +110,8 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<WYLikeIdList> getWYLikeIdList(Long uid,String timestamp) {
-        return wyApiService.getWYLikeIdList(uid,timestamp);
+    public Observable<WYLikeIdList> getWYLikeIdList(Long uid, String timestamp) {
+        return wyApiService.getWYLikeIdList(uid, timestamp);
     }
 
     @Override
@@ -124,8 +130,8 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<WYUserPlayList> getWYUserPlayList(long uid) {
-        return wyApiService.getWYUserPlayList(uid);
+    public Observable<WYUserPlayList> getWYUserPlayList(long uid, String timestamp) {
+        return wyApiService.getWYUserPlayList(uid, timestamp);
     }
 
     @Override
@@ -200,7 +206,7 @@ public class HttpDataSourceImpl implements HttpDataSource {
 
     @Override
     public Observable<HomeBlock> getWYHomeBlock(boolean refresh, String timestamp) {
-        return wyApiService.getWYHomeBlock(refresh,timestamp);
+        return wyApiService.getWYHomeBlock(refresh, timestamp);
     }
 
 //    @Override

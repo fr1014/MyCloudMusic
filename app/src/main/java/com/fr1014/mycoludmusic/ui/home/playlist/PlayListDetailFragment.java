@@ -27,7 +27,9 @@ import com.bumptech.glide.request.transition.Transition;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist;
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter;
@@ -37,6 +39,8 @@ import com.fr1014.mycoludmusic.utils.PaletteBgUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseFragment;
+
+import java.util.List;
 
 //歌单详情页面
 public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailBinding, PlayListViewModel> {
@@ -236,6 +240,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                             }
                         }, 800);
                     }
+                    mViewModel.getWYUserPlayList(); //获取用户收藏的歌单
                 }
             });
         });
@@ -244,6 +249,27 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             @Override
             public void onChanged(PlayListDetailEntity playListDetailEntity) {
                 adapter.setHeadInfo(playListDetailEntity);
+            }
+        });
+
+        mViewModel.getPlaylistWYLive().observe(getViewLifecycleOwner(), new Observer<List<Playlist>>() {
+            @Override
+            public void onChanged(List<Playlist> playlists) {
+                int type = 1;
+                for (Playlist playlist : playlists){
+                    if (playlist.getId() == id){
+                        type = 2;
+                    }
+                }
+                mViewModel.setCollectPlayListType(type);
+                adapter.setHeadInfo(type);
+            }
+        });
+
+        mViewModel.getCollectPlayList().observe(getViewLifecycleOwner(), new Observer<CollectPlaylist>() {
+            @Override
+            public void onChanged(CollectPlaylist collectPlaylist) {
+                adapter.setHeadInfo(mViewModel.getCollectPlayListType());
             }
         });
     }

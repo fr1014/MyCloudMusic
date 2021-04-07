@@ -24,6 +24,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.ui.block.PlayListHeaderBlock
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.ui.home.playlist.dialog.PlayListInfoDialog
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
@@ -38,6 +39,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
     private var playListDetailEntity: PlayListDetailEntity? = null
     private var showDialogInfo = true
     private var playListInfoDialog: PlayListInfoDialog? = null
+    private var headerViewHolder: HeaderViewHolder? = null
 
     constructor(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, showDialogInfo: Boolean) : this(mViewModel, mOwner) {
         this.showDialogInfo = showDialogInfo
@@ -61,6 +63,10 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
 
     fun setHeadInfo(playListDetailEntity: PlayListDetailEntity) {
         this.playListDetailEntity = playListDetailEntity
+    }
+
+    fun setHeadInfo(type: Int) {
+        headerViewHolder?.setHeadData(type)
     }
 
     fun updateNetworkStatus(networkStatus: NetworkStatus?) {
@@ -108,7 +114,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
 
     private fun showInfoDialog(context: Context) {
         if (showDialogInfo) {
-            if (playListInfoDialog == null){
+            if (playListInfoDialog == null) {
                 playListInfoDialog = PlayListInfoDialog(context)
             }
             playListInfoDialog!!.apply {
@@ -126,6 +132,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                 }
             }
             R.layout.head_playlist_detail -> HeaderViewHolder.newInstance(mViewModel, mOwner, parent).also { holder ->
+                headerViewHolder = holder
                 holder.itemView.apply {
                     findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
                         onPlayAllClickListener?.clickPlayAll()
@@ -136,6 +143,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                     findViewById<TextView>(R.id.tv_description).setOnClickListener {
                         showInfoDialog(context)
                     }
+                    findViewById<PlayListHeaderBlock>(R.id.block_playlist_header).setData(playListDetailEntity, mViewModel)
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {
@@ -254,6 +262,10 @@ class HeaderViewHolder(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, it
                 }
             }
         }
+    }
+
+    fun setHeadData(type: Int) {
+        itemView.findViewById<PlayListHeaderBlock>(R.id.block_playlist_header).setData(type)
     }
 
     companion object {

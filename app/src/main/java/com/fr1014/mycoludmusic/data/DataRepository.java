@@ -8,6 +8,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.NetizensPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.RecommendPlayList;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
@@ -76,6 +77,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
+    public Observable<CollectPlaylist> getWYCollectPlayList(int type, long id, String timestamp) {
+        return httpDataSource.getWYCollectPlayList(type, id, timestamp);
+    }
+
+    @Override
     public Observable<AlbumDetail> getWYAlbumDetail(long id) {
         return httpDataSource.getWYAlbumDetail(id);
     }
@@ -136,8 +142,8 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<WYUserPlayList> getWYUserPlayList(long uid) {
-        return httpDataSource.getWYUserPlayList(uid);
+    public Observable<WYUserPlayList> getWYUserPlayList(long uid, String timestamp) {
+        return httpDataSource.getWYUserPlayList(uid, timestamp);
     }
 
     @Override
@@ -211,7 +217,7 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
 
     @Override
     public Observable<HomeBlock> getWYHomeBlock(boolean refresh, String timestamp) {
-        return httpDataSource.getWYHomeBlock(refresh,timestamp);
+        return httpDataSource.getWYHomeBlock(refresh, timestamp);
     }
 
 //    @Override

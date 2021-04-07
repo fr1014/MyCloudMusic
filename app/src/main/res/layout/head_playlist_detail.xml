@@ -103,6 +103,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.fr1014.mycoludmusic.ui.block.PlayListHeaderBlock
+            android:id="@+id/block_playlist_header"
             android:layout_width="match_parent"
             android:layout_height="44dp"
             android:layout_gravity="bottom"

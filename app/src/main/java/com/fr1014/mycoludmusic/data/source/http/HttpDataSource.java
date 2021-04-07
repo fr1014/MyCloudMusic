@@ -6,6 +6,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchRecommend;
@@ -48,6 +49,8 @@ public interface HttpDataSource {
     /*
      ========================网易云===================================
    */
+    Observable<CollectPlaylist> getWYCollectPlayList(int type, long id,String timestamp);
+
     Observable<AlbumDetail> getWYAlbumDetail(long id);
 
     Observable<SongSale> getWYSongSaleList(String type, int albumType);
@@ -72,7 +75,7 @@ public interface HttpDataSource {
 
     Observable<WYManagePlayList> getWYManagePlayList(String op, Long pid, String tracks, String timestamp);
 
-    Observable<WYUserPlayList> getWYUserPlayList(long uid);
+    Observable<WYUserPlayList> getWYUserPlayList(long uid, String timestamp);
 
     Observable<NetizensPlaylist> getWYNetizensPlayList(String order, String cat, int limit, int offset);
 

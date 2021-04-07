@@ -49,7 +49,7 @@ public interface WYApiService {
      * 调用例子 : /playlist/subscribe?t=1&id=106697785 /playlist/subscribe?t=2&id=106697785
      */
     @GET("playlist/subscribe")
-    Observable<CollectPlaylist> getWYCollectPlayList(@Query("t") int type, @Query("id") long id);
+    Observable<CollectPlaylist> getWYCollectPlayList(@Query("t") int type, @Query("id") long id, @Query("timestamp") String timestamp);
 
     /**
      * @param id
@@ -120,7 +120,7 @@ public interface WYApiService {
     Observable<WYLikeList> getWYLikeList(@Query("uid") long uid);
 
     @GET("user/playlist")
-    Observable<WYUserPlayList> getWYUserPlayList(@Query("uid") long uid);
+    Observable<WYUserPlayList> getWYUserPlayList(@Query("uid") long uid, @Query("timestamp") String timestamp);
 
     /**
      * 说明 : 调用此接口 , 可获取网友精选碟歌单

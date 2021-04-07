@@ -6,7 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.fr1014.mycoludmusic.R
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist
 import com.fr1014.mycoludmusic.databinding.BlockPlaylistHeaderBinding
+import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.utils.CommonUtils
 
 /**
@@ -17,6 +20,8 @@ class PlayListHeaderBlock @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr), View.OnClickListener {
     private lateinit var mViewBinding: BlockPlaylistHeaderBinding
+    private var mViewModel: PlayListViewModel? = null
+    var playList: Playlist? = null
 
     init {
         initView()
@@ -38,7 +43,7 @@ class PlayListHeaderBlock @JvmOverloads constructor(
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.iv_collection, R.id.tv_collection -> {
-                tips()
+                playList?.let { mViewModel?.collectPlayList(it.id) }
             }
             R.id.iv_comment, R.id.tv_comment -> {
                 tips()
@@ -52,4 +57,39 @@ class PlayListHeaderBlock @JvmOverloads constructor(
     private fun tips() {
         CommonUtils.toastShort(context.getString(R.string.dev))
     }
+
+    fun setData(playListDetailEntity: PlayListDetailEntity?, viewModel: PlayListViewModel) {
+        mViewModel = viewModel
+        mViewBinding.apply {
+            playListDetailEntity?.playlist?.let {
+                playList = it;
+
+                if (it.subscribedCount != 0L) {
+                    tvCollection.text = CommonUtils.formatNumber(it.subscribedCount)
+                }
+                if (it.commentCount != 0L) {
+                    tvComment.text = CommonUtils.formatNumber(it.commentCount)
+                }
+                if (it.shareCount != 0L) {
+                    tvShare.text = CommonUtils.formatNumber(it.shareCount)
+                }
+            }
+        }
+
+    }
+
+    fun setData(type: Int) {
+        mViewBinding.apply {
+            ivCollection.setImageResource(if (type == 1) R.drawable.ic_collection else R.drawable.ic_collected)
+        }
+
+    }
+
+//    private fun initViewModelObserver() {
+//        mViewModel?.apply {
+//            getCollectPlayList().observe(this@PlayListHeaderBlock, Observer {
+//
+//            })
+//        }
+//    }
 }

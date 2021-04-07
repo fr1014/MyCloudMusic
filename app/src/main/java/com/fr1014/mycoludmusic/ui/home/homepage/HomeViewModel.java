@@ -136,16 +136,4 @@ public class HomeViewModel extends CommonViewModel {
         );
     }
 
-    public void getWYUserPlayList() {
-        addSubscribe(
-                model.getWYUserPlayList(Preferences.getUserProfile().getUserId())
-                        .compose(RxSchedulers.apply())
-                        .subscribe(new Consumer<WYUserPlayList>() {
-                            @Override
-                            public void accept(WYUserPlayList wyUserPlayList) throws Exception {
-
-                            }
-                        })
-        );
-    }
 }

@@ -71,11 +71,22 @@ public class CommonUtils {
     public static boolean isFastClick() {
         boolean flag = true;
         long currentClickTime = System.currentTimeMillis();
-        if ((currentClickTime - lastClickTime) >= FAST_CLICK_DELAY_TIME ) {
+        if ((currentClickTime - lastClickTime) >= FAST_CLICK_DELAY_TIME) {
             flag = false;
         }
         lastClickTime = currentClickTime;
         return flag;
     }
 
+    public static String formatNumber(long number) {
+        String str;
+        if (number > 10000) {
+            int big = (int) (number / 10000);
+            String small = (number % 10000) + "";
+            str = big + "." + small.substring(0, 1) + "万";
+        } else {
+            str = number + "";
+        }
+        return str;
+    }
 }

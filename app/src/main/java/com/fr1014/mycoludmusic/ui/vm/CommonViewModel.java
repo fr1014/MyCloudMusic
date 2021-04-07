@@ -39,7 +39,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
     }
 
     public LiveData<PlayListDetailEntity> getPlayListDetailInfo() {
-        if (playListDetailLive == null){
+        if (playListDetailLive == null) {
             playListDetailLive = new MutableLiveData<>();
         }
         return playListDetailLive;
@@ -83,7 +83,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
         final long userId = profile.getUserId();
         if (userId != 0L)
             addSubscribe(
-                    model.getWYUserPlayList(userId)
+                    model.getWYUserPlayList(userId, String.valueOf(System.currentTimeMillis()))
                             .compose(RxSchedulers.apply())
                             .subscribe(new Consumer<WYUserPlayList>() {
                                 @Override
@@ -95,7 +95,7 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
     }
 
     public void getLikeIdList(Long uid) {
-        addSubscribe(model.getWYLikeIdList(uid,String.valueOf(System.currentTimeMillis()))
+        addSubscribe(model.getWYLikeIdList(uid, String.valueOf(System.currentTimeMillis()))
                 .compose(RxSchedulers.applyIO())
                 .subscribe(new Consumer<WYLikeIdList>() {
                     @Override

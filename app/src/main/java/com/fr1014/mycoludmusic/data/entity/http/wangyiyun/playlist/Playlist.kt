@@ -27,7 +27,7 @@ data class Playlist(
         val specialType: Int,
         val status: Int,
         val subscribed: Boolean,
-        val subscribedCount: Int,
+        val subscribedCount: Long,
         val subscribers: List<Subscribers>,
         val tags: List<String>,
         val titleImage: Long,
@@ -40,5 +40,7 @@ data class Playlist(
         val trackIds:List<TrackIds>,
         val updateFrequency: Any,
         val updateTime: Long,
-        val userId: Long
+        val userId: Long,
+        val commentCount: Long,
+        val shareCount: Long
 )
