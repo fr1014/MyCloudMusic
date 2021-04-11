@@ -4,6 +4,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.Comment;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
@@ -32,6 +33,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayLis
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.http.Query;
 
@@ -49,7 +51,9 @@ public interface HttpDataSource {
     /*
      ========================网易云===================================
    */
-    Observable<CollectPlaylist> getWYCollectPlayList(int type, long id,String timestamp);
+    Single<Comment> getWYComment(int type, long id, int sortType, String cursor, int pageSize, int pageNo);
+
+    Observable<CollectPlaylist> getWYCollectPlayList(int type, long id, String timestamp);
 
     Observable<AlbumDetail> getWYAlbumDetail(long id);
 

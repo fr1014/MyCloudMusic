@@ -46,6 +46,9 @@
         android:label="歌单列表"
         tools:layout="@layout/fragment_playlist_detail" >
 
+        <action
+            android:id="@+id/action_playListDetailFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
     </fragment>
     <fragment
         android:id="@+id/userInfoFragment"
@@ -72,5 +75,10 @@
         android:name="com.fr1014.mycoludmusic.ui.home.songsale.SongSaleFragment"
         android:label="数字专辑"
         tools:layout="@layout/fragment_song_sale"/>
+
+    <fragment android:id="@+id/commentFragment"
+        android:name="com.fr1014.mycoludmusic.ui.home.comment.CommentFragment"
+        android:label="数字专辑"
+        tools:layout="@layout/fragment_comment"/>
 
 </navigation>

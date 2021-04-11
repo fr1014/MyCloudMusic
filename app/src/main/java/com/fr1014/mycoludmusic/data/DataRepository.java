@@ -6,6 +6,7 @@ import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWNewSearchEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.kuwo.KWSongInfoAndLrcEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.Comment;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
@@ -41,6 +42,7 @@ import com.fr1014.mymvvm.base.BaseModel;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.http.Query;
 
@@ -74,6 +76,11 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     @Override
     public Observable<ResponseBody> getSongCover(String coverPath) {
         return httpDataSource.getSongCover(coverPath);
+    }
+
+    @Override
+    public Single<Comment> getWYComment(int type, long id, int sortType, String cursor, int pageSize, int pageNo) {
+        return httpDataSource.getWYComment(type, id, sortType, cursor, pageSize, pageNo);
     }
 
     @Override

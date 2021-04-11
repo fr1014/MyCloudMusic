@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.http.api;
 
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.Comment;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
@@ -29,6 +30,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.WYUserPlayLis
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.WYManagePlayList;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -40,6 +42,41 @@ import retrofit2.http.Query;
  * 网易API
  */
 public interface WYApiService {
+
+    /**
+     * 新版评论接口
+     * 说明 : 调用此接口 , 传入资源类型和资源id,以及排序方式,可获取对应资源的评论
+     * <p>
+     * 必选参数 :
+     * id : 资源 id, 如歌曲 id,mv id
+     * <p>
+     * tpye: 数字 , 资源类型 , 对应歌曲 , mv, 专辑 , 歌单 , 电台, 视频对应以下类型
+     * <p>
+     * 0: 歌曲
+     * <p>
+     * 1: mv
+     * <p>
+     * 2: 歌单
+     * <p>
+     * 3: 专辑
+     * <p>
+     * 4: 电台
+     * <p>
+     * 5: 视频
+     * <p>
+     * 6: 动态
+     * 可选参数 :
+     * pageNo:分页参数,第N页,默认为1
+     * <p>
+     * pageSize:分页参数,每页多少条数据,默认20
+     * <p>
+     * sortType: 排序方式,1:按推荐排序,2:按热度排序,3:按时间排序
+     * <p>
+     * cursor: 当sortType为3时且页数不是第一页时需传入,值为上一条数据的time
+     */
+    @GET("comment/new")
+    Single<Comment> getWYComment(@Query("type") int type, @Query("id") long id, @Query("sortType") int sortType, @Query("cursor") String cursor, @Query("pageSize") int pageSize, @Query("pageNo") int pageNo);
+
 
     /**
      * 说明 : 调用此接口 , 传入类型和歌单 id 可收藏歌单或者取消收藏歌单

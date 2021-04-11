@@ -22,6 +22,7 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.SourceHolder;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
+import com.fr1014.mycoludmusic.ui.home.comment.CommentFragment;
 import com.fr1014.mycoludmusic.ui.home.songsale.detail.AlbumDetailFragment;
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
@@ -33,7 +34,7 @@ import com.fr1014.mymvvm.base.BaseViewModel;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseViewModel> extends BaseActivity<VB,VM> implements SwitchDialogFragment.MusicSourceCallback {
+public abstract class BasePlayActivity<VB extends ViewBinding, VM extends BaseViewModel> extends BaseActivity<VB, VM> implements SwitchDialogFragment.MusicSourceCallback {
 
     protected PlayService playService;
     private ServiceConnection serviceConnection;
@@ -63,7 +64,7 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //设置statusBar字体为黑色
-        StatusBarUtils.setImmersiveStatusBar(getWindow(),true);
+        StatusBarUtils.setImmersiveStatusBar(getWindow(), true);
         bindService();
     }
 
@@ -71,7 +72,7 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
         Intent intent = new Intent();
         intent.setClass(this, PlayService.class);
         serviceConnection = new PlayServiceConnect(this);
-        bindService(intent,serviceConnection,Context.BIND_AUTO_CREATE);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private static class PlayServiceConnect implements ServiceConnection {
@@ -164,8 +165,11 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
 
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (Fragment fragment : fragments) {
-            if (fragment instanceof AlbumDetailFragment){
+            if (fragment instanceof AlbumDetailFragment) {
                 ((AlbumDetailFragment) fragment).onBackPressed();
+                return;
+            } else if (fragment instanceof CommentFragment && fragment.isVisible()) {
+                ((CommentFragment) fragment).onBackPressed();
                 return;
             }
         }
@@ -182,7 +186,7 @@ public abstract class BasePlayActivity<VB extends ViewBinding,VM extends BaseVie
 
     @Override
     protected void onDestroy() {
-        if (serviceConnection != null){
+        if (serviceConnection != null) {
             unbindService(serviceConnection);
         }
         super.onDestroy();

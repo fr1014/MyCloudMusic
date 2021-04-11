@@ -64,12 +64,12 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         return bundle;
     }
 
-    public static Bundle createBundle(long id, String name, String coverImg,boolean showDialogInfo) {
+    public static Bundle createBundle(long id, String name, String coverImg, boolean showDialogInfo) {
         Bundle bundle = new Bundle();
         bundle.putLong(KEY_ID, id);
         bundle.putString(KEY_NAME, name);
         bundle.putString(KEY_COVER, coverImg);
-        bundle.putBoolean(KEY_SHOW_DIALOG_INFO,showDialogInfo);
+        bundle.putBoolean(KEY_SHOW_DIALOG_INFO, showDialogInfo);
         return bundle;
     }
 
@@ -83,7 +83,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             id = getArguments().getLong(KEY_ID);
             name = getArguments().getString(KEY_NAME);
             cover = getArguments().getString(KEY_COVER);
-            showDialogInfo = getArguments().getBoolean(KEY_SHOW_DIALOG_INFO,true);
+            showDialogInfo = getArguments().getBoolean(KEY_SHOW_DIALOG_INFO, true);
         }
     }
 
@@ -143,7 +143,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
         mViewBinding.toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.action_search){
+                if (item.getItemId() == R.id.action_search) {
                     CommonUtils.toastShort(getString(R.string.dev));
                 }
                 return true;
@@ -208,7 +208,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
     }
 
     private void initAdapter() {
-        adapter = new PlayListDetailAdapter(mViewModel, getViewLifecycleOwner(),showDialogInfo);
+        adapter = new PlayListDetailAdapter(mViewModel, getViewLifecycleOwner(), showDialogInfo, getActivity().getSupportFragmentManager());
         mViewBinding.rvPlaylistDetail.setLayoutManager(new LinearLayoutManager(MyApplication.getInstance()));
         mViewBinding.rvPlaylistDetail.setAdapter(adapter);
 
@@ -238,7 +238,7 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
                                     mViewBinding.rvPlaylistDetail.getChildAt(0).setVisibility(View.VISIBLE);
                                 }
                             }
-                        }, 800);
+                        }, 1200);
                     }
                     mViewModel.getWYUserPlayList(); //获取用户收藏的歌单
                 }
@@ -256,8 +256,8 @@ public class PlayListDetailFragment extends BaseFragment<FragmentPlaylistDetailB
             @Override
             public void onChanged(List<Playlist> playlists) {
                 int type = 1;
-                for (Playlist playlist : playlists){
-                    if (playlist.getId() == id){
+                for (Playlist playlist : playlists) {
+                    if (playlist.getId() == id) {
                         type = 2;
                     }
                 }

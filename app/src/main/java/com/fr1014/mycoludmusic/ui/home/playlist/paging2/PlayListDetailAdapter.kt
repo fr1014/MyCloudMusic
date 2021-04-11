@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.paging.PagedListAdapter
@@ -40,9 +41,11 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
     private var showDialogInfo = true
     private var playListInfoDialog: PlayListInfoDialog? = null
     private var headerViewHolder: HeaderViewHolder? = null
+    private lateinit var parentFragmentManager: FragmentManager
 
-    constructor(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, showDialogInfo: Boolean) : this(mViewModel, mOwner) {
+    constructor(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, showDialogInfo: Boolean, parentFragmentManager: FragmentManager) : this(mViewModel, mOwner) {
         this.showDialogInfo = showDialogInfo
+        this.parentFragmentManager = parentFragmentManager
     }
 
     companion object {
@@ -143,7 +146,7 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                     findViewById<TextView>(R.id.tv_description).setOnClickListener {
                         showInfoDialog(context)
                     }
-                    findViewById<PlayListHeaderBlock>(R.id.block_playlist_header).setData(playListDetailEntity, mViewModel)
+                    findViewById<PlayListHeaderBlock>(R.id.block_playlist_header).setData(playListDetailEntity, mViewModel, parentFragmentManager)
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {
