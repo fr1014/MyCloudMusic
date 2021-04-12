@@ -1,6 +1,5 @@
 package com.fr1014.mycoludmusic.ui.home.playlist.paging2
 
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxPagingSource
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.QueryComment
@@ -8,7 +7,6 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.WYApiService
 import com.fr1014.mycoludmusic.musicmanager.Music
-import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
