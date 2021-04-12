@@ -36,9 +36,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * 创建时间:2020/9/28
@@ -323,7 +327,9 @@ public class AudioPlayer implements LoadResultListener {
                 e.printStackTrace();
             }
         } else if (music.getId() != 0) {//网易的歌
-            addDisposable(dataRepository.getWYSongDetail(music.getId() + "")
+            dataRepository.getWYSongDetail(music.getId() + "")
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .map(songDetailEntity -> {
                         if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
                             music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
@@ -331,13 +337,22 @@ public class AudioPlayer implements LoadResultListener {
                         }
                         return music;
                     })
-                    .compose(RxSchedulers.apply())
-                    .subscribe(new Consumer<Music>() {
+                    .subscribe(new SingleObserver<Music>() {
                         @Override
-                        public void accept(Music music) throws Exception {
+                        public void onSubscribe(@NonNull Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(@NonNull Music music) {
                             CoverLoadUtils.get().loadRemoteCover(music);
                         }
-                    }));
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+
+                        }
+                    });
         }
     }
 

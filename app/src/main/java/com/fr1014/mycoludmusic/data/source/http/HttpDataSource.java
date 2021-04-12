@@ -91,7 +91,7 @@ public interface HttpDataSource {
 
     Observable<PlayListDetailEntity> getPlayListDetail(long id);
 
-    Observable<SongDetailEntity> getWYSongDetail(String ids);
+    Single<SongDetailEntity> getWYSongDetail(String ids);
 
     Observable<CheckEntity> checkMusic(long id);
 

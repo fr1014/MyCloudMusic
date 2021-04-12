@@ -3,6 +3,11 @@ package com.fr1014.mycoludmusic.ui.home.playlist.paging2
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import androidx.paging.rxjava2.RxPagingSource
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.CommentItem
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.QueryComment
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
@@ -11,9 +16,14 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.rx.ExecuteOnceObserver
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
+import com.fr1014.mycoludmusic.utils.CollectionUtils
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
+import retrofit2.HttpException
+import java.io.IOException
 import java.util.*
 
-class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int, Music>() {
+class PlayListDataSource(private val ids: Array<Long>) : RxPagingSource<QueryComment, Music>() {
 
     var retry: (() -> Any)? = null
     private val _networkStatus = MutableLiveData<NetworkStatus>()
@@ -23,11 +33,16 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
         WYYServiceProvider.create(WYApiService::class.java)
     }
 
-    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(0, 299)
-        mWYYService.getWYSongDetail(idsRange)
-                .compose(RxSchedulers.apply())
-                .map {
+    override fun getRefreshKey(state: PagingState<QueryComment, Music>): QueryComment? {
+        return null
+    }
+
+    override fun loadSingle(params: LoadParams<QueryComment>): Single<LoadResult<QueryComment, Music>> {
+        val nextPageNumber = params.key?.pageKey ?: 0
+        val idsRange = ids.getRangeIds(nextPageNumber, 299)
+        return mWYYService.getWYSongDetail(idsRange)
+                .subscribeOn(Schedulers.io())
+                .map<LoadResult<QueryComment, Music>> {
                     val musics: MutableList<Music> = ArrayList()
                     val songs: List<SongsBean> = it.songs
                     for (song in songs) {
@@ -51,97 +66,48 @@ class PlayListDataSource(private val ids: Array<Long>) : PageKeyedDataSource<Int
                         }
                         musics.add(music)
                     }
-                    musics
+
+                    LoadResult.Page(
+                            data = musics,
+                            prevKey = null,
+                            nextKey = QueryComment(nextPageNumber.plus(300), ids.getRangeIds(nextPageNumber, 299))
+                    )
                 }
-                .doOnSubscribe {
-                    retry = null
-                    _networkStatus.postValue(NetworkStatus.LOADING)
-                }
-                .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
-                    callback.onResult(it, null, 300)
-                }, onExecuteOnceError = {
-                    retry = { loadInitial(params, callback) }
-                    _networkStatus.postValue(NetworkStatus.FAILED)
-                }, onExecuteOnceComplete = {
-                    _networkStatus.postValue(NetworkStatus.COMPLETED)
-                })
-                )
-    }
-
-    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Music>) {
-
-    }
-
-    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Music>) {
-        val idsRange = ids.getRangeIds(params.key, 299)
-        mWYYService.getWYSongDetail(idsRange)
-                .compose(RxSchedulers.apply())
-                .map {
-                    val musics: MutableList<Music> = ArrayList()
-                    val songs: List<SongsBean> = it.songs
-                    for (song in songs) {
-                        val music = Music()
-                        val sb = StringBuilder()
-                        for (i in song.ar.indices) {
-                            val ar = song.ar[i]
-                            if (i < song.ar.size - 1) {
-                                sb.append(ar.name).append('&')
-                            } else {
-                                sb.append(ar.name)
-                            }
-                        }
-                        music.apply {
-                            id = song.id.toLong()
-                            artist = sb.toString()
-                            title = song.name
-                            imgUrl = song.al.picUrl
-                            duration = song.dt.toLong()
-                            album = song.al.name
-                        }
-                        musics.add(music)
+                .onErrorReturn { e ->
+                    when (e) {
+                        // Retrofit calls that return the body type throw either IOException for
+                        // network failures, or HttpException for any non-2xx HTTP status codes.
+                        // This code reports all errors to the UI, but you can inspect/wrap the
+                        // exceptions to provide more context.
+                        is NullPointerException -> LoadResult.Error(e)
+                        is IOException -> LoadResult.Error(e)
+                        is HttpException -> LoadResult.Error(e)
+                        else -> throw e
                     }
-                    musics
                 }
-                .doOnSubscribe {
-                    retry = null
-                    _networkStatus.postValue(NetworkStatus.LOADING)
-                }
-                .subscribe(ExecuteOnceObserver(onExecuteOnceNext = {
-                    callback.onResult(it, params.key.plus(300))
-                }, onExecuteOnceError = {
-                    if (it.toString() == "java.lang.NullPointerException: it.songs must not be null") {
-                        _networkStatus.postValue(NetworkStatus.COMPLETED)
-                    } else {
-                        retry = { loadAfter(params, callback) }
-                        _networkStatus.postValue(NetworkStatus.FAILED)
-                    }
 
-                }, onExecuteOnceComplete = {
-                    _networkStatus.postValue(NetworkStatus.COMPLETED)
-                })
-                )
     }
-}
 
-fun Array<Long>.getRangeIds(start: Int, loadRange: Int): String {
-    var mLoadRange: Int
-    if (isNotEmpty()) {
-        mLoadRange = loadRange
-        if (start >= size) {
-            return ""
-        }
-        if ((start + loadRange) >= size) {
-            mLoadRange = size - start - 1
-        }
-        val idsRange = StringBuilder()
-        for (position in start..(start + mLoadRange)) {
-            if (position == size) {
-                break
+    fun Array<Long>.getRangeIds(start: Int, loadRange: Int): String {
+        var mLoadRange: Int
+        if (isNotEmpty()) {
+            mLoadRange = loadRange
+            if (start >= size) {
+                return ""
             }
-            idsRange.append(this[position])
-            idsRange.append(",")
+            if ((start + loadRange) >= size) {
+                mLoadRange = size - start - 1
+            }
+            val idsRange = StringBuilder()
+            for (position in start..(start + mLoadRange)) {
+                if (position == size) {
+                    break
+                }
+                idsRange.append(this[position])
+                idsRange.append(",")
+            }
+            return idsRange.substring(0, idsRange.length - 1)
         }
-        return idsRange.substring(0, idsRange.length - 1)
+        return ""
     }
-    return ""
 }

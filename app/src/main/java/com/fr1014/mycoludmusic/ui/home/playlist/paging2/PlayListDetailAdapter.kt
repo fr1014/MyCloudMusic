@@ -13,10 +13,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -28,18 +27,16 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.block.PlayListHeaderBlock
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.ui.home.playlist.dialog.PlayListInfoDialog
-import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils
+import com.fr1014.mycoludmusic.ui.paging.AdapterDataObserverProxy
 import de.hdodenhof.circleimageview.CircleImageView
 
-class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private val mOwner: LifecycleOwner) : PagedListAdapter<Music, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
-    private var networkStatus: NetworkStatus? = null
-    private var hasFooter = false
+class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private val mOwner: LifecycleOwner) : PagingDataAdapter<Music, RecyclerView.ViewHolder>(PlayListComparator) {
     private var onPlayAllClickListener: OnPlayAllClickListener? = null
-    private var playListCount: Int? = null
     private var playListDetailEntity: PlayListDetailEntity? = null
     private var showDialogInfo = true
     private var playListInfoDialog: PlayListInfoDialog? = null
+
     private var headerViewHolder: HeaderViewHolder? = null
     private lateinit var parentFragmentManager: FragmentManager
 
@@ -48,59 +45,39 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
         this.parentFragmentManager = parentFragmentManager
     }
 
-    companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Music>() {
-            override fun areItemsTheSame(oldItem: Music, newItem: Music): Boolean {
-                return oldItem === newItem
-            }
-
-            override fun areContentsTheSame(oldItem: Music, newItem: Music): Boolean {
-                return oldItem.id == newItem.id
-            }
+    object PlayListComparator : DiffUtil.ItemCallback<Music>() {
+        override fun areItemsTheSame(oldItem: Music, newItem: Music): Boolean {
+            return oldItem.id == newItem.id
         }
+
+        override fun areContentsTheSame(oldItem: Music, newItem: Music): Boolean {
+            return oldItem.equals(newItem)
+        }
+
     }
 
     fun setPlayListCount(count: Int) {
-        playListCount = count
+        headerViewHolder?.setHeadCount(count)
     }
 
     fun setHeadInfo(playListDetailEntity: PlayListDetailEntity) {
         this.playListDetailEntity = playListDetailEntity
+        headerViewHolder?.apply {
+            setHeadData(playListDetailEntity)
+            itemView.findViewById<PlayListHeaderBlock>(R.id.block_playlist_header).setData(playListDetailEntity, mViewModel, parentFragmentManager)
+        }
     }
 
     fun setHeadInfo(type: Int) {
         headerViewHolder?.setHeadData(type)
     }
 
-    fun updateNetworkStatus(networkStatus: NetworkStatus?) {
-        this.networkStatus = networkStatus
-        if (networkStatus == NetworkStatus.INITIAL_LOADING) hideFooter() else showFooter()
-    }
-
-    private fun hideFooter() {
-        if (hasFooter) {
-            notifyItemRemoved(itemCount - 1)
-        }
-        hasFooter = false
-    }
-
-    private fun showFooter() {
-        if (hasFooter) {
-            notifyItemChanged(itemCount - 1)
-        } else {
-            hasFooter = true
-            notifyItemInserted(itemCount - 1)
-        }
-    }
-
     override fun getItemCount(): Int {
-        return super.getItemCount() + if (hasFooter) 2 else 1
+        return super.getItemCount() + 1
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (hasFooter && position == itemCount - 1) {
-            R.layout.loading_view
-        } else if (position == 0) {
+        return if (position == 0) {
             R.layout.head_playlist_detail
         } else {
             R.layout.item_playlist_detail
@@ -129,48 +106,51 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.item_playlist_detail -> PlayListViewHolder.newInstance(parent).also { holder ->
-                holder.itemView.setOnClickListener {
-                    AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition - 1) as Music)
+            R.layout.head_playlist_detail -> {
+                HeaderViewHolder.newInstance(mViewModel, mOwner, parent).also { holder ->
+                    headerViewHolder = holder
+                    holder.itemView.apply {
+                        findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
+                            onPlayAllClickListener?.clickPlayAll()
+                        }
+                        findViewById<FrameLayout>(R.id.fl_cover).setOnClickListener {
+                            showInfoDialog(context)
+                        }
+                        findViewById<TextView>(R.id.tv_description).setOnClickListener {
+                            showInfoDialog(context)
+                        }
+                    }
                 }
             }
-            R.layout.head_playlist_detail -> HeaderViewHolder.newInstance(mViewModel, mOwner, parent).also { holder ->
-                headerViewHolder = holder
-                holder.itemView.apply {
-                    findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
-                        onPlayAllClickListener?.clickPlayAll()
+            else -> {
+                PlayListViewHolder.newInstance(parent).also { holder ->
+                    holder.itemView.setOnClickListener {
+                        AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition - 1) as Music)
                     }
-                    findViewById<FrameLayout>(R.id.fl_cover).setOnClickListener {
-                        showInfoDialog(context)
-                    }
-                    findViewById<TextView>(R.id.tv_description).setOnClickListener {
-                        showInfoDialog(context)
-                    }
-                    findViewById<PlayListHeaderBlock>(R.id.block_playlist_header).setData(playListDetailEntity, mViewModel, parentFragmentManager)
-                }
-            }
-            else -> FooterViewHolder.newInstance(parent).also {
-                it.itemView.setOnClickListener {
-                    mViewModel.retry()
                 }
             }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder.itemViewType) {
-            R.layout.loading_view -> (holder as FooterViewHolder).bindWithNetworkStatus(
-                    networkStatus, itemCount
-            )
-            R.layout.head_playlist_detail -> {
-                playListDetailEntity?.let { (holder as HeaderViewHolder).setHeadData(it) }
-                playListCount?.let { (holder as HeaderViewHolder).setHeadCount(it) }
-            }
-            else -> {
+        //paging3 的坑
+        // rvPlaylistDetail.adapter = pAdapter.withLoadStateFooter(MyLoadStateAdapter { pAdapter.retry() })
+        //withLoadStateFooter 重新生成的adapter将  getItemViewType(position: Int) 覆写了 所以 此处不能根据viewType去绑定数据 只可依据position
+        when (position > 0) {
+            true -> {
                 val music = getItem(position - 1) ?: return
                 (holder as PlayListViewHolder).bindWithPhotoItem(music)
             }
         }
+    }
+
+    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
+        super.registerAdapterDataObserver(AdapterDataObserverProxy(observer, 1))
+    }
+
+    //java.lang.IllegalStateException: Observer androidx.paging.PagingDataAdapter was not registered.
+    override fun unregisterAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
+
     }
 }
 
@@ -195,42 +175,6 @@ class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
         }
     }
 
-}
-
-class FooterViewHolder(itemView: View) : BaseViewHolder(itemView) {
-    companion object {
-        fun newInstance(parent: ViewGroup): FooterViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.loading_view, parent, false)
-            return FooterViewHolder(view)
-        }
-    }
-
-    fun bindWithNetworkStatus(networkStatus: NetworkStatus?, count: Int) {
-        with(itemView) {
-            when (networkStatus) {
-                NetworkStatus.FAILED -> {
-                    getView<TextView>(R.id.tv_loading).text = "点击重试"
-                    getView<LottieAnimationView>(R.id.lav_loading).visibility = View.GONE
-                    isClickable = true
-                }
-                NetworkStatus.COMPLETED -> {
-                    getView<TextView>(R.id.tv_loading).text = "-- 我是有底线的 --"
-                    getView<LottieAnimationView>(R.id.lav_loading).visibility = View.GONE
-                    isClickable = false
-                }
-                else -> {
-                    getView<TextView>(R.id.tv_loading).text = "正在加载..."
-                    getView<LottieAnimationView>(R.id.lav_loading).visibility = View.VISIBLE
-                    isClickable = false
-                }
-            }
-        }
-        getView<View>(R.id.view_divider).visibility = if (isShowDivider(count)) View.VISIBLE else View.GONE
-    }
-
-    private fun isShowDivider(count: Int): Boolean {
-        return layoutPosition == count - 1
-    }
 }
 
 class HeaderViewHolder(mViewModel: PlayListViewModel, mOwner: LifecycleOwner, itemView: View) : BaseViewHolder(itemView) {

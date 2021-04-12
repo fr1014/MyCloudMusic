@@ -53,22 +53,25 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_playlist_detail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:overScrollMode="never"
-            android:visibility="invisible" />
+            android:layout_height="match_parent"
+            android:overScrollMode="never" />
 
         <include
             android:id="@+id/play_all"
             layout="@layout/item_playlist_detail_header" />
 
         <include
-            android:id="@+id/loading_view"
-            layout="@layout/loading_view"/>
+            android:id="@+id/include_loading_view"
+            layout="@layout/loading_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="240dp" />
     </FrameLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

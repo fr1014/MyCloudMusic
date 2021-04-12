@@ -71,8 +71,8 @@ public class CommonViewModel extends BaseViewModel<DataRepository> {
                         for (int index = 0; index < tracks.size(); index++) {
                             ids[index] = tracks.get(index).getId();
                         }
-                        playListDetailIds.postValue(ids);
                         playListDetailLive.postValue(playListDetailEntity);
+                        playListDetailIds.postValue(ids);
                     }
                 }));
     }

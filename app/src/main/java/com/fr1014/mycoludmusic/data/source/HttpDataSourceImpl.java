@@ -167,7 +167,7 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<SongDetailEntity> getWYSongDetail(String ids) {
+    public Single<SongDetailEntity> getWYSongDetail(String ids) {
         return wyApiService.getWYSongDetail(ids);
     }
 

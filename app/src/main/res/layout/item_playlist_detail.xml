@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
-    android:background="?android:attr/selectableItemBackground"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -50,9 +50,9 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/tinos_bold"
                 android:maxLines="1"
-                android:text="十年"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                tools:text="十年" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,10 +66,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_tv_original"
-                    android:text="原唱"
                     android:textColor="@color/white"
                     android:textSize="8sp"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:text="原唱" />
 
                 <TextView
                     android:id="@+id/tv_author"
@@ -78,8 +78,8 @@
                     android:ellipsize="end"
                     android:gravity="bottom"
                     android:maxLines="1"
-                    android:text="陈奕迅"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:text="陈奕迅" />
             </LinearLayout>
 
             <TextView
@@ -97,10 +97,4 @@
                 tools:text="天龙八部2" />
         </LinearLayout>
     </LinearLayout>
-
-    <View
-        android:id="@+id/view_place_holder"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:visibility="gone" />
 </LinearLayout>

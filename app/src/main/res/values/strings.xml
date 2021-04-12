@@ -10,6 +10,8 @@
     <string name="play_all">播放全部</string>
     <string name="channel_name">音乐前台服务</string>
     <string name="loading">努力加载中...</string>
+    <string name="retry">加载失败，点击重试</string>
+    <string name="finish">-- 我是有底线的 --</string>
     <string name="menu_timer">定时关闭</string>
     <string name="timer_set">设置成功，将于%s分钟后关闭</string>
     <string name="timer_cancel">定时停止播放已取消</string>

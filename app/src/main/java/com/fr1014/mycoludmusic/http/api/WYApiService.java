@@ -75,7 +75,7 @@ public interface WYApiService {
      * cursor: 当sortType为3时且页数不是第一页时需传入,值为上一条数据的time
      */
     @GET("comment/new")
-    Single<Comment> getWYComment(@Query("type") int type, @Query("id") long id, @Query("sortType") int sortType, @Query("cursor") String cursor, @Query("pageSize") int pageSize, @Query("pageNo") int pageNo);
+    Single<Comment> getWYComment(@Query("type") int type, @Query("id") long id, @Query("sortType") int sortType, @Query("cursor")String cursor,@Query("pageSize") int pageSize, @Query("pageNo") int pageNo);
 
 
     /**
@@ -194,7 +194,7 @@ public interface WYApiService {
     Observable<PlayListDetailEntity> getPlayListDetail(@Query("id") long id);
 
     @GET("song/detail")
-    Observable<SongDetailEntity> getWYSongDetail(@Query("ids") String ids);
+    Single<SongDetailEntity> getWYSongDetail(@Query("ids") String ids);
 
     /**
      * 获取音乐url,可传入多个id用 "," 隔开

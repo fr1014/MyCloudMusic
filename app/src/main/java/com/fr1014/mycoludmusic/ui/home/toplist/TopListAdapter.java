@@ -84,7 +84,7 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = PlayListDetailFragment.createBundle(data.getId(), data.getName(), data.getCoverImgUrl());
+                Bundle bundle = PlayListDetailFragment.Companion.createBundle(data.getId(), data.getName(), data.getCoverImgUrl());
                 Navigation.findNavController(view)
                         .navigate(R.id.playListDetailFragment, bundle);
             }
