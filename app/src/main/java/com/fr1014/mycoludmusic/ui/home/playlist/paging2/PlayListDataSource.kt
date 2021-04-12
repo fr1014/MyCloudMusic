@@ -1,22 +1,14 @@
 package com.fr1014.mycoludmusic.ui.home.playlist.paging2
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.paging.PageKeyedDataSource
-import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxPagingSource
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.CommentItem
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.QueryComment
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongDetailEntity
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.WYApiService
 import com.fr1014.mycoludmusic.musicmanager.Music
-import com.fr1014.mycoludmusic.rx.ExecuteOnceObserver
-import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
-import com.fr1014.mycoludmusic.utils.CollectionUtils
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
@@ -24,10 +16,6 @@ import java.io.IOException
 import java.util.*
 
 class PlayListDataSource(private val ids: Array<Long>) : RxPagingSource<QueryComment, Music>() {
-
-    var retry: (() -> Any)? = null
-    private val _networkStatus = MutableLiveData<NetworkStatus>()
-    val networkStatus: LiveData<NetworkStatus> = _networkStatus
 
     private val mWYYService by lazy {
         WYYServiceProvider.create(WYApiService::class.java)
