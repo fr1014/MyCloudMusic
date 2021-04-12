@@ -5,24 +5,17 @@ import android.graphics.Bitmap
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
-import androidx.paging.rxjava2.cachedIn
-import androidx.paging.rxjava2.observable
 import com.fr1014.mycoludmusic.data.DataRepository
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist
-import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.rx.RxSchedulers
-import com.fr1014.mycoludmusic.ui.home.comment.paging3.CommentPagingSource
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDataSource
-import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
 import com.fr1014.mycoludmusic.utils.CommonUtils
 
 class PlayListViewModel(application: Application, model: DataRepository) : CommonViewModel(application, model) {
 
-    var needScrollToTop = true
     var collectPlayListType = 1
 
     private val coverBitmapLive: MutableLiveData<Bitmap> by lazy {
