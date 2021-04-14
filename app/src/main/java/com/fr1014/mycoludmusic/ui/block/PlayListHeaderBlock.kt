@@ -1,19 +1,17 @@
 package com.fr1014.mycoludmusic.ui.block
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.enum.CommentType
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist
 import com.fr1014.mycoludmusic.databinding.BlockPlaylistHeaderBinding
-import com.fr1014.mycoludmusic.ui.home.comment.CommentFragment
+import com.fr1014.mycoludmusic.ui.home.comment.CommentActivity
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.utils.CommonUtils
 
@@ -28,9 +26,6 @@ class PlayListHeaderBlock @JvmOverloads constructor(
     private var mViewModel: PlayListViewModel? = null
     var playList: Playlist? = null
     private lateinit var parentFragmentManager: FragmentManager
-
-    private var mCommentFragment: Fragment? = null
-    private var isCommentFragmentShow = false
 
     init {
         initView()
@@ -55,7 +50,7 @@ class PlayListHeaderBlock @JvmOverloads constructor(
                 playList?.let { mViewModel?.collectPlayList(it.id) }
             }
             R.id.iv_comment, R.id.tv_comment -> {
-                showCommentFragment()
+                playList?.let { CommentActivity.getInstance(context, CommentType.PLAYLIST.type, it.id, 20, it.commentCount) }
             }
             R.id.iv_share, R.id.tv_share -> {
                 tips()
@@ -102,24 +97,4 @@ class PlayListHeaderBlock @JvmOverloads constructor(
 //            })
 //        }
 //    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun showCommentFragment() {
-        val beginTransaction = parentFragmentManager.beginTransaction()
-        if (mCommentFragment == null) {
-            mCommentFragment = playList?.let { CommentFragment.getInstance(CommentType.PLAYLIST.type, it.id, 20, it.commentCount) }
-            beginTransaction.add(R.id.container, mCommentFragment!!)
-        } else {
-            beginTransaction.show(mCommentFragment!!)
-        }
-        beginTransaction.commit()
-    }
-
-    private fun hideCommentFragment() {
-        val beginTransaction = parentFragmentManager.beginTransaction()
-        mCommentFragment?.apply {
-            beginTransaction.hide(this)
-            beginTransaction.commit()
-        }
-    }
 }

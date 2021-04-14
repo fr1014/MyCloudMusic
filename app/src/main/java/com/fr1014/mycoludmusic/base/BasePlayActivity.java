@@ -7,7 +7,6 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -23,7 +22,6 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.SourceHolder;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
-import com.fr1014.mycoludmusic.ui.home.comment.CommentFragment;
 import com.fr1014.mycoludmusic.ui.home.songsale.detail.AlbumDetailFragment;
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
 import com.fr1014.mycoludmusic.musicmanager.PlayService;
@@ -171,9 +169,6 @@ public abstract class BasePlayActivity<VB extends ViewBinding, VM extends BaseVi
         for (Fragment fragment : fragments) {
             if (fragment instanceof AlbumDetailFragment) {
                 ((AlbumDetailFragment) fragment).onBackPressed();
-                return;
-            } else if (fragment instanceof CommentFragment && fragment.isVisible()) {
-                ((CommentFragment) fragment).onBackPressed();
                 return;
             }
         }

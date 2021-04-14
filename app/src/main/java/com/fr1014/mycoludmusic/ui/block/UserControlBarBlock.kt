@@ -7,7 +7,6 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
@@ -16,11 +15,13 @@ import androidx.lifecycle.Observer
 import com.fr1014.mycoludmusic.MainActivity
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.app.BaseConfig
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.enum.CommentType
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike
 import com.fr1014.mycoludmusic.databinding.CustomUserControlbarBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.musicmanager.Preferences
+import com.fr1014.mycoludmusic.ui.home.comment.CommentActivity
 import com.fr1014.mycoludmusic.ui.login.LoginActivity
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicViewModel
 import com.fr1014.mycoludmusic.utils.CollectionUtils
@@ -61,7 +62,7 @@ class UserControlBarBlock @JvmOverloads constructor(
                 initLikeIcon(playMusic)
             })
 
-            mViewModel?.playlistWYLive?.observe(owner, Observer {
+            mViewModel?.playlistWYInfo?.observe(owner, Observer {
                 if (!CollectionUtils.isEmptyList(it)) {
                     userLikePid = it[0].id
                     Preferences.saveUserLikePid(userId, userLikePid!!)
@@ -107,6 +108,14 @@ class UserControlBarBlock @JvmOverloads constructor(
                         CommonUtils.toastShort(context.getString(R.string.tips_login))
                         context.startActivity(Intent(context, LoginActivity::class.java))
                     }
+                }
+            }
+            R.id.iv_comment -> {
+                val playMusic = AudioPlayer.get().currentMusic ?: return
+                if (playMusic.id != 0L) {
+                    CommentActivity.getInstance(context, CommentType.SONG.type, playMusic.id, 20, 0L)
+                } else {
+                    CommonUtils.toastShort("该歌曲非来自网易云，暂未支持评论功能！")
                 }
             }
             else -> {

@@ -98,7 +98,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
                     case R.id.userInfoFragment:
                     case R.id.dayRecommendFragment:
                     case R.id.songSaleFragment:
-                    case R.id.commentFragment:
                         getSupportActionBar().hide();
                         break;
                     default:

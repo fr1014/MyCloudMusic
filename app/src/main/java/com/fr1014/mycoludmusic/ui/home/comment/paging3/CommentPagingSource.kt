@@ -1,22 +1,32 @@
 package com.fr1014.mycoludmusic.ui.home.comment.paging3
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxPagingSource
-import com.fr1014.mycoludmusic.app.MyApplication
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.Comment
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.CommentItem
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.QueryComment
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.WYApiService
+import com.fr1014.mycoludmusic.utils.CollectionUtils
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
 import java.io.IOException
+import java.lang.NullPointerException
 
 /**
  * Create by fanrui on 2021/4/10
  * Describe:
  */
 class CommentPagingSource(val type: Int, val id: Long, val pageSize: Int) : RxPagingSource<QueryComment, CommentItem>() {
+
+    private val commentLive: MutableLiveData<Comment> by lazy {
+        MutableLiveData()
+    }
+
+    val commentInfo: LiveData<Comment> = commentLive
 
     private val mWYYService by lazy {
         WYYServiceProvider.create(WYApiService::class.java)
@@ -30,6 +40,12 @@ class CommentPagingSource(val type: Int, val id: Long, val pageSize: Int) : RxPa
                 .getWYComment(type, id, 3, cursor, pageSize, nextPageNumber)
                 .subscribeOn(Schedulers.io())
                 .map<LoadResult<QueryComment, CommentItem>> { commentIem ->
+                    if (nextPageNumber == 1) {
+                        commentLive.postValue(commentIem)
+                    }
+                    if (CollectionUtils.isEmptyList(commentIem.data.comments)) {
+                        return@map LoadResult.Error(NullPointerException())
+                    }
                     LoadResult.Page(
                             data = commentIem.data.comments,
                             prevKey = null,

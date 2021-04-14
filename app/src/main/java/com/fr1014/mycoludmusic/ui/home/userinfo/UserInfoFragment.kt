@@ -112,7 +112,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
 
     @SuppressLint("SetTextI18n")
     override fun initViewObservable() {
-        mViewModel.playlistWYLive.observe(viewLifecycleOwner, Observer {
+        mViewModel.playlistWYInfo.observe(viewLifecycleOwner, Observer {
             if (!CollectionUtils.isEmptyList(it)) {
                 myLikePlayList = it[0]
                 mViewBinding.userLike.apply {

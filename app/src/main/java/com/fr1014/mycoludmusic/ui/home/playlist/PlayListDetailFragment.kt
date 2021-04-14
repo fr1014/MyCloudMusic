@@ -211,11 +211,11 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
                         pAdapter.submitData(it)
                     }
                 }
-                viewModel.getWYUserPlayList() //获取用户收藏的歌单
+                viewModel.getWYUserPlayList()//获取用户收藏的歌单
             })
 
 
-            viewModel.playlistWYLive.observe(viewLifecycleOwner, { playlists ->
+            viewModel.playlistWYInfo.observe(viewLifecycleOwner, { playlists ->
                 var type = 1
                 for (playlist in playlists) {
                     if (playlist.id == id) {
