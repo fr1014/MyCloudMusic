@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.viewbinding.ViewBinding;
 
 import com.bumptech.glide.Glide;
+import com.fr1014.mycoludmusic.MainActivity;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.SourceHolder;
 import com.fr1014.mycoludmusic.app.MyApplication;
@@ -159,6 +160,9 @@ public abstract class BasePlayActivity<VB extends ViewBinding, VM extends BaseVi
     @Override
     public void onBackPressed() {
         if (mPlayFragment != null && isPlayFragmentShow) {
+            if (this instanceof MainActivity){
+                ((MainActivity)this).back();
+            }
             hidePlayingFragment();
             return;
         }

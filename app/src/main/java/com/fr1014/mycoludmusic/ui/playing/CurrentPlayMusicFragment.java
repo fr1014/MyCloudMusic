@@ -356,9 +356,9 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     public void onDestroy() {
-        if (getActivity() != null) {
-            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
-        }
+//        if (getActivity() != null) {
+//            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
+//        }
         AudioPlayer.get().removeOnPlayEventListener(this);
         CoverLoadUtils.get().removeLoadListener(this);
         super.onDestroy();

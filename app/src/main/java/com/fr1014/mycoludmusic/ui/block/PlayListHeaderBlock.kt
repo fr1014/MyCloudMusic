@@ -107,7 +107,7 @@ class PlayListHeaderBlock @JvmOverloads constructor(
     private fun showCommentFragment() {
         val beginTransaction = parentFragmentManager.beginTransaction()
         if (mCommentFragment == null) {
-            mCommentFragment = playList?.let { CommentFragment.getInstance(CommentType.PLAYLIST.type, it.id, 20) }
+            mCommentFragment = playList?.let { CommentFragment.getInstance(CommentType.PLAYLIST.type, it.id, 20, it.commentCount) }
             beginTransaction.add(R.id.container, mCommentFragment!!)
         } else {
             beginTransaction.show(mCommentFragment!!)

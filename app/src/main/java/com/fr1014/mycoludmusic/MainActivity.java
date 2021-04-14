@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fr1014.mycoludmusic.app.AppViewModelFactory;
 import com.fr1014.mycoludmusic.app.MyApplication;
@@ -23,25 +22,24 @@ import com.fr1014.mycoludmusic.musicmanager.QuitTimer;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
-import com.fr1014.mycoludmusic.ui.home.songsale.detail.AlbumDetailFragment;
 import com.fr1014.mycoludmusic.ui.search.SearchActivity;
-import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
+import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import java.util.List;
+import java.util.Deque;
 
 public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainViewModel> implements View.OnClickListener {
     private static final int REQUEST_PERMISSION_CODE = 100;
@@ -290,6 +288,14 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
 //            for (int i = 0; i < permissions.length; i++) {
 //                Log.i("MainActivity", "申请的权限为：" + permissions[i] + ",申请结果：" + grantResults[i]);
 //            }
+        }
+    }
+
+    public void back() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        Deque<NavBackStackEntry> backStack = navController.getBackStack();
+        if (backStack.size() == 2) {
+            StatusBarUtils.setImmersiveStatusBar(getWindow(), true);
         }
     }
 }

@@ -18,20 +18,30 @@ public class StatusBarUtils {
     private final static int FLYME = 1;
     private final static int COMMON = 2;
 
+    public static void setStatusBarTextColor(Window window, boolean isDark) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (isDark) {
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//黑色
+            } else {
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);//白色
+            }
+        }
+    }
+
     /**
      * 设置沉浸式状态栏
      *
      * @param fontIconDark 状态栏字体和图标颜色是否为深色
      */
-    public static void setImmersiveStatusBar(Window window,boolean fontIconDark) {
+    public static void setImmersiveStatusBar(Window window, boolean fontIconDark) {
         setTranslucentStatus(window);
         if (fontIconDark) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                setStatusBarFontIconDark(window,COMMON);
+                setStatusBarFontIconDark(window, COMMON);
             } else if (OSUtils.isMiui()) {
-                setStatusBarFontIconDark(window,MIUI);
+                setStatusBarFontIconDark(window, MIUI);
             } else if (OSUtils.isFlyme()) {
-                setStatusBarFontIconDark(window,FLYME);
+                setStatusBarFontIconDark(window, FLYME);
             }
         }
     }
@@ -39,16 +49,16 @@ public class StatusBarUtils {
     /**
      * 设置文字颜色
      */
-    public static void setStatusBarFontIconDark(Window window,int type) {
+    public static void setStatusBarFontIconDark(Window window, int type) {
         switch (type) {
             case MIUI:
-                setMiuiUI(window,true);
+                setMiuiUI(window, true);
                 break;
             case COMMON:
                 setCommonUI(window);
                 break;
             case FLYME:
-                setFlymeUI(window,true);
+                setFlymeUI(window, true);
                 break;
         }
     }
@@ -62,7 +72,7 @@ public class StatusBarUtils {
         }
     }
 
-    public static void setFlymeUI(Window window,boolean dark) {
+    public static void setFlymeUI(Window window, boolean dark) {
         try {
             WindowManager.LayoutParams lp = window.getAttributes();
             Field darkFlag = WindowManager.LayoutParams.class.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON");
@@ -83,7 +93,7 @@ public class StatusBarUtils {
         }
     }
 
-    public static void setMiuiUI(Window window,boolean dark) {
+    public static void setMiuiUI(Window window, boolean dark) {
         try {
             Class clazz = window.getClass();
             Class layoutParams = Class.forName("android.view.MiuiWindowManager$LayoutParams");

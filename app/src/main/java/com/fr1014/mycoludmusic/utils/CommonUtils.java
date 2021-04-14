@@ -20,6 +20,10 @@ public class CommonUtils {
     private static final int FAST_CLICK_DELAY_TIME = 1000;
     private static long lastClickTime;
 
+    public static void rd_ing(){
+        toastShort("功能开发中");
+    }
+
     public static Toast toastShort(String message) {
         Toast toast = Toast.makeText(MyApplication.getInstance(), "", Toast.LENGTH_SHORT);
         toast.setText(message);
@@ -39,6 +43,11 @@ public class CommonUtils {
         SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
         Date data = new Date(time);
         return dateFormat.format(data);
+    }
+
+    public static String formatTimeYear(long timeStamp){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy年MM月dd日");
+        return sdf.format(new Date(Long.parseLong(String.valueOf(timeStamp))));      // 时间戳转换成时间
     }
 
     /**

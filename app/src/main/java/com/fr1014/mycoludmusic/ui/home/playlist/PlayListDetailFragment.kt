@@ -65,7 +65,6 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
     }
 
     override fun initView() {
-        StatusBarUtils.setImmersiveStatusBar(activity?.window, false)
         mViewBinding?.apply {
             toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0)
             name.text = "歌单"
@@ -258,5 +257,10 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
             bundle.putBoolean(KEY_SHOW_DIALOG_INFO, showDialogInfo)
             return bundle
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        StatusBarUtils.setImmersiveStatusBar(activity?.window, false)
     }
 }

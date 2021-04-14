@@ -136,9 +136,13 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
             Navigation.findNavController(getView()).addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
                 @Override
                 public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
-                    if (destination.getId() == R.id.nav_home || destination.getId() == R.id.topListFragment) {
+                    if (destination.getId() == R.id.nav_home || destination.getId() == R.id.topListFragment || destination.getId() == R.id.userInfoFragment) {
                         if (getActivity() != null) {
                             StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), true);
+                        }
+                    } else {
+                        if (getActivity() != null) {
+                            StatusBarUtils.setImmersiveStatusBar(getActivity().getWindow(), false);
                         }
                     }
                 }
