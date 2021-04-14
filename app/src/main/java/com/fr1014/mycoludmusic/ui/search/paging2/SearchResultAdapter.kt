@@ -15,6 +15,7 @@ import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.ui.paging.AdapterDataObserverProxy
 import com.fr1014.mycoludmusic.ui.search.SearchViewModel
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 
@@ -94,6 +95,15 @@ class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAd
             }
         }
     }
+
+    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
+        super.registerAdapterDataObserver(AdapterDataObserverProxy(observer, 1))
+    }
+
+//    //java.lang.IllegalStateException: Observer androidx.paging.PagingDataAdapter was not registered.
+//    override fun unregisterAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
+//
+//    }
 
     class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
 
