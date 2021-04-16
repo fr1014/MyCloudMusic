@@ -34,7 +34,7 @@ class UserControlBarBlock @JvmOverloads constructor(
     private var mViewModel: CurrentPlayMusicViewModel? = null
     private var mLifecycleOwner: LifecycleOwner? = null
     private var musicLikes: MutableList<MusicLike>
-    private var userLikePid: Long? = null
+    private var userLikePid = 0L
 
     init {
         initView()
@@ -65,7 +65,7 @@ class UserControlBarBlock @JvmOverloads constructor(
             mViewModel?.playlistWYInfo?.observe(owner, Observer {
                 if (!CollectionUtils.isEmptyList(it)) {
                     userLikePid = it[0].id
-                    Preferences.saveUserLikePid(userId, userLikePid!!)
+                    Preferences.saveUserLikePid(userId, userLikePid)
                 }
             })
         }
@@ -99,7 +99,7 @@ class UserControlBarBlock @JvmOverloads constructor(
                     }
                     if (playMusic.id != 0L) {
                         val isLikeMusic = playMusic.isLikeMusic(musicLikes)
-                        mViewModel?.getLikeSong(!isLikeMusic, userLikePid!!, playMusic.id.toString(), System.currentTimeMillis().toString())
+                        mViewModel?.getLikeSong(!isLikeMusic, userLikePid, playMusic.id.toString(), System.currentTimeMillis().toString())
                     } else {
                         CommonUtils.toastLong("该歌曲源不是网易，暂时无法收藏")
                     }
