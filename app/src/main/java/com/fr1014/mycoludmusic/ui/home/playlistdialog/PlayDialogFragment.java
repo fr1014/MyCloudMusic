@@ -1,7 +1,6 @@
 package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -25,7 +24,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.fr1014.mycoludmusic.R;
-import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.databinding.FragmentPlayListDialogBinding;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 

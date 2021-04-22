@@ -19,6 +19,9 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
+/**
+ * 首页排行榜
+ */
 class TopListBlock @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
@@ -43,7 +46,7 @@ class TopListBlock @JvmOverloads constructor(
                 tvTopName.apply {
                     text = it.name
                     setOnClickListener { view ->
-                        Navigation.findNavController(view).navigate(R.id.playListDetailFragment,
+                        Navigation.findNavController(view).navigate(R.id.action_nav_home_to_playListDetailFragment,
                                 PlayListDetailFragment.createBundle(it.id, it.name, it.coverImgUrl)
                         )
                     }

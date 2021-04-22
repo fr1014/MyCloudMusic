@@ -112,7 +112,7 @@ class RecommendPlayListAdapter(layoutResId: Int) : BaseAdapter<CommonPlaylist, B
             R.id.item -> {
                 val data = getData(position)
                 val bundle = PlayListDetailFragment.createBundle(data.id, data.name, data.coverImgUrl)
-                Navigation.findNavController(view).navigate(R.id.playListDetailFragment, bundle)
+                Navigation.findNavController(view).navigate(R.id.action_nav_home_to_playListDetailFragment, bundle)
             }
             else -> {
             }

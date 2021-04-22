@@ -32,22 +32,22 @@ class HomeTopClickBlock @JvmOverloads constructor(
 
             ivDayRecommend.setOnClickListener {
                 navigateTo {
-                    Navigation.findNavController(it).navigate(R.id.dayRecommendFragment)
+                    Navigation.findNavController(it).navigate(R.id.action_nav_home_to_dayRecommendFragment)
                 }
             }
 
             ivLike.setOnClickListener {
                 navigateTo {
-                    Navigation.findNavController(it).navigate(R.id.userInfoFragment)
+                    Navigation.findNavController(it).navigate(R.id.action_nav_home_to_userInfoFragment)
                 }
             }
 
             ivTop.setOnClickListener {
-                Navigation.findNavController(it).navigate(R.id.topListFragment)
+                Navigation.findNavController(it).navigate(R.id.action_nav_home_to_topListFragment)
             }
 
             ivSongSale.setOnClickListener {
-                Navigation.findNavController(it).navigate(R.id.songSaleFragment)
+                Navigation.findNavController(it).navigate(R.id.action_nav_home_to_songSaleFragment)
             }
         }
     }

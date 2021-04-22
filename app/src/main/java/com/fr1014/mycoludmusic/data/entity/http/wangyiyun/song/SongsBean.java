@@ -35,7 +35,7 @@ public class SongsBean {
     private Object rurl;
     private int mst;
     private int cp;
-    private int mv;
+    private long mv;
     private long publishTime;
     private List<ArBean> ar;
     private List<?> alia;
@@ -169,7 +169,7 @@ public class SongsBean {
         return cp;
     }
 
-    public int getMv() {
+    public long getMv() {
         return mv;
     }
 

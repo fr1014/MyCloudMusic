@@ -23,6 +23,7 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.ui.home.comment.CommentActivity
 import com.fr1014.mycoludmusic.ui.login.LoginActivity
+import com.fr1014.mycoludmusic.ui.mv.MVActivity
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicViewModel
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.CommonUtils
@@ -35,6 +36,7 @@ class UserControlBarBlock @JvmOverloads constructor(
     private var mLifecycleOwner: LifecycleOwner? = null
     private var musicLikes: MutableList<MusicLike>
     private var userLikePid = 0L
+    private var playMusic: Music? = null
 
     init {
         initView()
@@ -55,19 +57,37 @@ class UserControlBarBlock @JvmOverloads constructor(
                 mViewModel?.getWYUserPlayList()
             }
 
-            mViewModel?.getLikeList()?.observe(owner, Observer {
-                musicLikes.clear()
-                musicLikes.addAll(it)
-                val playMusic = AudioPlayer.get().currentMusic
-                initLikeIcon(playMusic)
-            })
+            mViewModel?.let { viewModel ->
 
-            mViewModel?.playlistWYInfo?.observe(owner, Observer {
-                if (!CollectionUtils.isEmptyList(it)) {
-                    userLikePid = it[0].id
-                    Preferences.saveUserLikePid(userId, userLikePid)
-                }
-            })
+                viewModel.getLikeList().observe(owner, Observer {
+                    musicLikes.clear()
+                    musicLikes.addAll(it)
+                    val playMusic = AudioPlayer.get().currentMusic
+                    initLikeIcon(playMusic)
+                })
+
+                viewModel.playlistWYInfo.observe(owner, Observer {
+                    if (!CollectionUtils.isEmptyList(it)) {
+                        userLikePid = it[0].id
+                        Preferences.saveUserLikePid(userId, userLikePid)
+                    }
+                })
+
+                viewModel.songInfo.observe(owner, {
+                    if (it.mv > 0L) {
+                        mViewModel?.getWYMVInfo(it.mv)
+                    } else {
+                        CommonUtils.toastShort("该歌曲暂无MV")
+                    }
+                })
+
+                viewModel.mvData.observe(owner, {
+                    playMusic?.let { playMusic ->
+                        MVActivity.startMVActivity(context, it.url, playMusic.title, true)
+                        AudioPlayer.get().pausePlayer()
+                    }
+                })
+            }
         }
     }
 
@@ -116,6 +136,16 @@ class UserControlBarBlock @JvmOverloads constructor(
                     CommentActivity.getInstance(context, CommentType.SONG.type, playMusic.id, 20, 0L)
                 } else {
                     CommonUtils.toastShort("该歌曲非来自网易云，暂未支持评论功能！")
+                }
+            }
+            R.id.iv_mv -> {
+                playMusic = AudioPlayer.get().currentMusic ?: return
+                playMusic?.let { playMusic ->
+                    if (playMusic.id != 0L) {
+                        mViewModel?.getWYSongInfo(playMusic.id)
+                    } else {
+                        CommonUtils.toastShort("该歌曲非来自网易云，暂不支持播放MV")
+                    }
                 }
             }
             else -> {

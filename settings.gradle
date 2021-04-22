@@ -1,3 +1,4 @@
+include ':FRVideoPlayer'
 include ':FRecyclerviewAdapter'
 include ':mymvvm'
 include ':app'

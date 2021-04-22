@@ -137,7 +137,7 @@ public abstract class BasePlayActivity<VB extends ViewBinding, VM extends BaseVi
         }
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(R.anim.fragment_slide_up, 0);
+        ft.setCustomAnimations(R.anim.fragment_slide_enter, 0);
         if (mPlayFragment == null) {
             mPlayFragment = new CurrentPlayMusicFragment();
             ft.replace(android.R.id.content, mPlayFragment);
@@ -148,7 +148,7 @@ public abstract class BasePlayActivity<VB extends ViewBinding, VM extends BaseVi
 
     public void hidePlayingFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.setCustomAnimations(0, R.anim.fragment_slide_down);
+        ft.setCustomAnimations(0, R.anim.fragment_slide_exit);
         ft.remove(mPlayFragment);
         mPlayFragment = null;
         ft.commitAllowingStateLoss();

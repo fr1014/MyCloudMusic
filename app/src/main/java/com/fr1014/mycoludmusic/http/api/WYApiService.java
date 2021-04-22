@@ -4,6 +4,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.Comment;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.mv.MVInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
@@ -44,6 +45,13 @@ import retrofit2.http.Query;
 public interface WYApiService {
 
     /**
+     * @param id mv_id
+     * @return MV地址
+     */
+    @GET("mv/url")
+    Observable<MVInfo> getWYMVInfo(@Query("id") long id);
+
+    /**
      * 新版评论接口
      * 说明 : 调用此接口 , 传入资源类型和资源id,以及排序方式,可获取对应资源的评论
      * <p>
@@ -75,7 +83,7 @@ public interface WYApiService {
      * cursor: 当sortType为3时且页数不是第一页时需传入,值为上一条数据的time
      */
     @GET("comment/new")
-    Single<Comment> getWYComment(@Query("type") int type, @Query("id") long id, @Query("sortType") int sortType, @Query("cursor")String cursor,@Query("pageSize") int pageSize, @Query("pageNo") int pageNo);
+    Single<Comment> getWYComment(@Query("type") int type, @Query("id") long id, @Query("sortType") int sortType, @Query("cursor") String cursor, @Query("pageSize") int pageSize, @Query("pageNo") int pageNo);
 
 
     /**

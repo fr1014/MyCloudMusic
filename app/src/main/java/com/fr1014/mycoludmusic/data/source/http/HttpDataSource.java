@@ -7,6 +7,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.BaseResponse;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.Comment;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.DayRecommend;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.homeblock.HomeBlock;
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.mv.MVInfo;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.CollectPlaylist;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchDefault;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail;
@@ -51,6 +52,8 @@ public interface HttpDataSource {
     /*
      ========================网易云===================================
    */
+    Observable<MVInfo> getWYMVInfo(long id);
+
     Single<Comment> getWYComment(int type, long id, int sortType, String cursor, int pageSize, int pageNo);
 
     Observable<CollectPlaylist> getWYCollectPlayList(int type, long id, String timestamp);

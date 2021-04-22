@@ -150,7 +150,7 @@ public class HomeFragment extends BaseFragment<FragmentHomeBinding, HomeViewMode
         }
 
         mViewBinding.tvBtMore.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.topListFragment);
+            Navigation.findNavController(v).navigate(R.id.action_nav_home_to_topListFragment);
         });
     }
 

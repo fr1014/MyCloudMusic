@@ -88,7 +88,7 @@ class UserPlayListAdapter(layoutResId:Int) : BaseAdapter<Playlist,BaseViewHolder
             R.id.cl_playlist ->{
                 val data = getData(position)
                 val bundle = PlayListDetailFragment.createBundle(data.id, data.name, data.coverImgUrl)
-                Navigation.findNavController(view).navigate(R.id.playListDetailFragment, bundle)
+                Navigation.findNavController(view).navigate(R.id.action_userInfoFragment_to_playListDetailFragment, bundle)
             }
         }
     }

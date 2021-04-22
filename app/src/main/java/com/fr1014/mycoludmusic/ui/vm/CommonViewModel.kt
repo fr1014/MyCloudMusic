@@ -9,22 +9,32 @@ import androidx.paging.PagingConfig
 import androidx.paging.rxjava2.cachedIn
 import androidx.paging.rxjava2.observable
 import com.fr1014.mycoludmusic.data.DataRepository
-import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.Comment
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.mv.MVData
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist
+import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.home.comment.paging3.CommentPagingSource
 import com.fr1014.mymvvm.base.BaseViewModel
 import com.fr1014.mymvvm.base.BusLiveData
-import java.util.*
-import java.util.Arrays.copyOf
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
+import io.reactivex.schedulers.Schedulers
 import kotlin.collections.ArrayList
 
 open class CommonViewModel : BaseViewModel<DataRepository> {
 
-    var commentPagingSource : CommentPagingSource? = null
+    var commentPagingSource: CommentPagingSource? = null
+
+    private val mvDataLive: MutableLiveData<MVData> by lazy {
+        MutableLiveData()
+    }
+
+    private val songInfoLive: MutableLiveData<SongsBean> by lazy {
+        MutableLiveData()
+    }
 
     private val playListDetailIds: BusLiveData<Array<Long>> by lazy {
         BusLiveData()
@@ -42,10 +52,13 @@ open class CommonViewModel : BaseViewModel<DataRepository> {
     constructor(application: Application, model: DataRepository?) : super(application, model) {}
 
     fun commentList(type: Int, id: Long, pageSize: Int) = Pager(PagingConfig(pageSize = 6)) {
-        commentPagingSource  = CommentPagingSource(type, id, pageSize)
+        commentPagingSource = CommentPagingSource(type, id, pageSize)
         commentPagingSource!!
     }.observable.cachedIn(viewModelScope)
 
+    val mvData: LiveData<MVData> = mvDataLive
+
+    val songInfo: LiveData<SongsBean> = songInfoLive
 
     val playListDetailInfo: LiveData<PlayListDetailEntity> = playListDetailLive
 
@@ -54,6 +67,53 @@ open class CommonViewModel : BaseViewModel<DataRepository> {
     fun getPlayListDetail(id: Long): LiveData<Array<Long>> {
         getPlayListDetailEntity(id)
         return playListDetailIds
+    }
+
+    /*
+                dataRepository.getWYSongDetail(music.getId() + "")
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .map(songDetailEntity -> {
+                        if (songDetailEntity.getSongs() != null && songDetailEntity.getSongs().size() > 0) {
+                            music.setImgUrl(songDetailEntity.getSongs().get(0).getAl().getPicUrl());
+                            music.setDuration(songDetailEntity.getSongs().get(0).getDt());
+                        }
+                        return music;
+                    })
+                    .subscribe(new SingleObserver<Music>() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onSuccess(@NonNull Music music) {
+                            CoverLoadUtils.get().loadRemoteCover(music);
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+
+                        }
+                    });
+     */
+
+    fun getWYMVInfo(id: Long) {
+        addSubscribe(model.getWYMVInfo(id)
+                .compose(RxSchedulers.applyIO())
+                .subscribe {
+                    mvDataLive.postValue(it.data)
+                })
+    }
+
+    fun getWYSongInfo(id: Long) {
+        addSubscribe(model.getWYSongDetail(id.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(Consumer {
+                    songInfoLive.postValue(it.songs[0])
+                })
+        )
     }
 
     private fun getPlayListDetailEntity(id: Long) {

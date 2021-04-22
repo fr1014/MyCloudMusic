@@ -79,7 +79,7 @@ class UserInfoFragment : BaseFragment<FragmentUserInfoBinding, UserInfoViewModel
             val bundle = myLikePlayList?.id?.let { id ->
                 PlayListDetailFragment.createBundle(id, myLikePlayList?.name, myLikePlayList?.coverImgUrl,false)
             }
-            Navigation.findNavController(it).navigate(R.id.playListDetailFragment, bundle)
+            Navigation.findNavController(it).navigate(R.id.action_userInfoFragment_to_playListDetailFragment, bundle)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mViewBinding.scrollView.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->

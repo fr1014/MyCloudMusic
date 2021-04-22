@@ -86,7 +86,7 @@ public class TopListAdapter extends BaseAdapter<TopListDetailEntity.ListBean, Ba
             public void onClick(View view) {
                 Bundle bundle = PlayListDetailFragment.Companion.createBundle(data.getId(), data.getName(), data.getCoverImgUrl());
                 Navigation.findNavController(view)
-                        .navigate(R.id.playListDetailFragment, bundle);
+                        .navigate(R.id.action_topListFragment_to_playListDetailFragment, bundle);
             }
         });
     }

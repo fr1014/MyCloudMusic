@@ -47,7 +47,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     @Override
     protected CurrentPlayMusicViewModel initViewModel() {
-        return new ViewModelProvider(getActivity(), AppViewModelFactory.getInstance(MyApplication.getInstance())).get(CurrentPlayMusicViewModel.class);
+        return new ViewModelProvider(this, AppViewModelFactory.getInstance(MyApplication.getInstance())).get(CurrentPlayMusicViewModel.class);
     }
 
     @Override
@@ -191,15 +191,15 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
     private void setTipsVisibility(int visibility) {
         Music music = getCurrentPlayMusic();
         if (music == null) return;
-        if (music.getId() != 0L && TextUtils.isEmpty(music.getMUSICRID())){
+        if (music.getId() != 0L && TextUtils.isEmpty(music.getMUSICRID())) {
             mViewBinding.tvTips.setVisibility(View.GONE);
             return;
         }
 
-        if (music.getId() != 0L && !TextUtils.isEmpty(music.getMUSICRID())){
+        if (music.getId() != 0L && !TextUtils.isEmpty(music.getMUSICRID())) {
             String tips = "该歌曲源并非来自\"网易\"\n匹配的歌曲源可能不正确";
             mViewBinding.tvTips.setText(tips);
-        }else if (music.getId() != 0L){
+        } else if (music.getId() != 0L) {
             String tips = "该歌曲源并非来自\"网易\"\n1、该歌曲无法收藏\n2、匹配的歌曲源可能不正确";
             mViewBinding.tvTips.setText(tips);
         }
@@ -213,7 +213,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
 
     private void initSeekBarData(Music music) {
         long duration = music.getDuration();
-        if (duration == 0) {
+        if (duration == 0 && !AudioPlayer.get().isIdle()) {
             duration = player.getDuration();
         }
         sbProgress.setMax((int) Math.abs(duration));

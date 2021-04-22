@@ -10,43 +10,66 @@
         android:name="com.fr1014.mycoludmusic.ui.home.homepage.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home">
+
         <action
             android:id="@+id/action_nav_home_to_topListFragment"
-            app:destination="@id/topListFragment" />
+            app:destination="@id/topListFragment"
+            app:enterAnim="@anim/slide_from_right_to_left_in"
+            app:exitAnim="@anim/slide_from_right_to_left_out"
+            app:popEnterAnim="@anim/slide_from_left_to_right_in"
+            app:popExitAnim="@anim/slide_from_left_to_right_out" />
         <action
             android:id="@+id/action_nav_home_to_playListDetailFragment"
-            app:destination="@id/playListDetailFragment" />
+            app:destination="@id/playListDetailFragment"
+            app:enterAnim="@anim/slide_from_right_to_left_in"
+            app:exitAnim="@anim/slide_from_right_to_left_out"
+            app:popEnterAnim="@anim/slide_from_left_to_right_in"
+            app:popExitAnim="@anim/slide_from_left_to_right_out" />
         <action
             android:id="@+id/action_nav_home_to_userInfoFragment"
             app:destination="@id/userInfoFragment"
-            app:enterAnim="@anim/anim_enter"
-            app:exitAnim="@anim/anim_exit"
-            app:popEnterAnim="@anim/anim_enter"
-            app:popExitAnim="@anim/anim_exit" />
+            app:enterAnim="@anim/slide_from_right_to_left_in"
+            app:exitAnim="@anim/slide_from_right_to_left_out"
+            app:popEnterAnim="@anim/slide_from_left_to_right_in"
+            app:popExitAnim="@anim/slide_from_left_to_right_out" />
         <action
             android:id="@+id/action_nav_home_to_dayRecommendFragment"
-            app:destination="@id/dayRecommendFragment" />
+            app:destination="@id/dayRecommendFragment"
+            app:enterAnim="@anim/slide_from_right_to_left_in"
+            app:exitAnim="@anim/slide_from_right_to_left_out"
+            app:popEnterAnim="@anim/slide_from_left_to_right_in"
+            app:popExitAnim="@anim/slide_from_left_to_right_out" />
         <action
             android:id="@+id/action_nav_home_to_songSaleFragment"
-            app:destination="@id/songSaleFragment" />
+            app:destination="@id/songSaleFragment"
+            app:enterAnim="@anim/slide_from_right_to_left_in"
+            app:exitAnim="@anim/slide_from_right_to_left_out"
+            app:popEnterAnim="@anim/slide_from_left_to_right_in"
+            app:popExitAnim="@anim/slide_from_left_to_right_out" />
     </fragment>
 
     <fragment
         android:id="@+id/topListFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.toplist.TopListFragment"
         android:label="排行榜"
-        tools:layout="@layout/fragment_top_list" >
+        tools:layout="@layout/fragment_top_list">
         <action
             android:id="@+id/action_topListFragment_to_playListDetailFragment"
-            app:destination="@id/playListDetailFragment" />
+            app:destination="@id/playListDetailFragment"
+            app:enterAnim="@anim/slide_from_right_to_left_in"
+            app:exitAnim="@anim/slide_from_right_to_left_out"
+            app:popEnterAnim="@anim/slide_from_left_to_right_in"
+            app:popExitAnim="@anim/slide_from_left_to_right_out" />
     </fragment>
+
     <fragment
         android:id="@+id/playListDetailFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment"
         android:label="歌单列表"
-        tools:layout="@layout/fragment_playlist_detail" >
+        tools:layout="@layout/fragment_playlist_detail">
 
     </fragment>
+
     <fragment
         android:id="@+id/userInfoFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.userinfo.UserInfoFragment"
@@ -55,22 +78,24 @@
         <action
             android:id="@+id/action_userInfoFragment_to_playListDetailFragment"
             app:destination="@id/playListDetailFragment"
-            app:enterAnim="@anim/fragment_close_enter"
-            app:exitAnim="@anim/fragment_close_exit"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:enterAnim="@anim/slide_from_right_to_left_in"
+            app:exitAnim="@anim/slide_from_right_to_left_out"
+            app:popEnterAnim="@anim/slide_from_left_to_right_in"
+            app:popExitAnim="@anim/slide_from_left_to_right_out" />
     </fragment>
 
-    <fragment android:id="@+id/dayRecommendFragment"
+    <fragment
+        android:id="@+id/dayRecommendFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.homepage.dayrecommend.DayRecommendFragment"
         android:label="每日推荐"
         tools:layout="@layout/fragment_day_recommend">
 
     </fragment>
 
-    <fragment android:id="@+id/songSaleFragment"
+    <fragment
+        android:id="@+id/songSaleFragment"
         android:name="com.fr1014.mycoludmusic.ui.home.songsale.SongSaleFragment"
         android:label="数字专辑"
-        tools:layout="@layout/fragment_song_sale"/>
+        tools:layout="@layout/fragment_song_sale" />
 
 </navigation>
