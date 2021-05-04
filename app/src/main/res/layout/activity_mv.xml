@@ -9,6 +9,7 @@
     <com.fr1014.frvideoplayer.player.FRVideoPlayer
         android:id="@+id/fr_video_player"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="#232323" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

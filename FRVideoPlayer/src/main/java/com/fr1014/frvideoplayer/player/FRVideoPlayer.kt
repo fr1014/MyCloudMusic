@@ -75,8 +75,7 @@ class FRVideoPlayer @JvmOverloads constructor(
         activity = context as Activity
         activity.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
-        viewBinding = FrPlayerViewBinding.inflate(LayoutInflater.from(context), this, false)
-        addView(viewBinding.root)
+        viewBinding = FrPlayerViewBinding.inflate(LayoutInflater.from(context), this)
 
         initViews()
 
@@ -98,10 +97,10 @@ class FRVideoPlayer @JvmOverloads constructor(
 
         viewBinding.apply {
             ivStatus.setOnClickListener(this@FRVideoPlayer)
-            root.setOnClickListener(this@FRVideoPlayer)
+            rlSurface.setOnClickListener(this@FRVideoPlayer)
             back.setOnClickListener(this@FRVideoPlayer)
             progressBar.setOnSeekBarChangeListener(this@FRVideoPlayer)
-            root.isClickable = false
+            rlSurface.isClickable = false
             tvTitle.text = videoTitle
         }
 
@@ -112,7 +111,7 @@ class FRVideoPlayer @JvmOverloads constructor(
             R.id.back -> {
                 activity.finish()
             }
-            R.id.root -> {
+            R.id.rl_surface -> {
                 if (viewBinding.topVideo.visibility == View.GONE) {
                     showControllerMenu()
                 } else {
@@ -230,7 +229,7 @@ class FRVideoPlayer @JvmOverloads constructor(
         mp.start()
         viewBinding.progressBar.max = mp.duration
         fitVideoSize()
-        viewBinding.root.isClickable = true
+        viewBinding.rlSurface.isClickable = true
         showControllerMenu()  //展示控制界面（进度条，状态按钮。。。）
     }
 
