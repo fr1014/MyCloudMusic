@@ -27,8 +27,10 @@ import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.block.PlayListHeaderBlock
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.ui.home.playlist.dialog.PlayListInfoDialog
+import com.fr1014.mycoludmusic.ui.mv.MVActivity
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils
 import com.fr1014.mycoludmusic.ui.paging.AdapterDataObserverProxy
+import com.fr1014.mycoludmusic.utils.CommonUtils
 import de.hdodenhof.circleimageview.CircleImageView
 
 class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private val mOwner: LifecycleOwner) : PagingDataAdapter<Music, RecyclerView.ViewHolder>(PlayListComparator) {
@@ -124,8 +126,24 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
             }
             else -> {
                 PlayListViewHolder.newInstance(parent).also { holder ->
-                    holder.itemView.setOnClickListener {
-                        AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition - 1) as Music)
+                    holder.itemView.apply {
+
+                        setOnClickListener {
+                            AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition - 1) as Music)
+                        }
+
+                        findViewById<LinearLayout>(R.id.ll_mv).setOnClickListener {
+                            if (!CommonUtils.isFastClick()) {
+                                val music = getItem(holder.adapterPosition - 1) as Music
+                                if (music.mvId != 0L) {
+                                    mViewModel.getWYMVInfo(music)
+                                }
+                            }
+                        }
+
+                        findViewById<LinearLayout>(R.id.ll_more).setOnClickListener {
+                            CommonUtils.rd_ing()
+                        }
                     }
                 }
             }
@@ -172,6 +190,9 @@ class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
             setText(R.id.tv_author, music.artist)
         } else {
             setText(R.id.tv_author, music.artist + " - " + music.album)
+        }
+        if (music.mvId != 0L) {
+            getView<LinearLayout>(R.id.ll_mv).visibility = View.VISIBLE
         }
     }
 

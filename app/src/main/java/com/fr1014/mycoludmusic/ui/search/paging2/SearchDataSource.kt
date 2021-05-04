@@ -162,6 +162,7 @@ class SearchDataSource(private val searchKey: String) : PageKeyedDataSource<Int,
                 title = song.name
                 original = song.originCoverType.toString() + ""
                 id = song.id.toLong()
+                mvId = song.mv
             }
             if (!CollectionUtils.isEmptyList(song.alia)) {
                 music.subTitle = song.alia[0].toString()

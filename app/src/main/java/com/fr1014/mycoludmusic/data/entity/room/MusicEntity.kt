@@ -10,7 +10,7 @@ data class MusicEntity(
         @ColumnInfo(name = "artist") val artist: String?,   //歌手
         @ColumnInfo(name = "imageUrl") val imgUrl: String?, //专辑图片地址
         @ColumnInfo(name = "wyy_id") var id: Long?, //网易歌曲id
-        @ColumnInfo(name = "kw_id") var musicRid: String?, //网易歌曲id
+        @ColumnInfo(name = "kw_id") var musicRid: String?, //酷我歌曲id
         @ColumnInfo(name = "duration") var duration : Long?, //歌曲时长
         @ColumnInfo(name = "history") var history : Boolean
 ) {

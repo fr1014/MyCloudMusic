@@ -25,6 +25,7 @@ import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding
 import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter.OnPlayAllClickListener
+import com.fr1014.mycoludmusic.ui.mv.MVActivity
 import com.fr1014.mycoludmusic.ui.paging.FooterAdapter
 import com.fr1014.mycoludmusic.utils.CommonUtils
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils.Companion.paletteDownBg
@@ -226,8 +227,12 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
                 pAdapter.setHeadInfo(type)
             })
             viewModel.getCollectPlayList().observe(viewLifecycleOwner, { (code, point, msg) -> pAdapter.setHeadInfo(viewModel.collectPlayListType) })
-        }
 
+            viewModel.mvMusic.observe(viewLifecycleOwner, {
+                context?.let { context -> MVActivity.startMVActivity(context, it.mvUrl, it.title, true) }
+                AudioPlayer.get().pausePlayer()
+            })
+        }
     }
 
     private fun initHeaderView(length: Int) {

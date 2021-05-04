@@ -96,7 +96,7 @@ class TopListBlock @JvmOverloads constructor(
 
     private fun playMusic(track: Track, author: String) {
         track.apply {
-            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, ""))
+            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, "", track.mv))
         }
     }
 

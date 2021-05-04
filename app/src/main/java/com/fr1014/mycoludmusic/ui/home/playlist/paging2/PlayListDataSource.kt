@@ -43,12 +43,13 @@ class PlayListDataSource(private val ids: Array<Long>) : RxPagingSource<QueryCom
                             }
                         }
                         music.apply {
-                            id = song.id.toLong()
+                            id = song.id
                             artist = sb.toString()
                             title = song.name
                             imgUrl = song.al.picUrl
-                            duration = song.dt.toLong()
+                            duration = song.dt
                             album = song.al.name
+                            mvId = song.mv
                         }
                         musics.add(music)
                     }

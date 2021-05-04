@@ -15,7 +15,7 @@ public class SongsBean {
     private Object crbt;
     private String cf;
     private AlBean al;
-    private int dt;
+    private long dt;
     private HBean h;
     private MBean m;
     private LBean l;
@@ -89,7 +89,7 @@ public class SongsBean {
         return al;
     }
 
-    public int getDt() {
+    public long getDt() {
         return dt;
     }
 

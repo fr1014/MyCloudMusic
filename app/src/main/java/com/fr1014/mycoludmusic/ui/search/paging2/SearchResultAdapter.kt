@@ -17,6 +17,7 @@ import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
 import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.ui.paging.AdapterDataObserverProxy
 import com.fr1014.mycoludmusic.ui.search.SearchViewModel
+import com.fr1014.mycoludmusic.utils.CommonUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 
 /**
@@ -72,8 +73,15 @@ class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAd
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             R.layout.item_playlist_detail -> PlayListViewHolder.newInstance(parent).also { holder ->
-                holder.itemView.setOnClickListener {
-                    AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition) as Music)
+                holder.itemView.apply {
+
+                    setOnClickListener {
+                        AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition) as Music)
+                    }
+
+                    findViewById<LinearLayout>(R.id.ll_more).setOnClickListener {
+                        CommonUtils.rd_ing()
+                    }
                 }
             }
             else -> FooterViewHolder.newInstance(parent).also {

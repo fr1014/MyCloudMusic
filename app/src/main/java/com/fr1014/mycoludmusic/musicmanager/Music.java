@@ -19,6 +19,8 @@ public class Music implements Parcelable {
     private long duration;          // 持续时间
     private String original;        //是否为原唱 1为原唱，0为非原唱
     private String album;           //歌曲专辑
+    private long mvId;              //MV_Id
+    private String mvUrl;           //Mv地址
     private boolean isOnlineMusic = true;  //是否为在线歌曲
 
     public Music() {
@@ -32,16 +34,17 @@ public class Music implements Parcelable {
         this.isOnlineMusic = isOnlineMusic;
     }
 
-    public Music(long id, String artist, String title, String songUrl, String imgUrl, String MUSICRID) {
+    public Music(long id, String artist, String title, String songUrl, String imgUrl, String MUSICRID, long mvId) {
         this.id = id;
         this.artist = artist;
         this.title = title;
         this.songUrl = songUrl;
         this.imgUrl = imgUrl;
         this.MUSICRID = MUSICRID;
+        this.mvId = mvId;
     }
 
-    public Music(long id, String artist, String title, String songUrl, String imgUrl, String MUSICRID, long duration) {
+    public Music(long id, String artist, String title, String songUrl, String imgUrl, String MUSICRID, long duration, long mvId) {
         this.id = id;
         this.artist = artist;
         this.title = title;
@@ -49,6 +52,7 @@ public class Music implements Parcelable {
         this.imgUrl = imgUrl;
         this.MUSICRID = MUSICRID;
         this.duration = duration;
+        this.mvId = mvId;
     }
 
     public String getMUSICRID() {
@@ -137,6 +141,22 @@ public class Music implements Parcelable {
 
     public void setSubTitle(String subTitle) {
         this.subTitle = subTitle;
+    }
+
+    public long getMvId() {
+        return mvId;
+    }
+
+    public void setMvId(long mvId) {
+        this.mvId = mvId;
+    }
+
+    public String getMvUrl() {
+        return mvUrl;
+    }
+
+    public void setMvUrl(String mvUrl) {
+        this.mvUrl = mvUrl;
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetai
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike
+import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.home.comment.paging3.CommentPagingSource
@@ -27,6 +28,10 @@ import kotlin.collections.ArrayList
 open class CommonViewModel : BaseViewModel<DataRepository> {
 
     var commentPagingSource: CommentPagingSource? = null
+
+    private val mvMusicLive: MutableLiveData<Music> by lazy {
+        MutableLiveData()
+    }
 
     private val mvDataLive: MutableLiveData<MVData> by lazy {
         MutableLiveData()
@@ -55,6 +60,8 @@ open class CommonViewModel : BaseViewModel<DataRepository> {
         commentPagingSource = CommentPagingSource(type, id, pageSize)
         commentPagingSource!!
     }.observable.cachedIn(viewModelScope)
+
+    val mvMusic: LiveData<Music> = mvMusicLive
 
     val mvData: LiveData<MVData> = mvDataLive
 
@@ -97,6 +104,15 @@ open class CommonViewModel : BaseViewModel<DataRepository> {
                         }
                     });
      */
+
+    fun getWYMVInfo(music: Music) {
+        addSubscribe(model.getWYMVInfo(music.mvId)
+                .compose(RxSchedulers.applyIO())
+                .subscribe {
+                    music.mvUrl = it.data.url
+                    mvMusicLive.postValue(music)
+                })
+    }
 
     fun getWYMVInfo(id: Long) {
         addSubscribe(model.getWYMVInfo(id)

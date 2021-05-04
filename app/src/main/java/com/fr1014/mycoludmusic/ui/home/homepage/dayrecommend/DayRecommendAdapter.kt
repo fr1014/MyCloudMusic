@@ -26,12 +26,12 @@ class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHol
 
     @SuppressLint("SetTextI18n")
     override fun convert(holder: BaseViewHolder, data: SongsBean) {
-        if (showItemCover){
+        if (showItemCover) {
             GlideApp.with(holder.itemView)
                     .load(data.al.picUrl + "?param=200y200")
                     .apply(RequestOptions().placeholder(R.drawable.ic_placeholder).centerCrop().transform(RoundedCorners(30)))
                     .into(holder.getView(R.id.iv_cover))
-        }else{
+        } else {
             holder.getView<TextView>(R.id.tv_order).apply {
                 text = holder.adapterPosition.toString()
                 visibility = View.VISIBLE
@@ -49,7 +49,7 @@ class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHol
         when (view.id) {
             R.id.item_view -> {
                 val data = getData(position)
-                AudioPlayer.get().addAndPlay(Music(data.id, data.getArInfo(), data.name, "", "", ""))
+                AudioPlayer.get().addAndPlay(Music(data.id, data.getArInfo(), data.name, "", "", "", data.mv))
             }
         }
     }

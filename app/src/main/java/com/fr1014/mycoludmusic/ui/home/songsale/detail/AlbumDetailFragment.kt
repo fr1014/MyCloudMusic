@@ -133,7 +133,7 @@ class AlbumDetailFragment : BaseFragment<FragmentAlbumDetailBinding, SongSaleVie
     private fun addAndPlay() {
         val musics = ArrayList<Music>()
         for (data in mAdapter.datas) {
-            musics.add(Music(data.id, data.getArInfo(), data.name, "", cover, ""))
+            musics.add(Music(data.id, data.getArInfo(), data.name, "", cover, "", data.mv))
         }
         AudioPlayer.get().addAndPlay(musics)
     }

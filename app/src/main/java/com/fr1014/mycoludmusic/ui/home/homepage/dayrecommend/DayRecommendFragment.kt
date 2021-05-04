@@ -151,7 +151,7 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
                     sb.append(name).append('/')
                 }
             }
-            val music = Music(bean.id, sb.substring(0, sb.length - 1), bean.name, "", "", "")
+            val music = Music(bean.id, sb.substring(0, sb.length - 1), bean.name, "", "", "",bean.mv)
             musics.add(music)
         }
         return musics
