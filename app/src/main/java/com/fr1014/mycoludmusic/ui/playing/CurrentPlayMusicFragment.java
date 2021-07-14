@@ -268,7 +268,7 @@ public class CurrentPlayMusicFragment extends BaseFragment<FragmentCurrentMusicB
         mViewBinding.albumCoverView.endAnimator();
         resetSeekBarData();
         setMusicInfo(music);
-        mViewBinding.userControlBar.initLikeIcon(music);
+        mViewBinding.userControlBar.musicChange(music);
     }
 
     @Override

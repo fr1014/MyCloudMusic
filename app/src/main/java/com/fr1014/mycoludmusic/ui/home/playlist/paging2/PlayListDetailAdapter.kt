@@ -191,9 +191,7 @@ class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
         } else {
             setText(R.id.tv_author, music.artist + " - " + music.album)
         }
-        if (music.mvId != 0L) {
-            getView<LinearLayout>(R.id.ll_mv).visibility = View.VISIBLE
-        }
+        getView<LinearLayout>(R.id.ll_mv).visibility = if(music.mvId != 0L) View.VISIBLE else View.INVISIBLE
     }
 
 }

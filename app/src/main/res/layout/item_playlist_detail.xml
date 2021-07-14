@@ -104,7 +104,7 @@
             android:layout_weight="0.5"
             android:background="?attr/selectableItemBackground"
             android:gravity="center"
-            android:visibility="gone">
+            android:visibility="invisible">
 
             <ImageView
                 android:id="@+id/iv_mv"

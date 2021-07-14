@@ -6,6 +6,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.Intent
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -62,8 +63,9 @@ class UserControlBarBlock @JvmOverloads constructor(
                 viewModel.getLikeList().observe(owner, Observer {
                     musicLikes.clear()
                     musicLikes.addAll(it)
-                    val playMusic = AudioPlayer.get().currentMusic
-                    initLikeIcon(playMusic)
+                    playMusic?.let { playMusic ->
+                        initLikeIcon(playMusic)
+                    }
                 })
 
                 viewModel.playlistWYInfo.observe(owner, Observer {
@@ -73,19 +75,9 @@ class UserControlBarBlock @JvmOverloads constructor(
                     }
                 })
 
-                viewModel.songInfo.observe(owner, {
-                    if (it.mv > 0L) {
-                        mViewModel?.getWYMVInfo(it.mv)
-                    } else {
-                        CommonUtils.toastShort("该歌曲暂无MV")
-                    }
-                })
-
-                viewModel.mvData.observe(owner, {
-                    playMusic?.let { playMusic ->
-                        MVActivity.startMVActivity(context, it.url, playMusic.title, true)
-                        AudioPlayer.get().pausePlayer()
-                    }
+                viewModel.mvMusic.observe(owner, {
+                    MVActivity.startMVActivity(context, it.mvUrl, it.title, true)
+                    AudioPlayer.get().pausePlayer()
                 })
             }
         }
@@ -112,16 +104,17 @@ class UserControlBarBlock @JvmOverloads constructor(
             R.id.iv_like -> {
                 if (BaseConfig.isLogin) {
                     startLikeAnimator()
-                    val playMusic = AudioPlayer.get().currentMusic
                     if (userLikePid == 0L) {
                         CommonUtils.toastShort("尚未登录")
                         return
                     }
-                    if (playMusic.id != 0L) {
-                        val isLikeMusic = playMusic.isLikeMusic(musicLikes)
-                        mViewModel?.getLikeSong(!isLikeMusic, userLikePid, playMusic.id.toString(), System.currentTimeMillis().toString())
-                    } else {
-                        CommonUtils.toastLong("该歌曲源不是网易，暂时无法收藏")
+                    playMusic?.let { playMusic ->
+                        if (playMusic.id != 0L) {
+                            val isLikeMusic = playMusic.isLikeMusic(musicLikes)
+                            mViewModel?.getLikeSong(!isLikeMusic, userLikePid, playMusic.id.toString(), System.currentTimeMillis().toString())
+                        } else {
+                            CommonUtils.toastLong("该歌曲源不是网易，暂时无法收藏")
+                        }
                     }
                 } else {
                     if (context is MainActivity) {
@@ -131,21 +124,28 @@ class UserControlBarBlock @JvmOverloads constructor(
                 }
             }
             R.id.iv_comment -> {
-                val playMusic = AudioPlayer.get().currentMusic ?: return
-                if (playMusic.id != 0L) {
-                    CommentActivity.getInstance(context, CommentType.SONG.type, playMusic.id, 20, 0L)
-                } else {
-                    CommonUtils.toastShort("该歌曲非来自网易云，暂未支持评论功能！")
+                playMusic?.let { playMusic ->
+                    if (playMusic.id != 0L) {
+                        CommentActivity.getInstance(context, CommentType.SONG.type, playMusic.id, 20, 0L)
+                    } else {
+                        CommonUtils.toastShort("该歌曲非来自网易云，暂未支持评论功能！")
+                    }
                 }
             }
             R.id.iv_mv -> {
-                playMusic = AudioPlayer.get().currentMusic ?: return
                 playMusic?.let { playMusic ->
-                    if (playMusic.id != 0L) {
-                        mViewModel?.getWYSongInfo(playMusic.id)
-                    } else {
-                        CommonUtils.toastShort("该歌曲非来自网易云，暂不支持播放MV")
+                    when {
+                        playMusic.id == 0L -> {
+                            CommonUtils.toastShort("该歌曲非来自网易云,暂时不支持播放MV")
+                        }
+                        playMusic.mvId == 0L -> {
+                            CommonUtils.toastShort("该歌曲暂时无MV")
+                        }
+                        else -> {
+                            mViewModel?.getWYMVInfo(playMusic)
+                        }
                     }
+
                 }
             }
             else -> {
@@ -154,7 +154,22 @@ class UserControlBarBlock @JvmOverloads constructor(
         }
     }
 
-    fun initLikeIcon(music: Music) {
+    fun musicChange(music: Music) {
+        playMusic = music
+        initMvIcon(music)
+        initLikeIcon(music)
+    }
+
+    private fun initMvIcon(music: Music) {
+        //音乐非网易 或 歌曲本身就无mv
+        if (music.id == 0L || music.mvId == 0L) {
+            mViewBinding.ivSlash.visibility = View.VISIBLE
+        }else{
+            mViewBinding.ivSlash.visibility = View.GONE
+        }
+    }
+
+    private fun initLikeIcon(music: Music) {
         if (music.id == 0L) {
             mViewBinding.ivLike.setImageDrawable(context.getDrawable(R.drawable.selector_like))
             return

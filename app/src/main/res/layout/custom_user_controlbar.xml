@@ -37,6 +37,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/iv_slash"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_slash_solid"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline5"
+        app:layout_constraintStart_toStartOf="@+id/guideline4"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/iv_mv"
         android:layout_width="24dp"
         android:layout_height="24dp"

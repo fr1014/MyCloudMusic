@@ -63,10 +63,6 @@ open class CommonViewModel : BaseViewModel<DataRepository> {
 
     val mvMusic: LiveData<Music> = mvMusicLive
 
-    val mvData: LiveData<MVData> = mvDataLive
-
-    val songInfo: LiveData<SongsBean> = songInfoLive
-
     val playListDetailInfo: LiveData<PlayListDetailEntity> = playListDetailLive
 
     val playlistWYInfo: LiveData<List<Playlist>> = playlistWYLive
