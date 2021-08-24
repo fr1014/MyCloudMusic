@@ -38,6 +38,8 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListDetailEntity;
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.TopListEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.LocalDataSource;
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike;
+import com.fr1014.mycoludmusic.http.api.KKWApiService;
+import com.fr1014.mycoludmusic.http.api.KWYApiService;
 import com.fr1014.mymvvm.base.BaseModel;
 
 import java.util.List;
@@ -57,17 +59,21 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     private volatile static DataRepository instance = null;
     private HttpDataSource httpDataSource;
     private LocalDataSource localDataSource;
+    public KKWApiService kkwApiService;
+    public KWYApiService kwyApiService;
 
-    private DataRepository(HttpDataSource httpDataSource, LocalDataSource localDataSource) {
+    private DataRepository(HttpDataSource httpDataSource, LocalDataSource localDataSource, KKWApiService kkwApiService, KWYApiService kwyApiService) {
         this.httpDataSource = httpDataSource;
         this.localDataSource = localDataSource;
+        this.kkwApiService = kkwApiService;
+        this.kwyApiService = kwyApiService;
     }
 
-    public static DataRepository getInstance(HttpDataSource httpDataSource, LocalDataSource localDataSource) {
+    public static DataRepository getInstance(HttpDataSource httpDataSource, LocalDataSource localDataSource, KKWApiService kkwApiService, KWYApiService kwyApiService) {
         if (instance == null) {
             synchronized (DataRepository.class) {
                 if (instance == null) {
-                    instance = new DataRepository(httpDataSource, localDataSource);
+                    instance = new DataRepository(httpDataSource, localDataSource, kkwApiService, kwyApiService);
                 }
             }
         }
@@ -80,7 +86,7 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<MVInfo> getWYMVInfo(long id) {
+    public Observable<MVInfo> getWYMVInfo(String id) {
         return httpDataSource.getWYMVInfo(id);
     }
 
@@ -219,7 +225,7 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public Observable<WYSongLrcEntity> getWYSongLrcEntity(long id) {
+    public Observable<WYSongLrcEntity> getWYSongLrcEntity(String id) {
         return httpDataSource.getWYSongLrcEntity(id);
     }
 
@@ -323,7 +329,7 @@ public class DataRepository extends BaseModel implements HttpDataSource, LocalDa
     }
 
     @Override
-    public MusicLike getItemLive(Long id) {
+    public MusicLike getItemLive(String id) {
         return localDataSource.getItemLive(id);
     }
 

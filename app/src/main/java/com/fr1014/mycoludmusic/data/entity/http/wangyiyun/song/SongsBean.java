@@ -1,5 +1,7 @@
 package com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class SongsBean {
@@ -219,6 +221,18 @@ public class SongsBean {
 
         public List<?> getTns() {
             return tns;
+        }
+
+        @Override
+        public String toString() {
+            return "AlBean{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", picUrl='" + picUrl + '\'' +
+                    ", pic_str='" + pic_str + '\'' +
+                    ", pic=" + pic +
+                    ", tns=" + tns +
+                    '}';
         }
     }
 

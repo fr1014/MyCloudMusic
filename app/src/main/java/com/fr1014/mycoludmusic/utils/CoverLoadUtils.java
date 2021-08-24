@@ -49,7 +49,8 @@ public class CoverLoadUtils {
     }
 
     public void loadRemoteCover(Music music) {
-        Bitmap coverLocal = FileUtils.getCoverLocal(music);
+        Bitmap coverLocal = null;
+//                FileUtils.getCoverLocal(music);
         if (coverLocal != null) {
             for (LoadResultListener loadResultListener : loadResultListenerList) {
                 loadResultListener.coverLoadSuccess(music,coverLocal);
@@ -96,7 +97,7 @@ public class CoverLoadUtils {
                 .subscribe(new Consumer<Bitmap>() {
                     @Override
                     public void accept(Bitmap bitmap) throws Exception {
-                        FileUtils.saveCoverToLocal(bitmap, music, loadResultListenerList);
+//                        FileUtils.saveCoverToLocal(bitmap, music, loadResultListenerList);
                     }
                 }, new Consumer<Throwable>() {
                     @Override

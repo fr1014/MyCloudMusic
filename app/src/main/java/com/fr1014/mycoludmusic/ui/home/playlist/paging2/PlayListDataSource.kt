@@ -6,7 +6,8 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.comment.QueryComment
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.WYApiService
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
+import com.fr1014.mycoludmusic.musicmanager.player.MusicSource
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
@@ -32,7 +33,6 @@ class PlayListDataSource(private val ids: Array<Long>) : RxPagingSource<QueryCom
                     val musics: MutableList<Music> = ArrayList()
                     val songs: List<SongsBean> = it.songs
                     for (song in songs) {
-                        val music = Music()
                         val sb = StringBuilder()
                         for (i in song.ar.indices) {
                             val ar = song.ar[i]
@@ -42,14 +42,13 @@ class PlayListDataSource(private val ids: Array<Long>) : RxPagingSource<QueryCom
                                 sb.append(ar.name)
                             }
                         }
+                        val music = Music(id = song.id.toString(), artist = sb.toString(), title = song.name, mvId = song.mv.toString(), sourceType = MusicSource.WY_MUSIC.sourceType)
                         music.apply {
-                            id = song.id
-                            artist = sb.toString()
-                            title = song.name
-                            imgUrl = song.al.picUrl
+                            song.al?.let { al ->
+                                imgUrl = al.picUrl
+                                album = al.name
+                            }
                             duration = song.dt
-                            album = song.al.name
-                            mvId = song.mv
                         }
                         musics.add(music)
                     }

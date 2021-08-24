@@ -14,8 +14,8 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetai
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Playlist
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike
-import com.fr1014.mycoludmusic.musicmanager.Music
 import com.fr1014.mycoludmusic.musicmanager.Preferences
+import com.fr1014.mycoludmusic.musicmanager.player.Music
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.home.comment.paging3.CommentPagingSource
 import com.fr1014.mymvvm.base.BaseViewModel
@@ -110,7 +110,7 @@ open class CommonViewModel : BaseViewModel<DataRepository> {
                 })
     }
 
-    fun getWYMVInfo(id: Long) {
+    fun getWYMVInfo(id: String) {
         addSubscribe(model.getWYMVInfo(id)
                 .compose(RxSchedulers.applyIO())
                 .subscribe {
@@ -161,7 +161,7 @@ open class CommonViewModel : BaseViewModel<DataRepository> {
                     model!!.deleteAllLikeIds()
                     val musicLikes: MutableList<MusicLike> = ArrayList()
                     for (id in ids) {
-                        musicLikes.add(MusicLike(id))
+                        musicLikes.add(MusicLike(id.toString()))
                     }
                     model!!.insertAllLikeIds(musicLikes)
                 }

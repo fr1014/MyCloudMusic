@@ -9,14 +9,16 @@ import com.fr1014.mycoludmusic.data.source.LocalDataSourceImpl;
 import com.fr1014.mycoludmusic.http.HttpLogger;
 import com.fr1014.mycoludmusic.http.KWServiceProvider;
 import com.fr1014.mycoludmusic.http.LenientGsonConverterFactory;
+import com.fr1014.mycoludmusic.http.api.KKWApiService;
 import com.fr1014.mycoludmusic.http.api.KWApiService;
+import com.fr1014.mycoludmusic.http.api.KWYApiService;
 import com.fr1014.mycoludmusic.http.api.WYApiService;
 import com.fr1014.mycoludmusic.http.interceptor.AddCookiesInterceptor;
 import com.fr1014.mycoludmusic.http.interceptor.NetCacheInterceptor;
 import com.fr1014.mycoludmusic.http.interceptor.OfflineCacheInterceptor;
 import com.fr1014.mycoludmusic.http.interceptor.ReceivedCookiesInterceptor;
 import com.fr1014.mycoludmusic.http.WYYServiceProvider;
-import com.fr1014.mycoludmusic.musicmanager.PlayService;
+import com.fr1014.mycoludmusic.musicmanager.player.PlayService;
 import com.fr1014.mycoludmusic.rx.RxJavaError;
 import com.fr1014.mymvvm.base.BaseApplication;
 
@@ -124,11 +126,13 @@ public class MyApplication extends BaseApplication {
     public static DataRepository provideRepository() {
         //WYY api
         WYApiService wyApiService = WYYServiceProvider.create(WYApiService.class);
+        KWYApiService kwyApiService = WYYServiceProvider.create(KWYApiService.class);
         //KW api
         KWApiService kwApiService = KWServiceProvider.create(KWApiService.class);
+        KKWApiService kkwApiService = KWServiceProvider.create(KKWApiService.class);
 
         //数据仓库
-        return DataRepository.getInstance(HttpDataSourceImpl.getInstance(wyApiService, kwApiService), LocalDataSourceImpl.getInstance());
+        return DataRepository.getInstance(HttpDataSourceImpl.getInstance(wyApiService, kwApiService), LocalDataSourceImpl.getInstance(), kkwApiService, kwyApiService);
     }
 
 

@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.musicmanager;
+package com.fr1014.mycoludmusic.musicmanager.player;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

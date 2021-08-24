@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -19,9 +20,11 @@ import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile;
 import com.fr1014.mycoludmusic.databinding.ActivityMainBinding;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.QuitTimer;
-import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.musicmanager.player.Music;
+import com.fr1014.mycoludmusic.musicmanager.player.MusicKt;
+import com.fr1014.mycoludmusic.musicmanager.player.MusicListManageUtils;
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
 import com.fr1014.mycoludmusic.ui.search.SearchActivity;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
@@ -45,7 +48,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
     private static final int REQUEST_PERMISSION_CODE = 100;
     private AppBarConfiguration mAppBarConfiguration;
     private PlayStatusBarView statusBar;
-    private OnPlayerEventListener playEventListener;
     private SearchDefault mSearchDefault = null;
     private ObjectAnimator animator1;
     private ObjectAnimator animator2;
@@ -145,14 +147,9 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         if (statusBar == null) {
             statusBar = new PlayStatusBarView(MainActivity.this, getSupportFragmentManager());
             getLifecycle().addObserver(statusBar);
-            playEventListener = statusBar.getOnPlayEventListener();
-            statusBar.addMusicListChangeListener();
-            if (playEventListener != null) {
-                AudioPlayer.get().addOnPlayEventListener(playEventListener);
-            }
             mViewBinding.appBarMain.contentMain.flPlaystatus.addView(statusBar);
 
-            AudioPlayer.get().initMusicList();
+            MyAudioPlay.get().updateMusicList();
         }
     }
 
@@ -254,16 +251,13 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
 
     @Override
     protected void onStop() {
-        AudioPlayer.get().saveMusicsInfo();
+        MusicListManageUtils.get().saveMusicList();
         super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (playEventListener != null) {
-            AudioPlayer.get().removeOnPlayEventListener(playEventListener);
-        }
         if (statusBar != null) {
             getLifecycle().removeObserver(statusBar);
         }
@@ -290,6 +284,7 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
         }
     }
 
+    @SuppressLint("RestrictedApi")
     public void back() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         Deque<NavBackStackEntry> backStack = navController.getBackStack();

@@ -68,7 +68,7 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<MVInfo> getWYMVInfo(long id) {
+    public Observable<MVInfo> getWYMVInfo(String id) {
         return wyApiService.getWYMVInfo(id);
     }
 
@@ -208,7 +208,7 @@ public class HttpDataSourceImpl implements HttpDataSource {
     }
 
     @Override
-    public Observable<WYSongLrcEntity> getWYSongLrcEntity(long id) {
+    public Observable<WYSongLrcEntity> getWYSongLrcEntity(String id) {
         return wyApiService.getWYSongLrcEntity(id);
     }
 

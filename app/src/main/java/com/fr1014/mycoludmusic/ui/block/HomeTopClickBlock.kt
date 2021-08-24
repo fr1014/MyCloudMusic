@@ -18,7 +18,7 @@ import java.util.*
 class HomeTopClickBlock @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
-    private var mViewBinding: BlockHomeClickBinding? = null
+    private lateinit var mViewBinding: BlockHomeClickBinding
 
     init {
         initView()
@@ -27,7 +27,7 @@ class HomeTopClickBlock @JvmOverloads constructor(
     private fun initView() {
         mViewBinding = BlockHomeClickBinding.inflate(LayoutInflater.from(context), this)
 
-        mViewBinding?.apply {
+        mViewBinding.apply {
             tvDate.text = Calendar.getInstance().get(Calendar.DAY_OF_MONTH).toString()
 
             ivDayRecommend.setOnClickListener {

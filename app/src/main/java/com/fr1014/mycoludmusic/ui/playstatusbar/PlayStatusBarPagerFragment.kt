@@ -1,10 +1,7 @@
 package com.fr1014.mycoludmusic.ui.playstatusbar
 
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -12,32 +9,30 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentViewHolder
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.fr1014.mycoludmusic.base.BasePlayActivity
 import com.fr1014.mycoludmusic.databinding.FragmentPagerPlaystatusbarBinding
-import com.fr1014.mycoludmusic.listener.LoadResultListener
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.*
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
 import com.fr1014.mycoludmusic.utils.CollectionUtils
-import com.fr1014.mycoludmusic.utils.CoverLoadUtils
 import com.fr1014.mycoludmusic.utils.FileUtils
-import com.fr1014.mycoludmusic.utils.MusicUtils
-import com.fr1014.mycoludmusic.utils.glide.GlideApp
 import com.fr1014.mymvvm.base.BaseFragment
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import kotlin.collections.ArrayList
 
 private const val POSITION_MUSIC = "param"
 
-class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBinding, CommonViewModel>(), LoadResultListener {
+class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBinding, CommonViewModel>() {
     var music: Music? = null
     private var musicDialogFragment: CurrentPlayMusicFragment? = null
     private var isLoaded: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
         arguments?.let {
             music = it.getParcelable<Music>(POSITION_MUSIC)
         }
@@ -95,49 +90,28 @@ class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBindin
         mViewBinding.ivCoverImg.setImageBitmap(bitmap)
     }
 
-    fun loadImgUrl(music: Music) {
-        if (isLoaded) return
-        if (this.music?.title.equals(music.title) && this.music?.artist.equals(music.artist)) {
-            GlideApp.with(this@PlayStatusBarPagerFragment)
-                    .load(music.imgUrl + "?param=90y90")
-                    .into(object : CustomTarget<Drawable>() {
-                        override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-                            isLoaded = true
-                            mViewBinding.ivCoverImg.setImageDrawable(resource)
-                        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMusicCoverEvent(event: MusicCoverEvent){
+        when (event.type) {
+            CoverStatusType.Loading -> {
 
-                        override fun onLoadCleared(placeholder: Drawable?) {
+            }
+            CoverStatusType.Success -> {
+                val musicLoaded = event.music
+                musicLoaded?.let {
+                    if (it.isSameMusic(this.music)){
+                        event.coverLocal?.let { bitmap -> setBitmap(bitmap) }
+                    }
+                }
+            }
+            CoverStatusType.Fail -> {
 
-                        }
-
-                    })
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun coverLoading() {
-
-    }
-
-    override fun coverLoadSuccess(music: Music, coverLocal: Bitmap) {
-        if (isLoaded) return
-        this.music?.let{
-            if (MusicUtils.isSameMusic(it,music)) {
-                setBitmap(coverLocal)
             }
         }
     }
 
-    override fun coverLoadFail() {
-
-    }
-
     override fun onDestroyView() {
-        Log.d("hello", "onDestroyView: ")
-        CoverLoadUtils.get().removeLoadListener(this)
+        EventBus.getDefault().unregister(this)
         super.onDestroyView()
     }
 }
@@ -158,17 +132,19 @@ class PlayStatusBarPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa)
 
     override fun getItemId(position: Int): Long {
         val music = musicList[position]
-        if (music.id == 0L){
-            val musicrid = music.musicrid
-            if (TextUtils.isEmpty(musicrid)) return 0L
-            return musicrid.getRid()
+        if (music.sourceType == MusicSource.KW_MUSIC.sourceType){
+            return music.getKWMusicId().toLong()
         }
-        return music.id
+        return music.id.toLong()
     }
 
     override fun containsItem(itemId: Long): Boolean {
         return musicList.any {
-            it.id == itemId || if (TextUtils.isEmpty(it.musicrid)) true else it.musicrid.getRid() == itemId
+            if (it.sourceType == MusicSource.KW_MUSIC.sourceType){
+                it.getKWMusicId() === itemId.toString()
+            }else{
+                it.id === itemId.toString()
+            }
         }
     }
 
@@ -205,7 +181,6 @@ class PlayStatusBarPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa)
         val playStatusBarPagerFragment = PlayStatusBarPagerFragment.newInstance(musicList[position])
         createIds.add(position.toLong())
         manageFragments(playStatusBarPagerFragment, position)
-        CoverLoadUtils.get().registerLoadListener(playStatusBarPagerFragment)
         return playStatusBarPagerFragment
     }
 }
@@ -232,5 +207,3 @@ class PagerDiffUtil(private val oldList: List<Music>, private val newList: List<
         return listOf(PayloadKey.VALUE)
     }
 }
-
-fun String.getRid() = this.substring(6, length).toLong()

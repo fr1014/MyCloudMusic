@@ -12,7 +12,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.databinding.DialogCoverInfoBinding
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
 import com.fr1014.mycoludmusic.utils.CommonUtils
 import com.fr1014.mycoludmusic.utils.FileUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils

@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:clickable="true"
     android:fitsSystemWindows="false"
-    android:focusable="true">
+    android:focusable="true"
+    android:background="#222222">
 
     <com.fr1014.mycoludmusic.customview.blurimageview.BlurImageView
         android:id="@+id/bi_background"

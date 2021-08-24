@@ -7,6 +7,7 @@ import android.text.format.DateUtils;
 
 import com.fr1014.mycoludmusic.app.AppCache;
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
+import com.fr1014.mycoludmusic.musicmanager.player.PlayService;
 
 public class QuitTimer {
     private Context context;

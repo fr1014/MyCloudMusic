@@ -2,44 +2,31 @@ package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
-import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
-import com.fr1014.mycoludmusic.data.source.local.room.DBManager;
 import com.fr1014.mycoludmusic.databinding.FragmentPagerPlaydialogBinding;
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
-import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
-import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
-import com.fr1014.mycoludmusic.rx.MyDisposableObserver;
-import com.fr1014.mycoludmusic.rx.RxSchedulers;
-import com.fr1014.mycoludmusic.utils.CollectionUtils;
-import com.fr1014.mycoludmusic.utils.CommonUtils;
+import com.fr1014.mycoludmusic.musicmanager.player.Music;
+import com.fr1014.mycoludmusic.musicmanager.player.MusicKt;
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay;
+import com.fr1014.mycoludmusic.musicmanager.player.PlayerEvent;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
 
-import org.jetbrains.annotations.NotNull;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 
 /**
  * Create by fanrui on 2020/12/17
@@ -63,6 +50,7 @@ public class PlayDialogPageFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         Bundle bundle = getArguments();
         if (bundle != null) {
             pageType = bundle.getInt(PAGE_TYPE);
@@ -94,24 +82,29 @@ public class PlayDialogPageFragment extends Fragment {
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        AudioPlayer.get().addOnPlayEventListener(onPlayerEventListener = new OnPlayEventAdapterListener() {
-            @Override
-            public void onChange(@NotNull Music music) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayerEvent(PlayerEvent event) {
+        switch (event.getType()) {
+            case OnChange:
                 if (pageType == PAGE_TYPE_CURRENT) {
-                    List<Music> musicList = AudioPlayer.get().getMusicList();
-                    int position = musicList.indexOf(music);
-                    setHeaderCount(musicList.size());
-                    playDialogAdapter.setData(musicList);
-                    if (oldPosition != position) {
-                        playDialogAdapter.setCurrentMusic(music);
-                        playDialogAdapter.notifyDataSetChanged();
-                        oldPosition = position;
+                    Music music = event.getMusic();
+                    List<Music> musicList = MyAudioPlay.get().getCurrentMusicList();
+                    if (music != null) {
+                        int position = MusicKt.indexOf(music, musicList);
+                        setHeaderCount(musicList.size());
+                        playDialogAdapter.setData(musicList);
+                        if (oldPosition != position) {
+                            playDialogAdapter.setCurrentMusic(music);
+                            playDialogAdapter.notifyDataSetChanged();
+                            oldPosition = position;
+                        }
                     }
                 }
-            }
-        });
+                break;
+            case OnPlayListChange:
+                playDialogAdapter.setData(event.getMusicList());
+                break;
+        }
     }
 
     private void inPageTypeData() {
@@ -120,55 +113,57 @@ public class PlayDialogPageFragment extends Fragment {
             binding.header.tvMode.setTextColor(getContext().getResources().getColor(R.color.font_gray));
             binding.header.tvMode.setOnClickListener((View.OnClickListener) v -> dialogListener.dialogDismiss());
             //刷新adapter中的数据
-            DBManager.get().getLocalMusicListLive(true).observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
-                @Override
-                public void onChanged(List<MusicEntity> musicEntities) {
-                    if (!CollectionUtils.isEmptyList(musicEntities)) {
-                        Observable.just(musicEntities)
-                                .compose(RxSchedulers.applyIO())
-                                .map(new Function<List<MusicEntity>, List<Music>>() {
-                                    @Override
-                                    public List<Music> apply(@io.reactivex.annotations.NonNull List<MusicEntity> musicEntities) throws Exception {
-                                        List<Music> musicList = new ArrayList<>();
-                                        for (MusicEntity musicEntity : musicEntities) {
-                                            musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(), "", musicEntity.getImgUrl(), musicEntity.getMusicRid(), musicEntity.getDuration()));
-                                        }
-                                        Collections.reverse(musicList);
-                                        return musicList;
-                                    }
-                                })
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new MyDisposableObserver<List<Music>>() {
-                                    @Override
-                                    public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
-                                        setHeaderCount(musicList.size());
-                                        playDialogAdapter.setData(musicList);
-                                        playDialogAdapter.notifyDataSetChanged();
-                                    }
-                                });
-                    }
-                }
-            });
+//            DBManager.get().getLocalMusicListLive(true).observe(getViewLifecycleOwner(), new Observer<List<MusicEntity>>() {
+//                @Override
+//                public void onChanged(List<MusicEntity> musicEntities) {
+//                    if (!CollectionUtils.isEmptyList(musicEntities)) {
+//                        Observable.just(musicEntities)
+//                                .compose(RxSchedulers.applyIO())
+//                                .map(new Function<List<MusicEntity>, List<Music>>() {
+//                                    @Override
+//                                    public List<Music> apply(@io.reactivex.annotations.NonNull List<MusicEntity> musicEntities) throws Exception {
+//                                        List<Music> musicList = new ArrayList<>();
+//                                        for (MusicEntity musicEntity : musicEntities) {
+//                                            musicList.add(new Music(musicEntity.getId(), musicEntity.getArtist(), musicEntity.getTitle(), "", musicEntity.getImgUrl(), musicEntity.getMusicRid(), musicEntity.getDuration()));
+//                                        }
+//                                        Collections.reverse(musicList);
+//                                        return musicList;
+//                                    }
+//                                })
+//                                .observeOn(AndroidSchedulers.mainThread())
+//                                .subscribe(new MyDisposableObserver<List<Music>>() {
+//                                    @Override
+//                                    public void onNext(@io.reactivex.annotations.NonNull List<Music> musicList) {
+//                                        setHeaderCount(musicList.size());
+//                                        playDialogAdapter.setData(musicList);
+//                                        playDialogAdapter.notifyDataSetChanged();
+//                                    }
+//                                });
+//                    }
+//                }
+//            });
         } else {
             initPlayMode();
-            List<Music> playList = AudioPlayer.get().getMusicList();
-            if (playList != null) {
-                playDialogAdapter.setData(playList);
-                scrollToPosition();
-                playDialogAdapter.setCurrentMusic(AudioPlayer.get().getCurrentMusic());
-                playDialogAdapter.notifyDataSetChanged();
-            }
+            playDialogAdapter.setData(MyAudioPlay.get().getCurrentMusicList());
+            scrollToPosition();
+            playDialogAdapter.setCurrentMusic(MyAudioPlay.get().getCurrentMusic());
+            playDialogAdapter.notifyDataSetChanged();
             binding.header.tvMode.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    switchPlayMode();
+                    MyAudioPlay.get().switchPlayMode();
+                    initPlayMode();
                 }
             });
         }
     }
 
     public void scrollToPosition() {
-        oldPosition = AudioPlayer.get().indexOf(AudioPlayer.get().getCurrentMusic(),AudioPlayer.get().getMusicList());
+        Music currentMusic = MyAudioPlay.get().getCurrentMusic();
+        if (currentMusic != null) {
+            oldPosition = MusicKt.indexOf(currentMusic, MyAudioPlay.get().getCurrentMusicList());
+        }
+        if (oldPosition < 0) return;
         binding.rvPlaylist.scrollToPosition(oldPosition);
     }
 
@@ -180,7 +175,7 @@ public class PlayDialogPageFragment extends Fragment {
                     if (pageType == PAGE_TYPE_CURRENT) {
                         if (oldPosition != position) {
                             Music item = (Music) adapter.getData(position);
-                            AudioPlayer.get().addAndPlay(item);
+                            MyAudioPlay.get().addPlayMusic(item);
                         } else {
                             //点击的为当前播放的歌曲
                             if (getActivity() instanceof BasePlayActivity) {
@@ -189,43 +184,43 @@ public class PlayDialogPageFragment extends Fragment {
                             }
                         }
                     } else {
-                        Music item = (Music) adapter.getData(position);
-                        List<Music> musicList = AudioPlayer.get().getMusicList();
-                        for (Music music : musicList) {
-                            if (TextUtils.equals(music.getTitle(), item.getTitle()) && TextUtils.equals(music.getArtist(), item.getArtist())) {
-                                AudioPlayer.get().addAndPlay(music);
-                                return;
-                            }
-                        }
-                        AudioPlayer.get().addAndPlay(item);
+//                        Music item = (Music) adapter.getData(position);
+//                        List<Music> musicList = AudioPlayer.get().getMusicList();
+//                        for (Music music : musicList) {
+//                            if (TextUtils.equals(music.getTitle(), item.getTitle()) && TextUtils.equals(music.getArtist(), item.getArtist())) {
+//                                AudioPlayer.get().addAndPlay(music);
+//                                return;
+//                            }
+//                        }
+//                        AudioPlayer.get().addAndPlay(item);
                         dialogListener.dialogDismiss();
                     }
                     break;
                 case R.id.iv_del:
-                    Music music = (Music) adapter.getData(position);
-                    if (pageType == PAGE_TYPE_HISTORY) {
-                        DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
-                            @Override
-                            public void onChanged(MusicEntity musicEntity) {
-                                if (musicEntity != null) {
-                                    DBManager.get().delete(musicEntity);
-                                }
-                            }
-                        });
-                    } else {
-                        AudioPlayer.get().delete(music);
-                        DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
-                            @Override
-                            public void onChanged(MusicEntity musicEntity) {
-                                if (musicEntity != null) {
-                                    DBManager.get().delete(musicEntity);
-                                }
-                            }
-                        });
-                        initHeader();
-                        playDialogAdapter.setData(AudioPlayer.get().getMusicList());
-                        playDialogAdapter.notifyDataSetChanged();
-                    }
+//                    Music music = (Music) adapter.getData(position);
+//                    if (pageType == PAGE_TYPE_HISTORY) {
+//                        DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
+//                            @Override
+//                            public void onChanged(MusicEntity musicEntity) {
+//                                if (musicEntity != null) {
+//                                    DBManager.get().delete(musicEntity);
+//                                }
+//                            }
+//                        });
+//                    } else {
+//                        MyAudioPlay.get().delete(music);
+//                        DBManager.get().getMusicEntityItem(music).observe(getViewLifecycleOwner(), new Observer<MusicEntity>() {
+//                            @Override
+//                            public void onChanged(MusicEntity musicEntity) {
+//                                if (musicEntity != null) {
+//                                    DBManager.get().delete(musicEntity);
+//                                }
+//                            }
+//                        });
+//                        initHeader();
+//                        playDialogAdapter.setData(AudioPlayer.get().getMusicList());
+//                        playDialogAdapter.notifyDataSetChanged();
+//                    }
                     break;
             }
         });
@@ -236,7 +231,7 @@ public class PlayDialogPageFragment extends Fragment {
             binding.header.tvType.setText("历史播放");
         } else {
             binding.header.tvType.setText("当前播放");
-            int count = AudioPlayer.get().getMusicList().size();
+            int count = MyAudioPlay.get().getCurrentMusicList().size();
             setHeaderCount(count);
         }
     }
@@ -245,27 +240,26 @@ public class PlayDialogPageFragment extends Fragment {
         binding.header.tvCount.setText(String.format("(%d)", count));
     }
 
-    private void switchPlayMode() {
-        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
-        switch (mode) {
-            case SINGLE:
-                mode = PlayModeEnum.LOOP;
-                break;
-            case LOOP:
-                mode = PlayModeEnum.SHUFFLE;
-                AudioPlayer.get().shuffle();
-                break;
-            case SHUFFLE:
-                mode = PlayModeEnum.SINGLE;
-                break;
-        }
-        Preferences.savePlayMode(mode.value());
-        AudioPlayer.get().notifyMusicListChange();
-        initPlayMode();
-    }
+//    private void switchPlayMode() {
+//        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
+//        switch (mode) {
+//            case SINGLE:
+//                mode = PlayModeEnum.LOOP;
+//                break;
+//            case LOOP:
+//                mode = PlayModeEnum.SHUFFLE;
+//                AudioPlayer.get().shuffle();
+//                break;
+//            case SHUFFLE:
+//                mode = PlayModeEnum.SINGLE;
+//                break;
+//        }
+//        Preferences.savePlayMode(mode.value());
+//        AudioPlayer.get().notifyMusicListChange();
+//    }
 
     public void initPlayMode() {
-        if (pageType == PAGE_TYPE_CURRENT){
+        if (pageType == PAGE_TYPE_CURRENT) {
             int mode = Preferences.getPlayMode();
             setImageMode(mode);
         }
@@ -299,10 +293,8 @@ public class PlayDialogPageFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
-        if (onPlayerEventListener != null) {
-            AudioPlayer.get().removeOnPlayEventListener(onPlayerEventListener);
-        }
     }
 
     public interface OnDialogListener {

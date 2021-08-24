@@ -14,7 +14,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.app.AppCache
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.user.Profile
 import com.fr1014.mycoludmusic.databinding.BlockMynavigationviewBinding
-import com.fr1014.mycoludmusic.musicmanager.PlayService
+import com.fr1014.mycoludmusic.musicmanager.player.PlayService
 import com.fr1014.mycoludmusic.musicmanager.Preferences
 import com.fr1014.mycoludmusic.musicmanager.QuitTimer
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions

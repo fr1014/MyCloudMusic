@@ -158,10 +158,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             statusBarView = PlayStatusBarView(this, supportFragmentManager)
             statusBarView?.let { view ->
                 lifecycle.addObserver(view)
-                view.addMusicListChangeListener()
-                view.onPlayEventListener?.let { listener ->
-                    AudioPlayer.get().addOnPlayEventListener(listener)
-                }
                 mViewBinding.flPlaystatus.addView(statusBarView)
                 AudioPlayer.get().notifyMusicListChange()
             }
@@ -282,9 +278,6 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
     override fun onDestroy() {
         statusBarView?.let {
             lifecycle.removeObserver(it)
-            it.onPlayEventListener?.let { listener ->
-                AudioPlayer.get().removeOnPlayEventListener(listener)
-            }
         }
         searchMatchAdapter?.unregisterAdapterDataObserver(searchMatchAdapterObserver)
         super.onDestroy()

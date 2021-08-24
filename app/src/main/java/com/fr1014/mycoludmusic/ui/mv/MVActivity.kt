@@ -17,7 +17,7 @@ class MVActivity : AppCompatActivity() {
     lateinit var mViewBinding: ActivityMvBinding
 
     companion object {
-        fun startMVActivity(context: Context, url: String, title: String, isFirstPlay: Boolean) {
+        fun startMVActivity(context: Context, url: String, title: String?, isFirstPlay: Boolean) {
             val intent = Intent(context, MVActivity::class.java)
             intent.putExtra(MV, Bundle().apply {
                 putString(MV_URL, url)

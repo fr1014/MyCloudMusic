@@ -22,7 +22,7 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.databinding.FragmentPlaylistDetailBinding
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter
 import com.fr1014.mycoludmusic.ui.home.playlist.paging2.PlayListDetailAdapter.OnPlayAllClickListener
 import com.fr1014.mycoludmusic.ui.mv.MVActivity
@@ -38,7 +38,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 //歌单详情页面
-class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, PlayListViewModel?>() {
+class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding, PlayListViewModel>() {
     private var id = 0L
     private var pName: String? = null
     private var cover: String? = null
@@ -66,7 +66,7 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
     }
 
     override fun initView() {
-        mViewBinding?.apply {
+        mViewBinding.apply {
             toolbar.setPadding(0, ScreenUtils.getStatusBarHeight(), 0, 0)
             name.text = "歌单"
             playAll.llPlaylist.visibility = View.INVISIBLE
@@ -89,8 +89,8 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
                 })
                 .into(object : CustomTarget<Bitmap?>() {
                     override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap?>?) {
-                        paletteTopBg(mViewBinding!!.ivTitle, resource)
-                        mViewModel!!.getCoverBitmap().postValue(resource)
+                        paletteTopBg(mViewBinding.ivTitle, resource)
+                        mViewModel.getCoverBitmap().postValue(resource)
                     }
 
                     override fun onLoadCleared(placeholder: Drawable?) {
@@ -102,7 +102,7 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
 
     private fun initListener() {
 //        mViewBinding.ivBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
-        mViewBinding?.apply {
+        mViewBinding.apply {
             toolbar.setNavigationOnClickListener { v -> Navigation.findNavController(v).popBackStack() }
             toolbar.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.action_search) {
@@ -110,7 +110,9 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
                 }
                 true
             }
-            playAll.llPlaylist.setOnClickListener { v: View? -> AudioPlayer.get().addAndPlay(pAdapter.snapshot().items) }
+            playAll.llPlaylist.setOnClickListener {
+                MyAudioPlay.get().initPlayList(pAdapter.snapshot().items).play()
+            }
 
             rvPlaylistDetail.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -143,7 +145,7 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
     // 获取header
     // 获取第一个可见item的高度
     private fun scrollY(): Int {
-        val layoutManager = mViewBinding!!.rvPlaylistDetail.layoutManager as LinearLayoutManager
+        val layoutManager = mViewBinding.rvPlaylistDetail.layoutManager as LinearLayoutManager
         // 获取第一个可见item的位置
         val position = layoutManager.findFirstVisibleItemPosition()
         if (position == 0) {
@@ -167,10 +169,9 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
 
     private fun initAdapter() {
 
-        pAdapter = PlayListDetailAdapter(mViewModel!!, viewLifecycleOwner, showDialogInfo, requireActivity().supportFragmentManager)
+        pAdapter = PlayListDetailAdapter(mViewModel, viewLifecycleOwner, showDialogInfo, requireActivity().supportFragmentManager)
 
-
-        mViewBinding?.apply {
+        mViewBinding.apply {
             rvPlaylistDetail.layoutManager = LinearLayoutManager(context)
             rvPlaylistDetail.adapter = pAdapter.withLoadStateFooter(FooterAdapter { pAdapter.retry() })
 
@@ -193,44 +194,43 @@ class PlayListDetailFragment : BaseFragment<FragmentPlaylistDetailBinding?, Play
 
         pAdapter.setOnPlayAllClick(object : OnPlayAllClickListener {
             override fun clickPlayAll() {
-                AudioPlayer.get().addAndPlay(pAdapter.snapshot().items)
+                MyAudioPlay.get().initPlayList(pAdapter.snapshot().items).play()
             }
         })
     }
 
     override fun initViewObservable() {
 
-        mViewModel?.let { viewModel ->
+        mViewModel.apply {
 
-            viewModel.playListDetailInfo.observe(viewLifecycleOwner, { playListDetailEntity -> pAdapter.setHeadInfo(playListDetailEntity) })
+            playListDetailInfo.observe(viewLifecycleOwner, { playListDetailEntity -> pAdapter.setHeadInfo(playListDetailEntity) })
 
-            viewModel.getPlayListDetail(id).observe(viewLifecycleOwner, { ids: Array<Long> ->
+            getPlayListDetail(id).observe(viewLifecycleOwner, { ids: Array<Long> ->
                 initHeaderView(ids.size)
 
                 viewLifecycleOwner.lifecycleScope.launch {
-                    viewModel.getPlayList(ids).collectLatest {
+                    getPlayList(ids).collectLatest {
                         pAdapter.submitData(it)
                     }
                 }
-                viewModel.getWYUserPlayList()//获取用户收藏的歌单
+                getWYUserPlayList()//获取用户收藏的歌单
             })
 
-
-            viewModel.playlistWYInfo.observe(viewLifecycleOwner, { playlists ->
+            playlistWYInfo.observe(viewLifecycleOwner, { playlists ->
                 var type = 1
                 for (playlist in playlists) {
                     if (playlist.id == id) {
                         type = 2
                     }
                 }
-                viewModel.collectPlayListType = type
+                collectPlayListType = type
                 pAdapter.setHeadInfo(type)
             })
-            viewModel.getCollectPlayList().observe(viewLifecycleOwner, { (code, point, msg) -> pAdapter.setHeadInfo(viewModel.collectPlayListType) })
+            getCollectPlayList().observe(viewLifecycleOwner, { (code, point, msg) -> pAdapter.setHeadInfo(collectPlayListType) })
 
-            viewModel.mvMusic.observe(viewLifecycleOwner, {
+            mvMusic.observe(viewLifecycleOwner, {
                 context?.let { context -> MVActivity.startMVActivity(context, it.mvUrl, it.title, true) }
-                AudioPlayer.get().pausePlayer()
+                MyAudioPlay.get().pausePlayer()
             })
         }
     }

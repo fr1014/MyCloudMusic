@@ -1,20 +1,17 @@
 package com.fr1014.mycoludmusic.utils;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
-
-import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
-import com.fr1014.mycoludmusic.listener.LoadResultListener;
-import com.fr1014.mycoludmusic.musicmanager.Music;
+import com.fr1014.mycoludmusic.musicmanager.player.CoverStatusType;
+import com.fr1014.mycoludmusic.musicmanager.player.Music;
+import com.fr1014.mycoludmusic.musicmanager.player.MusicCoverEvent;
+import com.fr1014.mycoludmusic.musicmanager.player.Notifier;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,7 +106,7 @@ public class FileUtils {
         return !file.exists() || file.length() == 0;
     }
 
-    public static void saveCoverToLocal(Bitmap bitmap, Music music, List<LoadResultListener> loadResultListeners) {
+    public static void saveCoverToLocal(Bitmap bitmap, Music music) {
         String path = FileUtils.getCoverDir() + FileUtils.getCoverFileName(music.getArtist(), music.getTitle());
         File file = new File(path);
         if (file.exists()) {
@@ -143,15 +139,15 @@ public class FileUtils {
 //            result.compress(Bitmap.CompressFormat.PNG, 90, out);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
-            for (LoadResultListener loadResultListener : loadResultListeners) {
-                loadResultListener.coverLoadSuccess(music,bitmap);
-            }
+//            for (LoadResultListener loadResultListener : loadResultListeners) {
+//                loadResultListener.coverLoadSuccess(music,bitmap);
+//            }
+            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Success, music, bitmap));
+            Notifier.get().showPlay(music);
 //            EventBus.getDefault().post(new CoverSaveEvent(true));
         } catch (IOException e) {
             e.printStackTrace();
-            for (LoadResultListener loadResultListener : loadResultListeners) {
-                loadResultListener.coverLoadFail();
-            }
+            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Fail));
         } finally {
             try {
                 if (out != null) {
@@ -172,7 +168,7 @@ public class FileUtils {
             BitmapFactory.Options options = new BitmapFactory.Options();
             bitmap = BitmapFactory.decodeFileDescriptor(fis.getFD(), null, options);
         } catch (IOException ignored) {
-
+            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Fail));
         }
         return bitmap;
     }
@@ -201,5 +197,4 @@ public class FileUtils {
         MediaScannerConnection.scanFile(context, paths, null, null);
         return true;
     }
-
 }

@@ -31,7 +31,7 @@ public interface LocalDataSource {
 
     List<MusicLike> getLikeIds();
 
-    MusicLike getItemLive(Long id);
+    MusicLike getItemLive(String id);
 
     void insert(MusicLike musicLike);
 

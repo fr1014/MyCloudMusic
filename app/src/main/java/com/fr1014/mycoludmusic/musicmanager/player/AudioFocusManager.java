@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.musicmanager;
+package com.fr1014.mycoludmusic.musicmanager.player;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -37,26 +37,31 @@ public class AudioFocusManager implements AudioManager.OnAudioFocusChangeListene
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (isPausedByFocusLossTransient) {
                     // 通话结束，恢复播放
+                    MyAudioPlay.get().startPlayer();
                     AudioPlayer.get().startPlayer();
                 }
 
                 // 恢复音量
+                MyAudioPlay.get().mediaPlayer.setVolume(1f, 1f);
                 AudioPlayer.get().getMediaPlayer().setVolume(1f, 1f);
 
                 isPausedByFocusLossTransient = false;
                 break;
             // 永久丢失焦点，如被其他播放器抢占
             case AudioManager.AUDIOFOCUS_LOSS:
+                MyAudioPlay.get().pausePlayer();
                 AudioPlayer.get().pausePlayer();
                 break;
             // 短暂丢失焦点，如来电
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                MyAudioPlay.get().pausePlayer(false);
                 AudioPlayer.get().pausePlayer(false);
                 isPausedByFocusLossTransient = true;
                 break;
             // 瞬间丢失焦点，如通知
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                 // 音量减小为一半
+                MyAudioPlay.get().mediaPlayer.setVolume(0.5f, 0.5f);
                 AudioPlayer.get().getMediaPlayer().setVolume(0.5f, 0.5f);
                 break;
         }

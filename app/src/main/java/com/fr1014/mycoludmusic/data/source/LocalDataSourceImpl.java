@@ -1,9 +1,7 @@
 package com.fr1014.mycoludmusic.data.source;
 
 import androidx.lifecycle.LiveData;
-import androidx.room.Room;
 
-import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.data.entity.room.MusicEntity;
 import com.fr1014.mycoludmusic.data.source.local.room.AppDatabase;
 import com.fr1014.mycoludmusic.data.source.local.room.LocalDataSource;
@@ -91,7 +89,7 @@ public class LocalDataSourceImpl implements LocalDataSource {
     }
 
     @Override
-    public MusicLike getItemLive(Long id) {
+    public MusicLike getItemLive(String id) {
         return db.musicLikeDao().getItemLive(id);
     }
 

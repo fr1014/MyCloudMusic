@@ -2,7 +2,6 @@ package com.fr1014.mycoludmusic.customview;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -17,17 +16,19 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.databinding.CustomviewPlaystatusbarBinding;
-import com.fr1014.mycoludmusic.musicmanager.listener.MusicListChangeListener;
-import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayEventAdapterListener;
+import com.fr1014.mycoludmusic.musicmanager.player.Music;
+import com.fr1014.mycoludmusic.musicmanager.player.MusicKt;
+import com.fr1014.mycoludmusic.musicmanager.player.MusicListManageUtils;
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay;
+import com.fr1014.mycoludmusic.musicmanager.player.PlayerEvent;
 import com.fr1014.mycoludmusic.ui.home.playlistdialog.PlayDialogFragment;
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
-import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.ui.playstatusbar.PlayStatusBarPagerAdapter;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 
-import org.jetbrains.annotations.NotNull;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -36,11 +37,10 @@ import java.util.List;
  * <p>
  * 仅可在继承了BasePlayActivity的Activity中使用
  */
-public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, MusicListChangeListener, LifecycleObserver {
+public class PlayStatusBarView extends LinearLayout implements View.OnClickListener, LifecycleObserver {
     private CustomviewPlaystatusbarBinding mViewBinding;
     private FragmentManager fragmentManager;
     private PlayDialogFragment listDialogFragment;
-    private OnPlayerEventListener onPlayerEventListener;
     private PlayStatusBarPagerAdapter pagerAdapter;
     private boolean isFirstInitPager = true;
     private boolean isPagerSlideSelected = false;
@@ -64,11 +64,11 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
     private void initView() {
         mViewBinding = CustomviewPlaystatusbarBinding.inflate(LayoutInflater.from(getContext()), this, false);
         addView(mViewBinding.getRoot());
-        setVisibility(INVISIBLE);
+        setVisibility(CollectionUtils.isEmptyList(getCurrentMusicList()) ? GONE : VISIBLE);
         initPlayListViewPager();
         initListener();
         listDialogFragment = new PlayDialogFragment();
-        setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
+        setPlayPause(MyAudioPlay.get().isPlaying() || MyAudioPlay.get().isPreparing());
     }
 
     private void initPlayListViewPager() {
@@ -82,10 +82,10 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                 if (!isFirstInitPager && isPagerSlideSelected) {
-                    AudioPlayer.get().pausePlayer();
-                    List<Music> pagerMusicList = AudioPlayer.get().getPagerMusicList();
-                    AudioPlayer.get().addAndPlay(pagerMusicList.get(position));
+                if (!isFirstInitPager && isPagerSlideSelected) {
+                    MyAudioPlay.get().pausePlayer();
+                    List<Music> pagerMusicList = getCurrentMusicList();
+                    MyAudioPlay.get().addPlayMusic(pagerMusicList.get(position));
                 }
             }
 
@@ -99,7 +99,7 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
                  */
                 if (state == 0) {
                     isPagerSlideSelected = false;
-                }else {
+                } else {
                     isFirstInitPager = false;
                     isPagerSlideSelected = true;
                 }
@@ -107,41 +107,49 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         });
     }
 
-    private void switchPagerFragment() {
+    private List<Music> getCurrentMusicList() {
+        return MyAudioPlay.get().getCurrentMusicList();
+    }
+
+    private void switchPagerFragment(Music music) {
         isPagerSlideSelected = false;
-        Music currentMusic = AudioPlayer.get().getCurrentMusic();
-        if (currentMusic != null){
-            int position = AudioPlayer.get().indexOf(currentMusic);
+        if (music != null) {
+            int position = MusicKt.indexOf(music, getCurrentMusicList());
             mViewBinding.pagerList.setCurrentItem(position, false);
         }
     }
 
-    private void initListener() {
-        onPlayerEventListener = new OnPlayEventAdapterListener() {
-            @Override
-            public void onChange(@NotNull Music music) {
-                setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
-                switchPagerFragment();
-            }
-
-            @Override
-            public void onPlayerStart() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPlayerEvent(PlayerEvent event) {
+        switch (event.getType()) {
+            case OnPlayListChange:
+                List<Music> musicList = event.getMusicList();
+                if (pagerAdapter != null && !CollectionUtils.isEmptyList(musicList)) {
+                    setVisibility(VISIBLE);
+                    pagerAdapter.setMusicList(musicList);
+                    switchPagerFragment(MyAudioPlay.get().getCurrentMusic());
+                } else {
+                    setVisibility(GONE);
+                }
+                break;
+            case OnChange:
+                //setPlayPause(AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing());
+                switchPagerFragment(event.getMusic());
+                break;
+            case OnPlayerStart:
                 setPlayPause(true);
-            }
-
-            @Override
-            public void onPlayerPause() {
+                break;
+            case OnPlayerPause:
                 setPlayPause(false);
-            }
-        };
+                break;
+        }
+    }
+
+    private void initListener() {
         mViewBinding.clBottomBar.setOnClickListener(this);
         mViewBinding.ivStateStop.setOnClickListener(this);
         mViewBinding.ivStatePlay.setOnClickListener(this);
         mViewBinding.ivMusicMenu.setOnClickListener(this);
-    }
-
-    public OnPlayerEventListener getOnPlayEventListener() {
-        return onPlayerEventListener;
     }
 
     private void setPlayStatus(int visibility) {
@@ -167,10 +175,10 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         switch (v.getId()) {
             case R.id.iv_state_play:
             case R.id.iv_state_stop:
-                AudioPlayer.get().playPause();
+                MyAudioPlay.get().playOrPause();
                 break;
             case R.id.iv_music_menu:
-                if (AudioPlayer.get().getCurrentMusic() != null) {
+                if (MyAudioPlay.get().getCurrentMusic() != null) {
                     if (!listDialogFragment.isAdded()) {
                         //弹出当前播放列表
                         listDialogFragment.show(fragmentManager, "playlist_dialog");
@@ -182,26 +190,13 @@ public class PlayStatusBarView extends LinearLayout implements View.OnClickListe
         }
     }
 
-    @Override
-    public void isChanged(List<Music> musicList) {
-        if (getVisibility() != View.VISIBLE && !CollectionUtils.isEmptyList(musicList)){
-            setVisibility(VISIBLE);
-        }
-        if (pagerAdapter != null) {
-            pagerAdapter.setMusicList(musicList);
-            Music currentMusic = AudioPlayer.get().getCurrentMusic();
-            if (currentMusic != null) {
-                switchPagerFragment();
-            }
-        }
-    }
-
-    public void addMusicListChangeListener() {
-        AudioPlayer.get().addMusicListChangeListener(this);
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    void onCreate() {
+        EventBus.getDefault().register(this);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     void onDestroy() {
-        AudioPlayer.get().removeMusicListChangeListener(this);
+        EventBus.getDefault().unregister(this);
     }
 }

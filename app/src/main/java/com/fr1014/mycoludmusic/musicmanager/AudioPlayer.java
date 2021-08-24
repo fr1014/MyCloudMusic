@@ -21,6 +21,9 @@ import com.fr1014.mycoludmusic.listener.LoadResultListener;
 import com.fr1014.mycoludmusic.musicmanager.listener.MusicListChangeListener;
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
+import com.fr1014.mycoludmusic.musicmanager.player.AudioFocusManager;
+import com.fr1014.mycoludmusic.musicmanager.player.PlayModeEnum;
+import com.fr1014.mycoludmusic.musicmanager.player.PlayService;
 import com.fr1014.mycoludmusic.musicmanager.receiver.NoisyAudioStreamReceiver;
 import com.fr1014.mycoludmusic.rx.RxSchedulers;
 import com.fr1014.mycoludmusic.utils.CollectionUtils;
@@ -166,7 +169,7 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public void notifyShowPlay(Music music) {
-        Notifier.get().showPlay(music);
+//        Notifier.get().showPlay(music);
     }
 
     public void addOnPlayEventListener(OnPlayerEventListener listener) {
@@ -301,8 +304,8 @@ public class AudioPlayer implements LoadResultListener {
                 listener.onChange(music);
             }
             state = STATE_PREPARING;
-            MediaSessionManager.get().updateMetaData(music);
-            MediaSessionManager.get().updatePlaybackState();
+//            MediaSessionManager.get().updateMetaData(music);
+//            MediaSessionManager.get().updatePlaybackState();
         } catch (IOException e) {
             CrashReport.postCatchedException(e);  // bugly会将这个throwable上报
             e.printStackTrace();
@@ -461,7 +464,7 @@ public class AudioPlayer implements LoadResultListener {
             state = STATE_PLAYING;
             handler.post(mPublishRunnable);
             notifyShowPlay(getCurrentMusic());
-            MediaSessionManager.get().updatePlaybackState();
+//            MediaSessionManager.get().updatePlaybackState();
             context.registerReceiver(noisyReceiver, noisyFilter);
 
             for (OnPlayerEventListener listener : listeners) {
@@ -482,8 +485,8 @@ public class AudioPlayer implements LoadResultListener {
         mediaPlayer.pause();
         state = STATE_PAUSE;
         handler.removeCallbacks(mPublishRunnable);
-        Notifier.get().showPause(getCurrentMusic());
-        MediaSessionManager.get().updatePlaybackState();
+//        Notifier.get().showPause(getCurrentMusic());
+//        MediaSessionManager.get().updatePlaybackState();
         try {
             context.unregisterReceiver(noisyReceiver);
         } catch (IllegalArgumentException e) {
@@ -581,7 +584,7 @@ public class AudioPlayer implements LoadResultListener {
     public void seekTo(int msec) {
         if (isPlaying() || isPausing()) {
             mediaPlayer.seekTo(msec);
-            MediaSessionManager.get().updatePlaybackState();
+//            MediaSessionManager.get().updatePlaybackState();
             for (OnPlayerEventListener listener : listeners) {
                 listener.onPublish(msec);
             }
@@ -613,11 +616,12 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public void saveCurrentMusic(Music music) {
-        SharedPreferencesUtil.putMusic(SharedPreferencesConst.CURRENT_MUSIC, SharedPreferencesConst.CURRENT_MUSIC_KEY, music);
+//        SharedPreferencesUtil.putMusic(SharedPreferencesConst.CURRENT_MUSIC, SharedPreferencesConst.CURRENT_MUSIC_KEY, music);
     }
 
     public Music getCurrentMusic() {
-        return SharedPreferencesUtil.getMusic(SharedPreferencesConst.CURRENT_MUSIC, SharedPreferencesConst.CURRENT_MUSIC_KEY);
+        return null;
+//        return SharedPreferencesUtil.getMusic(SharedPreferencesConst.CURRENT_MUSIC, SharedPreferencesConst.CURRENT_MUSIC_KEY);
     }
 
     public Music getPlayMusic() {
@@ -723,7 +727,7 @@ public class AudioPlayer implements LoadResultListener {
     }
 
     public int indexOf(Music music, List<Music> musicList) {
-        if (CollectionUtils.isEmptyList(musicList)) return -1;
+        if (music == null || CollectionUtils.isEmptyList(musicList)) return -1;
         for (int index = 0; index < musicList.size(); index++) {
             if (MusicUtils.INSTANCE.isSameMusic(music, musicList.get(index))) {
                 return index;

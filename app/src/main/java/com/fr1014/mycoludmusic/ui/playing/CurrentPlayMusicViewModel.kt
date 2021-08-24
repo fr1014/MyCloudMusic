@@ -1,12 +1,13 @@
 package com.fr1014.mycoludmusic.ui.playing
 
 import android.app.Application
-import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fr1014.mycoludmusic.data.DataRepository
 import com.fr1014.mycoludmusic.data.source.local.room.MusicLike
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
+import com.fr1014.mycoludmusic.musicmanager.player.MusicSource
+import com.fr1014.mycoludmusic.musicmanager.player.getKWMusicId
 import com.fr1014.mycoludmusic.rx.ExecuteOnceObserver
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
@@ -46,7 +47,7 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
                 .subscribe({
                     try {
                         likeSongResultLive.postValue(like)
-                        saveLikeMusicId(tracks.toLong(), like)
+                        saveLikeMusicId(tracks, like)
                     } catch (e: Exception) {
                     }
                 }, {
@@ -58,7 +59,7 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
                 }));
     }
 
-    private fun saveLikeMusicId(ids: Long, isLikeMusic: Boolean) {
+    private fun saveLikeMusicId(ids: String, isLikeMusic: Boolean) {
         Observable.just(ids)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(Schedulers.io())
@@ -83,8 +84,8 @@ class CurrentPlayMusicViewModel(application: Application, model: DataRepository)
             songLrcPathLive.postValue(array)
             return
         }
-        if (!TextUtils.isEmpty(music.musicrid)) {
-            val mid = music.musicrid.replace("MUSIC_", "")
+        if (music.sourceType == MusicSource.KW_MUSIC.sourceType) {
+            val mid = music.getKWMusicId()
             addSubscribe(model.getKWSongInfoAndLrc(mid)
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())

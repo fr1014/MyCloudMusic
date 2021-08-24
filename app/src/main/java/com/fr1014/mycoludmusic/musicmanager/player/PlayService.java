@@ -1,14 +1,15 @@
-package com.fr1014.mycoludmusic.musicmanager;
+package com.fr1014.mycoludmusic.musicmanager.player;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.musicmanager.QuitTimer;
 import com.fr1014.mycoludmusic.musicmanager.constants.Actions;
 
 public class PlayService extends Service {
@@ -22,6 +23,7 @@ public class PlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        MyAudioPlay.get().init(this);
         AudioPlayer.get().init(this);
         MediaSessionManager.get().init(this);
         Notifier.get().init(this);
@@ -60,10 +62,6 @@ public class PlayService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        MediaPlayer mediaPlayer = AudioPlayer.get().getMediaPlayer();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
         if (AudioPlayer.get().mCompositeDisposable != null) {
             AudioPlayer.get().mCompositeDisposable.clear();
         }

@@ -14,8 +14,9 @@ import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.Track
 import com.fr1014.mycoludmusic.databinding.BlockTopListBinding
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
+import com.fr1014.mycoludmusic.musicmanager.player.MusicSource
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListDetailFragment
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
@@ -96,7 +97,7 @@ class TopListBlock @JvmOverloads constructor(
 
     private fun playMusic(track: Track, author: String) {
         track.apply {
-            AudioPlayer.get().addAndPlay(Music(id, author, name, "", al.picUrl, "", track.mv))
+            MyAudioPlay.get().addPlayMusic(Music(id.toString(), author, name, track.mv.toString(), MusicSource.WY_MUSIC.sourceType))
         }
     }
 

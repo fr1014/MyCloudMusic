@@ -24,7 +24,7 @@ import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment;
 import com.fr1014.mycoludmusic.ui.home.songsale.detail.AlbumDetailFragment;
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment;
-import com.fr1014.mycoludmusic.musicmanager.PlayService;
+import com.fr1014.mycoludmusic.musicmanager.player.PlayService;
 import com.fr1014.mycoludmusic.utils.CommonUtils;
 import com.fr1014.mycoludmusic.utils.StatusBarUtils;
 import com.fr1014.mymvvm.base.BaseActivity;

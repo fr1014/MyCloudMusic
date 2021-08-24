@@ -49,7 +49,7 @@ public interface WYApiService {
      * @return MV地址
      */
     @GET("mv/url")
-    Observable<MVInfo> getWYMVInfo(@Query("id") long id);
+    Observable<MVInfo> getWYMVInfo(@Query("id") String id);
 
     /**
      * 新版评论接口
@@ -244,7 +244,7 @@ public interface WYApiService {
     Observable<WYSearchDetail> getWYSearch(@Query("keywords") String keywords, @Query("offset") int offset);
 
     @GET("lyric")
-    Observable<WYSongLrcEntity> getWYSongLrcEntity(@Query("id") long id);
+    Observable<WYSongLrcEntity> getWYSongLrcEntity(@Query("id") String id);
 
     @GET("personalized")
     Observable<RecommendPlayList> getWYRecommendPlayList(@Query("limit") int limit);

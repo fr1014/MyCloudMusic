@@ -9,8 +9,9 @@ import com.fr1014.frecyclerviewadapter.BaseAdapter
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
+import com.fr1014.mycoludmusic.musicmanager.player.MusicSource
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 
 class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHolder>(layoutResId), BaseAdapter.OnItemClickListener {
@@ -49,7 +50,7 @@ class DayRecommendAdapter(layoutResId: Int) : BaseAdapter<SongsBean, BaseViewHol
         when (view.id) {
             R.id.item_view -> {
                 val data = getData(position)
-                AudioPlayer.get().addAndPlay(Music(data.id, data.getArInfo(), data.name, "", "", "", data.mv))
+                MyAudioPlay.get().addPlayMusic(Music(data.id.toString(), data.getArInfo(), data.name, data.mv.toString(), MusicSource.WY_MUSIC.sourceType))
             }
         }
     }

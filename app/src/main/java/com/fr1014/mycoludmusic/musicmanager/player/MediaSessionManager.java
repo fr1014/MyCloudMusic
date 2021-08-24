@@ -1,4 +1,4 @@
-package com.fr1014.mycoludmusic.musicmanager;
+package com.fr1014.mycoludmusic.musicmanager.player;
 
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -6,6 +6,10 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.fr1014.mycoludmusic.utils.FileUtils;
 
+/**
+ * MediaSession可以实现耳机来控制播放
+ * https://juejin.cn/post/6844903575814930439
+ */
 public class MediaSessionManager {
     private static final String TAG = "MediaSessionManager";
     private static final long MEDIA_SESSION_ACTIONS = PlaybackStateCompat.ACTION_PLAY
@@ -43,11 +47,11 @@ public class MediaSessionManager {
     }
 
     public void updatePlaybackState() {
-        int state = (AudioPlayer.get().isPlaying() || AudioPlayer.get().isPreparing()) ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
+        int state = (MyAudioPlay.get().isPlaying() || MyAudioPlay.get().isPreparing()) ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
         mediaSession.setPlaybackState(
                 new PlaybackStateCompat.Builder()
                         .setActions(MEDIA_SESSION_ACTIONS)
-                        .setState(state, AudioPlayer.get().getAudioPosition(), 1)
+                        .setState(state, MyAudioPlay.get().getAudioPosition(), 1)
                         .build());
     }
 
@@ -73,32 +77,32 @@ public class MediaSessionManager {
     private final MediaSessionCompat.Callback callback = new MediaSessionCompat.Callback() {
         @Override
         public void onPlay() {
-            AudioPlayer.get().playPause();
+            MyAudioPlay.get().playOrPause();
         }
 
         @Override
         public void onPause() {
-            AudioPlayer.get().playPause();
+            MyAudioPlay.get().playOrPause();
         }
 
         @Override
         public void onSkipToNext() {
-            AudioPlayer.get().playNext(false);
+            MyAudioPlay.get().playNext();
         }
 
         @Override
         public void onSkipToPrevious() {
-            AudioPlayer.get().playPre();
+            MyAudioPlay.get().playPre();
         }
 
         @Override
         public void onStop() {
-            AudioPlayer.get().stopPlayer();
+            MyAudioPlay.get().stopPlayer();
         }
 
         @Override
         public void onSeekTo(long pos) {
-            AudioPlayer.get().seekTo((int) pos);
+            MyAudioPlay.get().seekTo((int) pos);
         }
     };
 }

@@ -11,6 +11,6 @@ import androidx.room.PrimaryKey
 @Entity
 data class MusicLike(
         @PrimaryKey
-        @ColumnInfo(name = "id") val id: Long,  //歌曲id
+        @ColumnInfo(name = "id") val id: String,  //歌曲id
 //        @ColumnInfo(name = "playListId") val playListId: Long //歌单id
 )

@@ -4,8 +4,8 @@ import com.fr1014.frecyclerviewadapter.BaseAdapter;
 import com.fr1014.frecyclerviewadapter.BaseViewHolder;
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
-import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.utils.MusicUtils;
+import com.fr1014.mycoludmusic.musicmanager.player.Music;
+import com.fr1014.mycoludmusic.musicmanager.player.MusicKt;
 
 /**
  * 创建时间:2020/9/15
@@ -22,7 +22,7 @@ public class PlayDialogAdapter extends BaseAdapter<Music, BaseViewHolder> {
     @Override
     protected void convert(BaseViewHolder holder, Music data) {
         holder.addOnClickListener(R.id.ll_playlist, R.id.iv_del);
-        if (currentMusic != null && MusicUtils.INSTANCE.isSameMusic(currentMusic,data)) {
+        if (currentMusic != null && MusicKt.isSameMusic(currentMusic, data)) {
             holder.setText(R.id.tv_song_name, data.getTitle()).setTextColor(R.id.tv_song_name, MyApplication.getInstance().getResources().getColor(R.color.red));
             holder.setText(R.id.tv_author, "- " + data.getArtist()).setTextColor(R.id.tv_author, MyApplication.getInstance().getResources().getColor(R.color.red));
         } else {

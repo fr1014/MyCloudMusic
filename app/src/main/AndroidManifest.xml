@@ -47,7 +47,7 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <service
-            android:name=".musicmanager.PlayService"
+            android:name=".musicmanager.player.PlayService"
             android:enabled="true"
             android:exported="true" />
 

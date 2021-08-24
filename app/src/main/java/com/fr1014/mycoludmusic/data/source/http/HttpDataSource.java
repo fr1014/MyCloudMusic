@@ -52,7 +52,7 @@ public interface HttpDataSource {
     /*
      ========================网易云===================================
    */
-    Observable<MVInfo> getWYMVInfo(long id);
+    Observable<MVInfo> getWYMVInfo(String id);
 
     Single<Comment> getWYComment(int type, long id, int sortType, String cursor, int pageSize, int pageNo);
 
@@ -108,7 +108,7 @@ public interface HttpDataSource {
 
     Observable<WYSearchDetail> getWYSearch(String keywords, int offset);
 
-    Observable<WYSongLrcEntity> getWYSongLrcEntity(long id);
+    Observable<WYSongLrcEntity> getWYSongLrcEntity(String id);
 
     Observable<RecommendPlayList> getWYRecommendPlayList(int limit);
 

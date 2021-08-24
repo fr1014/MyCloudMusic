@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay;
 
 public class StatusBarReceiver extends BroadcastReceiver {
 
@@ -23,13 +23,13 @@ public class StatusBarReceiver extends BroadcastReceiver {
         }
         String extra = intent.getStringExtra(EXTRA);
         if (TextUtils.equals(extra,EXTRA_BACK)){
-            AudioPlayer.get().playPre();
+            MyAudioPlay.get().playPre();
         } else if (TextUtils.equals(extra, EXTRA_NEXT)) {
-            AudioPlayer.get().playNext(false);
+            MyAudioPlay.get().playNext();
         } else if (TextUtils.equals(extra, EXTRA_PLAY_PAUSE)) {
-            AudioPlayer.get().playPause();
+            MyAudioPlay.get().playOrPause();
         }else if (TextUtils.equals(extra,EXTRA_QUIT)){
-            AudioPlayer.get().quit();
+            MyAudioPlay.get().quit();
         }
     }
 }

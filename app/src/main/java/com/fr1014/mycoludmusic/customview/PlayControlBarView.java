@@ -5,18 +5,15 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.databinding.CustomPlaycontrolbarBinding;
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer;
-import com.fr1014.mycoludmusic.musicmanager.Music;
-import com.fr1014.mycoludmusic.musicmanager.PlayModeEnum;
 import com.fr1014.mycoludmusic.musicmanager.Preferences;
-import com.fr1014.mycoludmusic.utils.CommonUtils;
+import com.fr1014.mycoludmusic.musicmanager.player.Music;
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay;
 
 /**
  * Create by fanrui on 2020/12/26
@@ -73,7 +70,7 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
                 playControlBarClick.next(playNextMusic());
                 break;
             case R.id.iv_state:
-                AudioPlayer.get().playPause();
+                MyAudioPlay.get().playOrPause();
                 break;
             case R.id.iv_music_menu:
                 playControlBarClick.openMenu();
@@ -81,30 +78,8 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
         }
     }
 
-    Toast toast;
     private void switchPlayMode() {
-        if (toast != null){
-            toast.cancel();
-        }
-        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
-        switch (mode) {
-            case SINGLE:
-                toast = CommonUtils.toastShort("循环播放");
-                mode = PlayModeEnum.LOOP;
-                break;
-            case LOOP:
-                toast = CommonUtils.toastShort("随机播放");
-                mode = PlayModeEnum.SHUFFLE;
-                AudioPlayer.get().shuffle();
-                break;
-            case SHUFFLE:
-                toast = CommonUtils.toastShort("单曲循环");
-                mode = PlayModeEnum.SINGLE;
-                break;
-        }
-        Preferences.savePlayMode(mode.value());
-        AudioPlayer.get().notifyMusicListChange();
-        initPlayMode();
+        setImageMode(MyAudioPlay.get().switchPlayMode().value());
     }
 
     public void initPlayMode() {
@@ -127,13 +102,11 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
     }
 
     public Music playPreMusic() {
-        int playPosition = AudioPlayer.get().playPre();
-        return AudioPlayer.get().getPagerMusicList().get(playPosition);
+        return MyAudioPlay.get().playPre();
     }
 
     public Music playNextMusic() {
-        int playPosition = AudioPlayer.get().playNext(false);
-        return AudioPlayer.get().getPagerMusicList().get(playPosition);
+        return MyAudioPlay.get().playNext();
     }
 
     public void setStateImage(@DrawableRes int resId) {

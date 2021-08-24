@@ -13,7 +13,7 @@ import androidx.room.Query
 @Dao
 interface MusicLikeDao {
     @Query("SELECT * FROM musiclike where id = :id")
-    fun getItemLive(id: Long): MusicLike
+    fun getItemLive(id: String): MusicLike
 
     @Query("SELECT * FROM musiclike")
     fun getAllLive(): LiveData<List<MusicLike>>

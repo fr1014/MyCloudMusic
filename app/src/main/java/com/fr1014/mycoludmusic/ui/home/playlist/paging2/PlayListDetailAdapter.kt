@@ -22,12 +22,11 @@ import com.bumptech.glide.request.RequestOptions
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.playlist.PlayListDetailEntity
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.ui.block.PlayListHeaderBlock
 import com.fr1014.mycoludmusic.ui.home.playlist.PlayListViewModel
 import com.fr1014.mycoludmusic.ui.home.playlist.dialog.PlayListInfoDialog
-import com.fr1014.mycoludmusic.ui.mv.MVActivity
 import com.fr1014.mycoludmusic.utils.PaletteBgUtils
 import com.fr1014.mycoludmusic.ui.paging.AdapterDataObserverProxy
 import com.fr1014.mycoludmusic.utils.CommonUtils
@@ -129,13 +128,13 @@ class PlayListDetailAdapter(private val mViewModel: PlayListViewModel, private v
                     holder.itemView.apply {
 
                         setOnClickListener {
-                            AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition - 1) as Music)
+                            MyAudioPlay.get().addPlayMusic(getItem(holder.adapterPosition - 1) as Music)
                         }
 
                         findViewById<LinearLayout>(R.id.ll_mv).setOnClickListener {
                             if (!CommonUtils.isFastClick()) {
                                 val music = getItem(holder.adapterPosition - 1) as Music
-                                if (music.mvId != 0L) {
+                                if (!TextUtils.isEmpty(music.mvId)) {
                                     mViewModel.getWYMVInfo(music)
                                 }
                             }
@@ -191,7 +190,7 @@ class PlayListViewHolder(itemView: View) : BaseViewHolder(itemView) {
         } else {
             setText(R.id.tv_author, music.artist + " - " + music.album)
         }
-        getView<LinearLayout>(R.id.ll_mv).visibility = if(music.mvId != 0L) View.VISIBLE else View.INVISIBLE
+        getView<LinearLayout>(R.id.ll_mv).visibility = if(!TextUtils.isEmpty(music.mvId) && music.mvId != "0") View.VISIBLE else View.INVISIBLE
     }
 
 }

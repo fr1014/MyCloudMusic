@@ -1,6 +1,7 @@
 package com.fr1014.mycoludmusic.ui.home.homepage.dayrecommend
 
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -18,13 +19,15 @@ import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.song.SongsBean
 import com.fr1014.mycoludmusic.databinding.FragmentDayRecommendBinding
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.*
 import com.fr1014.mycoludmusic.utils.BlurImageUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
 import com.fr1014.mycoludmusic.utils.StatusBarUtils
 import com.fr1014.mycoludmusic.utils.glide.GlideApp
 import com.fr1014.mymvvm.base.BaseFragment
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -44,6 +47,7 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
     }
 
     override fun initView() {
+        EventBus.getDefault().register(this)
         activity?.let {
             StatusBarUtils.setImmersiveStatusBar(it.window, false)
         }
@@ -57,6 +61,18 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
         initListener()
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onPlayerEvent(event: PlayerEvent){
+        when(event.type){
+            PlayerType.OnChange -> {
+                Log.d("hello", "onPlayerEvent: " + event.music?.title)
+            }
+            else ->{
+
+            }
+        }
+    }
+
     private fun initListener() {
         mViewBinding.apply {
             ivBack.setOnClickListener {
@@ -65,7 +81,7 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
 
             playAll.llPlaylist.setOnClickListener {
                 mAdapter.datas?.let {
-                    AudioPlayer.get().addAndPlay(getMusics(it))
+                    MyAudioPlay.get().initPlayList(it.getMusics()).play()
                 }
             }
 
@@ -125,7 +141,7 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
                                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                                     headerBitmap = resource
                                     mHeaderView.findViewById<ImageView>(R.id.iv_head).setImageBitmap(resource)
-                                    mViewBinding.ivBg.setImageDrawable(BlurImageUtils.getForegroundDrawable(context, resource,5))
+                                    mViewBinding.ivBg.setImageDrawable(BlurImageUtils.getForegroundDrawable(context, resource, 5))
                                 }
 
                             })
@@ -135,26 +151,25 @@ class DayRecommendFragment : BaseFragment<FragmentDayRecommendBinding, DayRecomm
                         mHeaderView.findViewById<TextView>(R.id.tv_count).text = this
                     }
                     mHeaderView.findViewById<LinearLayout>(R.id.play_all).setOnClickListener {
-                        AudioPlayer.get().addAndPlay(getMusics(this))
+                        MyAudioPlay.get().initPlayList(this.getMusics()).play()
                     }
                 }
             }
         })
     }
+}
 
-    private fun getMusics(SongsBeans :List<SongsBean>) : List<Music>{
-        val musics: MutableList<Music> = ArrayList()
-        for (bean in SongsBeans) {
-            val sb = StringBuilder()
-            for (i in bean.ar.indices) {
-                bean.ar[i].apply {
-                    sb.append(name).append('/')
-                }
+fun List<SongsBean>.getMusics(): List<Music> {
+    val musics: MutableList<Music> = ArrayList()
+    for (bean in this) {
+        val sb = StringBuilder()
+        for (i in bean.ar.indices) {
+            bean.ar[i].apply {
+                sb.append(name).append('/')
             }
-            val music = Music(bean.id, sb.substring(0, sb.length - 1), bean.name, "", "", "",bean.mv)
-            musics.add(music)
         }
-        return musics
+        val music = Music(bean.id.toString(), sb.substring(0, sb.length - 1), bean.name, bean.mv.toString(), MusicSource.WY_MUSIC.sourceType)
+        musics.add(music)
     }
-
+    return musics
 }
