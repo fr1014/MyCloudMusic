@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.fr1014.mycoludmusic.app.AppViewModelFactory
 import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.databinding.FragmentSearchResultBinding
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.ui.search.paging2.SearchResultAdapter
 import com.fr1014.mymvvm.base.BaseFragment
@@ -58,7 +58,7 @@ class SearchResultFragment : BaseFragment<FragmentSearchResultBinding, SearchVie
 
     private fun initListener() {
         mViewBinding.includePlayAll.llPlaylist.setOnClickListener {
-            AudioPlayer.get().addAndPlay(viewAdapter.currentList?.toList())
+            viewAdapter.currentList?.toList()?.let { musicList -> MyAudioPlay.get().initPlayList(musicList) }
         }
     }
 

@@ -28,7 +28,7 @@ import com.fr1014.mycoludmusic.base.BasePlayActivity
 import com.fr1014.mycoludmusic.customview.PlayStatusBarView
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.MatchBean
 import com.fr1014.mycoludmusic.databinding.ActivitySearchBinding
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.ui.SwitchDialogFragment
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.ScreenUtils
@@ -159,7 +159,7 @@ class SearchActivity : BasePlayActivity<ActivitySearchBinding, SearchViewModel>(
             statusBarView?.let { view ->
                 lifecycle.addObserver(view)
                 mViewBinding.flPlaystatus.addView(statusBarView)
-                AudioPlayer.get().notifyMusicListChange()
+                MyAudioPlay.get().musicListChange()
             }
         }
     }

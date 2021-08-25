@@ -33,7 +33,7 @@ data class Music(var id: String, var artist: String, var title: String?, var mvI
     var songUrl: String? = ""
     var imgUrl: String? = ""    // 歌曲图片地址
     var duration: Long = 0L   // 持续时间
-    val original: String = ""  // 是否为原唱 1为原唱，0为非原唱
+    var original: String = ""  // 是否为原唱 1为原唱，0为非原唱
     var album: String? = ""   // 歌曲专辑
     var mvUrl: String = ""    // Mv地址
     val isOnlineMusic: Boolean = true //是否为在线歌曲)

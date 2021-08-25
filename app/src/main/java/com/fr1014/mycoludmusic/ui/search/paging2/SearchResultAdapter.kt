@@ -13,8 +13,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.fr1014.frecyclerviewadapter.BaseViewHolder
 import com.fr1014.mycoludmusic.R
-import com.fr1014.mycoludmusic.musicmanager.AudioPlayer
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
+import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
+import com.fr1014.mycoludmusic.musicmanager.player.isSameMusic
 import com.fr1014.mycoludmusic.ui.paging.AdapterDataObserverProxy
 import com.fr1014.mycoludmusic.ui.search.SearchViewModel
 import com.fr1014.mycoludmusic.utils.CommonUtils
@@ -36,7 +37,7 @@ class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAd
             }
 
             override fun areContentsTheSame(oldItem: Music, newItem: Music): Boolean {
-                return (oldItem.title + oldItem.artist) == (newItem.title + newItem.artist)
+                return oldItem.isSameMusic(newItem)
             }
         }
     }
@@ -76,7 +77,7 @@ class SearchResultAdapter(private val mViewModel: SearchViewModel) : PagedListAd
                 holder.itemView.apply {
 
                     setOnClickListener {
-                        AudioPlayer.get().addAndPlay(getItem(holder.adapterPosition) as Music)
+                        MyAudioPlay.get().addPlayMusic(getItem(holder.adapterPosition) as Music)
                     }
 
                     findViewById<LinearLayout>(R.id.ll_more).setOnClickListener {

@@ -10,7 +10,8 @@ import com.fr1014.mycoludmusic.http.KWServiceProvider
 import com.fr1014.mycoludmusic.http.WYYServiceProvider
 import com.fr1014.mycoludmusic.http.api.KWApiService
 import com.fr1014.mycoludmusic.http.api.WYApiService
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
+import com.fr1014.mycoludmusic.musicmanager.player.MusicSource
 import com.fr1014.mycoludmusic.rx.ExecuteOnceObserver
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.utils.CollectionUtils
@@ -147,7 +148,6 @@ class SearchDataSource(private val searchKey: String) : PageKeyedDataSource<Int,
     private fun mapWYSearch(entity: WYSearchDetail): List<Music> {
         val musics: MutableList<Music> = ArrayList()
         for (song in entity.result.songs) {
-            val music = Music()
             val artists = song.ar
             val sb = StringBuilder()
             for (index in artists.indices) {
@@ -157,12 +157,9 @@ class SearchDataSource(private val searchKey: String) : PageKeyedDataSource<Int,
                     sb.append(artists[index].name)
                 }
             }
+            val music = Music(song.id.toString(), sb.toString(), song.name, song.mv.toString(), MusicSource.WY_MUSIC.sourceType)
             music.apply {
-                artist = sb.toString()
-                title = song.name
                 original = song.originCoverType.toString() + ""
-                id = song.id.toLong()
-                mvId = song.mv
             }
             if (!CollectionUtils.isEmptyList(song.alia)) {
                 music.subTitle = song.alia[0].toString()
@@ -178,19 +175,19 @@ class SearchDataSource(private val searchKey: String) : PageKeyedDataSource<Int,
         val r = Pattern.compile(pattern)
         for (bean in entity.abslist) {
             val m = r.matcher(bean.name)
-            val music = Music()
+            var title: String?
+            var mSubTitle: String? = null
+            if (m.matches()) {
+                title = m.group(1)
+                mSubTitle = m.group(2)
+            } else {
+                title = bean.name
+            }
+            val music = Music(id = bean.musicrid, artist = bean.artist, title, "", sourceType = MusicSource.KW_MUSIC.sourceType)
             music.apply {
-                musicrid = bean.musicrid
-                artist = bean.artist
                 original = bean.originalsongtype
                 album = bean.album
-                subTitle = music.subTitle
-                if (m.matches()) {
-                    title = m.group(1)
-                    subTitle = m.group(2)
-                } else {
-                    title = bean.name
-                }
+                subTitle = mSubTitle
             }
             musicList.add(music)
         }

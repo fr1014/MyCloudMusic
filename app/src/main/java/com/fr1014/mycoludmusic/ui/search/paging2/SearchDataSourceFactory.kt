@@ -3,7 +3,7 @@ package com.fr1014.mycoludmusic.ui.search.paging2
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
 
 
 /**

@@ -92,7 +92,7 @@ class MyAudioPlay private constructor() : CommonAudioPlayer() {
         super.addPlayMusic(music)
     }
 
-    private fun musicListChange() {
+    fun musicListChange() {
         EventBus.getDefault().post(PlayerEvent(MusicListManageUtils.get().getCurrentMusicList(), PlayerType.OnPlayListChange))
     }
 

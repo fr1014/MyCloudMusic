@@ -1,19 +1,15 @@
 package com.fr1014.mycoludmusic.ui.search
 
 import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import com.fr1014.mycoludmusic.app.MyApplication
 import com.fr1014.mycoludmusic.data.DataRepository
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.MatchBean
 import com.fr1014.mycoludmusic.data.entity.http.wangyiyun.search.SearchHotDetail
-import com.fr1014.mycoludmusic.musicmanager.Music
+import com.fr1014.mycoludmusic.musicmanager.player.Music
 import com.fr1014.mycoludmusic.rx.RxSchedulers
 import com.fr1014.mycoludmusic.ui.search.paging2.NetworkStatus
 import com.fr1014.mycoludmusic.ui.search.paging2.SearchDataSourceFactory
