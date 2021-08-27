@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.animation.LinearInterpolator
@@ -15,6 +16,7 @@ import com.fr1014.mycoludmusic.databinding.AlubmCoverviewBinding
 import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.musicmanager.player.PlayerEvent
 import com.fr1014.mycoludmusic.musicmanager.player.PlayerType
+import com.fr1014.mycoludmusic.ui.playing.dialog.CoverInfoDialog
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -25,37 +27,58 @@ import org.greenrobot.eventbus.ThreadMode
  */
 class AlbumCoverView : ConstraintLayout, LifecycleObserver {
     private lateinit var rotationAnimator: ObjectAnimator
-    private lateinit var mViewBinding: AlubmCoverviewBinding
+    lateinit var mViewBinding: AlubmCoverviewBinding
+    private lateinit var coverInfoDialog: CoverInfoDialog
 
-    constructor(context: Context?) : super(context!!) {
+    constructor(context: Context) : super(context) {
         initView()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context!!, attrs) {
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         initView()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context!!, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         initView()
     }
 
     private fun initView() {
         mViewBinding = AlubmCoverviewBinding.inflate(LayoutInflater.from(context), this)
         initAnimator()
+
         mViewBinding.apply {
-            ivArm.pivotX = 0f
-            ivArm.pivotY = 0f
-            if (MyAudioPlay.get().isPlaying()) {
-                startAnimator()
-                ObjectAnimator.ofFloat(ivArm, "rotation", 0f).start()
-            } else {
-                ObjectAnimator.ofFloat(ivArm, "rotation", 0f, -20f).start()
+
+            civSongImg.setOnLongClickListener {
+                MyAudioPlay.get().getCurrentMusic()?.let { music ->
+                    if (!TextUtils.isEmpty(music.imgUrl)) {
+                        if (!::coverInfoDialog.isInitialized) {
+                            coverInfoDialog = CoverInfoDialog(context)
+                        }
+                        coverInfoDialog.setData(music)
+                        coverInfoDialog.show()
+                    }
+                }
+                true
+            }
+
+            ivArm.apply {
+                pivotX = 0f
+                pivotY = 0f
+                if (MyAudioPlay.get().isPlaying()) {
+                    startAnimator()
+                    ObjectAnimator.ofFloat(this, "rotation", 0f).start()
+                } else {
+                    ObjectAnimator.ofFloat(this, "rotation", 0f, -20f).start()
+                }
             }
         }
     }
 
     private fun initAnimator() {
-        rotationAnimator = ObjectAnimator.ofFloat(mViewBinding.flCover, "rotation", 0f, 360f) //旋转的角度可有多个
+        //旋转的角度可有多个
+        if (!::rotationAnimator.isInitialized) {
+            rotationAnimator = ObjectAnimator.ofFloat(mViewBinding.flCover, "rotation", 0f, 360f)
+        }
         rotationAnimator.apply {
             duration = 25000
             repeatCount = ValueAnimator.INFINITE
@@ -124,7 +147,8 @@ class AlbumCoverView : ConstraintLayout, LifecycleObserver {
             PlayerType.OnPlayerComplete -> {
                 endAnimator()
             }
-            else -> {}
+            else -> {
+            }
         }
     }
 

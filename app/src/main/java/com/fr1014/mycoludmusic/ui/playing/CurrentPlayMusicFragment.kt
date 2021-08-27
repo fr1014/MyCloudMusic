@@ -1,9 +1,11 @@
 package com.fr1014.mycoludmusic.ui.playing
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
-import android.text.TextUtils
+import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -17,22 +19,35 @@ import com.fr1014.mycoludmusic.databinding.FragmentCurrentMusicBinding
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView
 import com.fr1014.mycoludmusic.musicmanager.lrcview.LrcView.OnPlayClickListener
 import com.fr1014.mycoludmusic.musicmanager.player.*
-import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay
 import com.fr1014.mycoludmusic.ui.home.playlistdialog.PlayDialogFragment
-import com.fr1014.mycoludmusic.ui.playing.dialog.CoverInfoDialog
 import com.fr1014.mycoludmusic.utils.*
+import com.fr1014.mycoludmusic.utils.reboundlayout.OnBounceDistanceChangeListener
 import com.fr1014.mymvvm.base.BaseFragment
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
 
-class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, CurrentPlayMusicViewModel>(), View.OnClickListener, OnPlayClickListener {
+class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, CurrentPlayMusicViewModel>(), View.OnClickListener, OnPlayClickListener, OnBounceDistanceChangeListener {
+    private val COVER_FROM = "CurrentPlayMusicFragment"
     private lateinit var player: MediaPlayer
-    private var coverInfoDialog: CoverInfoDialog? = null
+    private lateinit var onBounceDistanceChangeListener: OnBounceDistanceChangeListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is ReBoundActivity) {
+            onBounceDistanceChangeListener = context
+        }
+    }
 
     override fun getViewBinding(container: ViewGroup): FragmentCurrentMusicBinding {
         return FragmentCurrentMusicBinding.inflate(layoutInflater, container, false)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        mViewBinding.reboundLayout.onBounceDistanceChangeListener = this
+        return view
     }
 
     override fun initViewModel(): CurrentPlayMusicViewModel {
@@ -63,10 +78,11 @@ class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, Curre
     private fun initListener() {
         mViewBinding.apply {
             icBack.setOnClickListener(this@CurrentPlayMusicFragment)
-            albumCoverView.setOnClickListener(this@CurrentPlayMusicFragment)
+            flPlay.setOnClickListener(this@CurrentPlayMusicFragment)
+            albumCoverView.mViewBinding.civSongImg.setOnClickListener(this@CurrentPlayMusicFragment)
 
             playControlBar.setPlayControlBarClick(object : OnPlayControlBarClick {
-                override fun pre(pre : Music) {
+                override fun pre(pre: Music) {
                     changeMusicPlay(pre)
                 }
 
@@ -98,22 +114,6 @@ class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, Curre
                     }
                 }
             })
-
-            albumCoverView.setOnLongClickListener {
-                val music = MyAudioPlay.get().getCurrentMusic()
-                context?.let { context ->
-                    music?.let { music ->
-                        if (!TextUtils.isEmpty(music.imgUrl)) {
-                            if (coverInfoDialog == null) {
-                                coverInfoDialog = CoverInfoDialog(context);
-                            }
-                            coverInfoDialog?.setData(music);
-                            coverInfoDialog?.show();
-                        }
-                    }
-                }
-                true
-            }
         }
     }
 
@@ -148,7 +148,7 @@ class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, Curre
                 mViewBinding.albumCoverView.endAnimator()
                 activity?.onBackPressed()
             }
-            R.id.album_cover_view -> if (mViewBinding.albumCoverView.visibility == View.VISIBLE) {
+            R.id.fl_play, R.id.civ_songImg -> if (mViewBinding.albumCoverView.visibility == View.VISIBLE) {
                 mViewBinding.albumCoverView.visibility = View.GONE
                 setTipsVisibility(View.GONE)
                 mViewBinding.albumCoverView.pauseAnimator()
@@ -160,7 +160,7 @@ class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, Curre
 
     private fun initViewData(music: Music) {
         initSeekBarData(music)
-        setBitmap(FileUtils.getCoverLocal(music));
+        setBitmap(FileUtils.getCoverLocal(COVER_FROM, music));
         setTipsVisibility(View.VISIBLE)
         resetSeekBarData()
         setMusicInfo(music)
@@ -244,14 +244,16 @@ class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, Curre
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMusicCoverEvent(event: MusicCoverEvent) {
-        when (event.type) {
-            CoverStatusType.Loading, CoverStatusType.Fail -> {
-                mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(resources, R.drawable.film))
-            }
-            CoverStatusType.Success -> {
-                MyAudioPlay.get().getCurrentMusic()?.let {
-                    if (it.isSameMusic(event.music)){
-                        setBitmap(event.coverLocal)
+        if (event.from == COVER_FROM_COMMON || event.from == COVER_FROM) {
+            when (event.type) {
+                CoverStatusType.Loading, CoverStatusType.Fail -> {
+                    mViewBinding.albumCoverView.songImgSetBitmap(BitmapFactory.decodeResource(resources, R.drawable.film))
+                }
+                CoverStatusType.Success -> {
+                    MyAudioPlay.get().getCurrentMusic()?.let {
+                        if (it.isSameMusic(event.music)) {
+                            setBitmap(event.coverLocal)
+                        }
                     }
                 }
             }
@@ -312,5 +314,13 @@ class CurrentPlayMusicFragment : BaseFragment<FragmentCurrentMusicBinding, Curre
 //        }
         EventBus.getDefault().unregister(this)
         super.onDestroy()
+    }
+
+    override fun onDistanceChange(distance: Int, direction: Int) {
+        onBounceDistanceChangeListener.onDistanceChange(distance, direction)
+    }
+
+    override fun onFingerUp(distance: Int, direction: Int) {
+        onBounceDistanceChangeListener.onFingerUp(distance, direction)
     }
 }

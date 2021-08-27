@@ -1,5 +1,6 @@
 package com.fr1014.mycoludmusic.ui.home.playlistdialog;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,13 +15,13 @@ import com.fr1014.mycoludmusic.R;
 import com.fr1014.mycoludmusic.app.MyApplication;
 import com.fr1014.mycoludmusic.base.BasePlayActivity;
 import com.fr1014.mycoludmusic.databinding.FragmentPagerPlaydialogBinding;
-import com.fr1014.mycoludmusic.musicmanager.Preferences;
 import com.fr1014.mycoludmusic.musicmanager.listener.OnPlayerEventListener;
 import com.fr1014.mycoludmusic.musicmanager.player.Music;
 import com.fr1014.mycoludmusic.musicmanager.player.MusicKt;
 import com.fr1014.mycoludmusic.musicmanager.player.MyAudioPlay;
 import com.fr1014.mycoludmusic.musicmanager.player.PlayerEvent;
 import com.fr1014.mycoludmusic.utils.ScreenUtils;
+import com.fr1014.mycoludmusic.ui.playing.ReBoundActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -179,7 +180,7 @@ public class PlayDialogPageFragment extends Fragment {
                         } else {
                             //点击的为当前播放的歌曲
                             if (getActivity() instanceof BasePlayActivity) {
-                                ((BasePlayActivity) getActivity()).showPlayingFragment();
+                                startActivity(new Intent(getContext(), ReBoundActivity.class));
                                 dialogListener.dialogDismiss();
                             }
                         }
@@ -240,27 +241,9 @@ public class PlayDialogPageFragment extends Fragment {
         binding.header.tvCount.setText(String.format("(%d)", count));
     }
 
-//    private void switchPlayMode() {
-//        PlayModeEnum mode = PlayModeEnum.valueOf(Preferences.getPlayMode());
-//        switch (mode) {
-//            case SINGLE:
-//                mode = PlayModeEnum.LOOP;
-//                break;
-//            case LOOP:
-//                mode = PlayModeEnum.SHUFFLE;
-//                AudioPlayer.get().shuffle();
-//                break;
-//            case SHUFFLE:
-//                mode = PlayModeEnum.SINGLE;
-//                break;
-//        }
-//        Preferences.savePlayMode(mode.value());
-//        AudioPlayer.get().notifyMusicListChange();
-//    }
-
     public void initPlayMode() {
         if (pageType == PAGE_TYPE_CURRENT) {
-            int mode = Preferences.getPlayMode();
+            int mode = MyAudioPlay.get().getPlayMode().value();
             setImageMode(mode);
         }
     }

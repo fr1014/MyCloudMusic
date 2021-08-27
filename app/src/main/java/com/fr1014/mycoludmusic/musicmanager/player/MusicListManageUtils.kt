@@ -58,7 +58,7 @@ class MusicListManageUtils private constructor() {
     }
 
     fun getCurrentMusicList(): LinkedList<Music> {
-        if (Preferences.getPlayMode() == PlayModeEnum.SHUFFLE.value()) {
+        if (MyAudioPlay.get().getPlayMode() == PlayModeEnum.SHUFFLE) {
             return shuffleMusicList;
         }
         return loopMusicList;
@@ -89,6 +89,7 @@ class MusicListManageUtils private constructor() {
             loopMusicList.addAll(musicList)
             if (!CollectionUtils.isEmptyList(shuffleMusicList)) shuffleMusicList.clear()
             shuffleMusicList.addAll(musicList.shuffle())
+            saveMusicList()
             return true
         }
         return false
@@ -132,26 +133,26 @@ class MusicListManageUtils private constructor() {
         return Gson().fromJson(strJson, object : TypeToken<Music>() {}.type)
     }
 
-    fun loadMusicCover(music: Music) {
-        val coverLocal = FileUtils.getCoverLocal(music)
+    fun loadMusicCover(music: Music, from: String) {
+        val coverLocal = FileUtils.getCoverLocal(from, music)
         if (coverLocal != null) {
-            EventBus.getDefault().post(MusicCoverEvent(CoverStatusType.Success, music, coverLocal))
+            EventBus.getDefault().post(MusicCoverEvent(CoverStatusType.Success, from, music, coverLocal))
             return
         }
         coroutineScope.launch {
-            loadMusicCoverRemote(music)
+            loadMusicCoverRemote(music, from)
         }
     }
 
-    private suspend fun loadMusicCoverRemote(music: Music) {
-        EventBus.getDefault().post(MusicCoverEvent(CoverStatusType.Loading))
+    private suspend fun loadMusicCoverRemote(music: Music, from: String) {
+        EventBus.getDefault().post(MusicCoverEvent(CoverStatusType.Loading, from))
         withContext(Dispatchers.IO) {
             try {
                 val responseBody = dataRepository.kkwApiService.getSongCover("${music.imgUrl}?param=700y700")
                 val bitmap = BitmapFactory.decodeStream(responseBody.byteStream())
-                FileUtils.saveCoverToLocal(bitmap, music)
+                FileUtils.saveCoverToLocal(from, bitmap, music)
             } catch (e: Exception) {
-                EventBus.getDefault().post(MusicCoverEvent(CoverStatusType.Fail))
+                EventBus.getDefault().post(MusicCoverEvent(CoverStatusType.Fail, from))
             }
         }
     }

@@ -161,7 +161,7 @@ open class CommonAudioPlayer : MediaPlayer.OnPreparedListener, MediaPlayer.OnErr
         return if (isPlaying() || isPausing()) mediaPlayer.currentPosition.toLong() else 0
     }
 
-    private fun getPlayMode() = PlayModeEnum.valueOf(Preferences.getPlayMode())
+    fun getPlayMode(): PlayModeEnum = PlayModeEnum.valueOf(Preferences.getPlayMode())
 
     open fun switchPlayMode(): PlayModeEnum {
         var playMode = getPlayMode()

@@ -107,8 +107,8 @@ fun Music.savePlayingMusic() {
     MusicListManageUtils.get().putMusic(SharedPreferencesConst.CURRENT_MUSIC, SharedPreferencesConst.CURRENT_MUSIC_KEY, this)
 }
 
-fun Music.loadRemoteCover() {
-    MusicListManageUtils.get().loadMusicCover(this)
+fun Music.loadRemoteCover(from: String) {
+    MusicListManageUtils.get().loadMusicCover(this, from)
 }
 
 suspend fun Music.getSongUrl(dataRepository: DataRepository) {

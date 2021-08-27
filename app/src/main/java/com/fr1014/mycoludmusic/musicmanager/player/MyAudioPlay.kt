@@ -23,7 +23,6 @@ import org.greenrobot.eventbus.EventBus
 private const val TIME_UPDATE: Long = 300L
 
 class MyAudioPlay private constructor() : CommonAudioPlayer() {
-    private lateinit var handler: Handler
     private lateinit var noisyAudioStreamReceiver: NoisyAudioStreamReceiver // 来电/耳机拔出时广播
     private lateinit var noisyFilter: IntentFilter
     private lateinit var audioFocusManager: AudioFocusManager               // 音频焦点管理
@@ -33,6 +32,22 @@ class MyAudioPlay private constructor() : CommonAudioPlayer() {
     private var toast: Toast? = null
     private var newMusicAdded = false
     private var newMusicAddedPlayPosition: Int = -1
+
+    private lateinit var handler: Handler
+    /*
+     * 在定义变量时，加上 by lazy 操作符，当变量第一次使用时会执行 lambda 方法块里的代码为变量初始化值，
+     * 再次使用该变量时，则会使用上一次赋的值。
+     */
+    private val mPublishRunnable: Runnable by lazy {
+        object : Runnable {
+            override fun run() {
+                if (isPlaying()) {
+                    EventBus.getDefault().post(PlayerEvent(PlayerType.OnPublish, mediaPlayer.currentPosition))
+                }
+                handler.postDelayed(this, TIME_UPDATE)
+            }
+        }
+    }
 
     companion object {
         @JvmStatic
@@ -110,7 +125,7 @@ class MyAudioPlay private constructor() : CommonAudioPlayer() {
                 if (TextUtils.isEmpty(music.imgUrl) || music.duration == 0L) {
                     music.getSongInfo(dataRepository)
                 }
-                music.loadRemoteCover()
+                music.loadRemoteCover(COVER_FROM_COMMON)
             }
             try {
                 super.play(music)
@@ -162,7 +177,9 @@ class MyAudioPlay private constructor() : CommonAudioPlayer() {
 
     override fun switchPlayMode(): PlayModeEnum {
         val playMode = super.switchPlayMode()
-        musicListChange()
+        if (playMode != getPlayMode()){
+            musicListChange()
+        }
         toast?.cancel()
         toast = when (playMode) {
             PlayModeEnum.SINGLE -> CommonUtils.toastShort("单曲循环")
@@ -182,15 +199,6 @@ class MyAudioPlay private constructor() : CommonAudioPlayer() {
             mediaPlayer.seekTo(msec)
             MediaSessionManager.get().updatePlaybackState()
             EventBus.getDefault().post(PlayerEvent(PlayerType.OnBufferingUpdate, msec))
-        }
-    }
-
-    private val mPublishRunnable: Runnable = object : Runnable {
-        override fun run() {
-            if (isPlaying()) {
-                EventBus.getDefault().post(PlayerEvent(PlayerType.OnPublish, mediaPlayer.currentPosition))
-            }
-            handler.postDelayed(this, TIME_UPDATE)
         }
     }
 

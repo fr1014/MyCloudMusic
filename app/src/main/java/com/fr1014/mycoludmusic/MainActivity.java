@@ -251,7 +251,6 @@ public class MainActivity extends BasePlayActivity<ActivityMainBinding, MainView
 
     @Override
     protected void onStop() {
-        MusicListManageUtils.get().saveMusicList();
         super.onStop();
     }
 

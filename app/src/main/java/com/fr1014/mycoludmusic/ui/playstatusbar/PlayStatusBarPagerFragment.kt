@@ -9,13 +9,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentViewHolder
-import com.fr1014.mycoludmusic.base.BasePlayActivity
 import com.fr1014.mycoludmusic.databinding.FragmentPagerPlaystatusbarBinding
 import com.fr1014.mycoludmusic.musicmanager.player.*
 import com.fr1014.mycoludmusic.ui.playing.CurrentPlayMusicFragment
 import com.fr1014.mycoludmusic.ui.vm.CommonViewModel
 import com.fr1014.mycoludmusic.utils.CollectionUtils
 import com.fr1014.mycoludmusic.utils.FileUtils
+import com.fr1014.mycoludmusic.ui.playing.ReBoundActivity
 import com.fr1014.mymvvm.base.BaseFragment
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -26,7 +26,8 @@ import kotlin.collections.ArrayList
 private const val POSITION_MUSIC = "param"
 
 class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBinding, CommonViewModel>() {
-    var music: Music? = null
+    private val COVER_FROM = "PlayStatusBarPagerFragment";
+    private var music: Music? = null
     private var musicDialogFragment: CurrentPlayMusicFragment? = null
     private var isLoaded: Boolean = false
 
@@ -40,9 +41,9 @@ class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (!isLoaded){
+        if (!isLoaded) {
             if (music != null) {
-                val coverLocal = FileUtils.getCoverLocal(music)
+                val coverLocal = FileUtils.getCoverLocal(COVER_FROM, music)
                 if (coverLocal != null) {
                     setBitmap(coverLocal)
                 }
@@ -64,13 +65,10 @@ class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBindin
 
     override fun initView() {
         mViewBinding.clPlaylist.setOnClickListener {
-            if (musicDialogFragment == null) {
-                musicDialogFragment = CurrentPlayMusicFragment()
-            }
-            if (!musicDialogFragment!!.isAdded) {
-                //当前播放的音乐的详情页
-                (context as BasePlayActivity<*, *>).showPlayingFragment()
-            }
+            //当前播放的音乐的详情页
+//            (context as BasePlayActivity<*, *>).showPlayingFragment()
+            startActivity(ReBoundActivity::class.java)
+//            (context as BasePlayActivity<*, *>).overridePendingTransition(R.anim.fragment_slide_enter, 0)
         }
         setData(music)
     }
@@ -85,27 +83,29 @@ class PlayStatusBarPagerFragment : BaseFragment<FragmentPagerPlaystatusbarBindin
         }
     }
 
-    private fun setBitmap(bitmap: Bitmap){
+    private fun setBitmap(bitmap: Bitmap) {
         isLoaded = true
         mViewBinding.ivCoverImg.setImageBitmap(bitmap)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMusicCoverEvent(event: MusicCoverEvent){
-        when (event.type) {
-            CoverStatusType.Loading -> {
+    fun onMusicCoverEvent(event: MusicCoverEvent) {
+        if (event.from == COVER_FROM_COMMON || event.from == COVER_FROM) {
+            when (event.type) {
+                CoverStatusType.Loading -> {
 
-            }
-            CoverStatusType.Success -> {
-                val musicLoaded = event.music
-                musicLoaded?.let {
-                    if (it.isSameMusic(this.music)){
-                        event.coverLocal?.let { bitmap -> setBitmap(bitmap) }
+                }
+                CoverStatusType.Success -> {
+                    val musicLoaded = event.music
+                    musicLoaded?.let {
+                        if (it.isSameMusic(this.music)) {
+                            event.coverLocal?.let { bitmap -> setBitmap(bitmap) }
+                        }
                     }
                 }
-            }
-            CoverStatusType.Fail -> {
+                CoverStatusType.Fail -> {
 
+                }
             }
         }
     }
@@ -132,7 +132,7 @@ class PlayStatusBarPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa)
 
     override fun getItemId(position: Int): Long {
         val music = musicList[position]
-        if (music.sourceType == MusicSource.KW_MUSIC.sourceType){
+        if (music.sourceType == MusicSource.KW_MUSIC.sourceType) {
             return music.getKWMusicId().toLong()
         }
         return music.id.toLong()
@@ -140,9 +140,9 @@ class PlayStatusBarPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa)
 
     override fun containsItem(itemId: Long): Boolean {
         return musicList.any {
-            if (it.sourceType == MusicSource.KW_MUSIC.sourceType){
+            if (it.sourceType == MusicSource.KW_MUSIC.sourceType) {
                 it.getKWMusicId() === itemId.toString()
-            }else{
+            } else {
                 it.id === itemId.toString()
             }
         }

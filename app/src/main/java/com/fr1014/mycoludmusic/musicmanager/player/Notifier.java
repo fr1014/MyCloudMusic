@@ -135,7 +135,7 @@ public class Notifier {
         String title = music.getTitle();
         String artist = music.getArtist();
         Bitmap cover;
-        Bitmap coverLocal = FileUtils.getCoverLocal(music);
+        Bitmap coverLocal = FileUtils.getCoverLocal("Notifier", music);
         if (coverLocal == null) {
             cover = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
         } else {

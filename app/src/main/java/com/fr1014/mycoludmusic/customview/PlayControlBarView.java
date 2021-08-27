@@ -83,7 +83,7 @@ public class PlayControlBarView extends LinearLayout implements View.OnClickList
     }
 
     public void initPlayMode() {
-        int mode = Preferences.getPlayMode();
+        int mode = MyAudioPlay.get().getPlayMode().value();
         setImageMode(mode);
     }
 

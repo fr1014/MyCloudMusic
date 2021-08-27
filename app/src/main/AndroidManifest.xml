@@ -25,6 +25,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:theme="@style/Transparent"
+            android:name=".ui.playing.ReBoundActivity"/>
+        <activity
             android:name=".ui.mv.MVActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />

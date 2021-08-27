@@ -106,7 +106,7 @@ public class FileUtils {
         return !file.exists() || file.length() == 0;
     }
 
-    public static void saveCoverToLocal(Bitmap bitmap, Music music) {
+    public static void saveCoverToLocal(String from, Bitmap bitmap, Music music) {
         String path = FileUtils.getCoverDir() + FileUtils.getCoverFileName(music.getArtist(), music.getTitle());
         File file = new File(path);
         if (file.exists()) {
@@ -139,15 +139,11 @@ public class FileUtils {
 //            result.compress(Bitmap.CompressFormat.PNG, 90, out);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
-//            for (LoadResultListener loadResultListener : loadResultListeners) {
-//                loadResultListener.coverLoadSuccess(music,bitmap);
-//            }
-            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Success, music, bitmap));
+            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Success, from, music, bitmap));
             Notifier.get().showPlay(music);
-//            EventBus.getDefault().post(new CoverSaveEvent(true));
         } catch (IOException e) {
             e.printStackTrace();
-            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Fail));
+            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Fail, from));
         } finally {
             try {
                 if (out != null) {
@@ -159,7 +155,7 @@ public class FileUtils {
         }
     }
 
-    public static Bitmap getCoverLocal(Music music) {
+    public static Bitmap getCoverLocal(String from, Music music) {
         if (music == null) return null;
         String path = FileUtils.getCoverDir() + FileUtils.getCoverFileName(music.getArtist(), music.getTitle());
         Bitmap bitmap = null;
@@ -168,7 +164,7 @@ public class FileUtils {
             BitmapFactory.Options options = new BitmapFactory.Options();
             bitmap = BitmapFactory.decodeFileDescriptor(fis.getFD(), null, options);
         } catch (IOException ignored) {
-            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Fail));
+            EventBus.getDefault().post(new MusicCoverEvent(CoverStatusType.Fail, from));
         }
         return bitmap;
     }

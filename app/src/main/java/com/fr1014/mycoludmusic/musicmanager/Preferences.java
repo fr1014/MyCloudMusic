@@ -22,7 +22,6 @@ import java.util.Set;
 public class Preferences {
     private static final String PLAY_POSITION = "play_position";
     private static final String PLAY_MODE = "play_mode";
-    private static final String SPLASH_URL = "splash_url";
     private static final String NIGHT_MODE = "night_mode";
     private static final String MUSIC_SOURCE = "music_source";
     private static final String USER_PROFILE = "profile";
@@ -79,14 +78,6 @@ public class Preferences {
         saveInt(PLAY_MODE, mode);
     }
 
-    public static String getSplashUrl() {
-        return getString(SPLASH_URL, "");
-    }
-
-    public static void saveSplashUrl(String url) {
-        saveString(SPLASH_URL, url);
-    }
-
     public static void saveMusicSource(String source){
         saveMusicSource(MUSIC_SOURCE,source);
     }
@@ -118,22 +109,6 @@ public class Preferences {
     public static String getMusicSource() {
         return getString(MUSIC_SOURCE,"网易");
     }
-
-    //    public static String getFilterSize() {
-//        return getString(sContext.getString(R.string.setting_key_filter_size), "0");
-//    }
-//
-//    public static void saveFilterSize(String value) {
-//        saveString(sContext.getString(R.string.setting_key_filter_size), value);
-//    }
-//
-//    public static String getFilterTime() {
-//        return getString(sContext.getString(R.string.setting_key_filter_time), "0");
-//    }
-//
-//    public static void saveFilterTime(String value) {
-//        saveString(sContext.getString(R.string.setting_key_filter_time), value);
-//    }
 
     private static boolean getBoolean(String key, boolean defValue) {
         return getPreferences().getBoolean(key, defValue);

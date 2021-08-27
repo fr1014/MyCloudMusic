@@ -67,7 +67,7 @@ public class MediaSessionManager {
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, music.getAlbum())
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, music.getArtist())
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, music.getDuration())
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, FileUtils.getCoverLocal(music));
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, FileUtils.getCoverLocal("MediaSessionManager", music));
 
 //        metaData.putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, AppCache.get().getLocalMusicList().size());
 
